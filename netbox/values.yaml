@@ -1,0 +1,101 @@
+# Default values for netbox.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: netboxcommunity/netbox
+  tag: v2.5
+  pullPolicy: Always
+
+env:
+  configuration:
+    DB_NAME: netbox
+    DB_USER: netbox
+    DB_HOST: localhost
+    EMAIL_SERVER: localhost
+    EMAIL_PORT: 25
+    EMAIL_USERNAME: netbox
+    EMAIL_TIMEOUT: 5
+    EMAIL_FROM: netbox@example.com
+    MEDIA_ROOT: /opt/netbox/netbox/media
+    NAPALM_USERNAME: ''
+    NAPALM_PASSWORD: ''
+    NAPALM_TIMEOUT: 10
+    MAX_PAGE_SIZE: 1000
+    REDIS_HOST: redis
+    SUPERUSER_NAME: admin
+    SUPERUSER_EMAIL: admin@example.com
+    WEBHOOKS_ENABLED: true
+
+  secrets:
+    DB_PASSWORD: netbox
+    EMAIL_PASSWORD: netbox
+    REDIS_PASSWORD: redis
+    SECRET_KEY: 0123456789abcdef0123456789abcdef01234567
+    SUPERUSER_PASSWORD: admin
+    SUPERUSER_API_TOKEN: 0123456789abcdef0123456789abcdef01234567
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+worker:
+  enabled: false
+
+  replicaCount: 1
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+

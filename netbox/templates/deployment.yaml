@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "netbox.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "netbox.name" . }}
+    helm.sh/chart: {{ include "netbox.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "netbox.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "netbox.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "netbox.fullname" . }}
+            - secretRef:
+                name: {{ include "netbox.fullname" . }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8001
+          readinessProbe:
+            tcpSocket:
+              port: 8001
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: netbox-nginx-config
+              mountPath: /etc/netbox-nginx
+            - name: netbox-static-files
+              mountPath: /opt/netbox/netbox/static
+            # - name: netbox-configuration
+            #   path: /etc/netbox/config
+            #   readOnly: true
+            # - name: netbox-initializers
+            #   path: /opt/netbox/initializers
+            #   readOnly: true
+            # - name: netbox-startup-scripts
+            #   path: /opt/netbox/startup_scripts
+            #   readOnly: true
+            # - name: netbox-reports
+            #   path: /opt/netbox/reports
+            #   readOnly: true
+        - name: nginx
+          image: "nginx:alpine"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+          volumeMounts:
+            - name: netbox-nginx-config
+              mountPath: /etc/netbox-nginx
+              readOnly: true
+            - name: netbox-static-files
+              mountPath: /opt/netbox/netbox/static
+              readOnly: true
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        # - name: netbox-configuration
+        #   configMap:
+        #     name: {{ .Chart.Name }}-configuration
+        # - name: netbox-initializers
+        #   configMap:
+        #     name: {{ .Chart.Name }}-initializers
+        # - name: netbox-reports
+        #   configMap:
+        #     name: {{ .Chart.Name }}-reports
+        # - name: netbox-startup-scripts
+        #   configMap:
+        #     name: {{ .Chart.Name }}-startup-scripts
+        - name: netbox-nginx-config
+          emptyDir: {}
+        - name: netbox-static-files
+          emptyDir: {}
+        - name: netbox-media-files
+          emptyDir: {}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

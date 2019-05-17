@@ -1,0 +1,29 @@
+---
+stages:
+  - test
+  - deploy
+
+lint:charts:
+  image:
+    name: linkyard/docker-helm
+    entrypoint: ["/bin/sh", "-c"]
+  stage: test
+  script:
+    - helm lint charts/*
+
+pages:
+  image:
+    name: linkyard/docker-helm
+    entrypoint: ["/bin/sh", "-c"]
+  stage: deploy
+  script:
+    - helm init --client-only
+    - mkdir -p ./public/
+    - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
+    - (cd public; helm package ../charts/*)
+    - helm repo index public --url ${CI_PAGES_URL}
+  artifacts:
+    paths:
+      - public
+  only:
+    - master@ananace/charts
