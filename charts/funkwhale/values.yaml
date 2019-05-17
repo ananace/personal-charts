@@ -1,0 +1,161 @@
+# Default values for funkwhale.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: funkwhale/funkwhale
+  tag: 0.19.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  host: chart-example.local
+  protocol: http
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+dbUrl: ''
+redisUrl: ''
+djangoSecret: ''
+
+extraEnv: []
+  # LDAP_ENABLED: "True"
+  # LDAP_ROOT_DN: dc=example,dc=com
+  # LDAP_SEARCH_FILTER: (|(uid={0})(mail={0}))
+  # LDAP_SERVER_URI: ldaps://ldap.example.com
+  # LDAP_START_TLS: "True"
+  # MEDIA_ROOT: /srv/funkwhale/data/media
+  # MUSIC_DIRECTORY_PATH: /srv/funkwhale/data/music
+  # MUSIC_DIRECTORY_SERVE_PATH: /srv/funkwhale/data/music
+
+s3:
+  enabled: false
+  proxy: false
+
+  accessKey: ''
+  secretKey: ''
+  bucket: funkwhale
+  # region: us-1
+  # location: /funkwhale
+  # url: http://s3.example.com
+
+api:
+  # Additional mounts to add to the API pod
+  extraVolumeMounts: []
+    # - name: extra-music-data
+    #   mountPath: /srv/funkwhale/data/music
+    #   readOnly: true
+    #   existingClaim: volume-claim
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+front:
+  replicaCount: 1
+
+  image:
+    repository: nginx
+    tag: stable
+    pullPolicy: IfNotPresent
+
+  # Additional mounts to add to the frontend pod
+  extraVolumeMounts: []
+    # - name: extra-music-data
+    #   mountPath: /srv/funkwhale/data/music
+    #   readOnly: true
+    #   existingClaim: volume-claim
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+celery:
+  beat:
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  worker:
+    replicaCount: 1
+
+    # Additional mounts to add to the frontend pod
+    extraVolumeMounts: []
+      # - name: extra-music-data
+      #   mountPath: /srv/funkwhale/data/music
+      #   readOnly: true
+      #   existingClaim: volume-claim
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
