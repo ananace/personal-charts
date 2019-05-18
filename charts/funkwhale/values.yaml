@@ -16,7 +16,8 @@ service:
 
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   host: chart-example.local
@@ -27,19 +28,51 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-dbUrl: ''
-redisUrl: ''
+database:
+  ## Database host
+  host:
+
+  ## Database port
+  port: 5432
+
+  ## Database user
+  user: funkwhale
+
+  ## Database password
+  password:
+
+  ## Database name
+  database: funkwhale
+
+redis:
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+  slave:
+    persistence:
+      enabled: false
+  password: funkwhale
+  redisPort: 6379
+
 djangoSecret: ''
 
-extraEnv: []
+extraEnv: {}
   # LDAP_ENABLED: "True"
   # LDAP_ROOT_DN: dc=example,dc=com
   # LDAP_SEARCH_FILTER: (|(uid={0})(mail={0}))
   # LDAP_SERVER_URI: ldaps://ldap.example.com
   # LDAP_START_TLS: "True"
   # MEDIA_ROOT: /srv/funkwhale/data/media
-  # MUSIC_DIRECTORY_PATH: /srv/funkwhale/data/music
-  # MUSIC_DIRECTORY_SERVE_PATH: /srv/funkwhale/data/music
+
+extraSecret: {}
+  # EMAIL_CONFIG: smtp://
+  # DEFAULT_FROM_EMAIL: funkwhale@example.com
+
+persistence:
+  size: 1Gi
+  storageClass: "-"
 
 s3:
   enabled: false
@@ -48,7 +81,7 @@ s3:
   accessKey: ''
   secretKey: ''
   bucket: funkwhale
-  # region: us-1
+  # region: eu-west-2
   # location: /funkwhale
   # url: http://s3.example.com
 
@@ -113,17 +146,13 @@ front:
 
 celery:
   beat:
-    resources: {}
-      # We usually recommend not to specify default resources and to leave this as a conscious
-      # choice for the user. This also increases chances charts run on environments with little
-      # resources, such as Minikube. If you do want to specify resources, uncomment the following
-      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-      # limits:
-      #   cpu: 100m
-      #   memory: 128Mi
-      # requests:
-      #   cpu: 100m
-      #   memory: 128Mi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 10m
+        memory: 75Mi
 
     nodeSelector: {}
 
@@ -132,7 +161,7 @@ celery:
     affinity: {}
 
   worker:
-    replicaCount: 1
+    replicaCount: 2
 
     # Additional mounts to add to the frontend pod
     extraVolumeMounts: []

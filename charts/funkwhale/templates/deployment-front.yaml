@@ -42,7 +42,7 @@ spec:
         - name: nginx
           image: "{{ .Values.front.image.repository }}:{{ .Values.front.image.tag }}"
           imagePullPolicy: {{ .Values.front.image.pullPolicy }}
-          commands:
+          command:
             - sh
             - -c
             - |
@@ -86,17 +86,17 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    volumes:
-      - name: frontend
-        emptyDir: {}
-      - name: data
-        persistentVolumeClaim:
-          claimName: {{ include "funkwhale.fullname" . }}-data
-      - name: config
-        configMap:
-          name: {{ include "funkwhale.fullname" . }}-front
-    {{- range .Values.front.extraVolumeMounts }}
-      - name: {{ .name }}
-        persistentVolumeClaim:
-          claimName: {{ .existingClaim }}
-    {{- end }}
+      volumes:
+        - name: frontend
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "funkwhale.fullname" . }}
+        - name: config
+          configMap:
+            name: {{ include "funkwhale.fullname" . }}-front
+      {{- range .Values.front.extraVolumeMounts }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .existingClaim }}
+      {{- end }}

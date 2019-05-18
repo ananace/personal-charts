@@ -26,11 +26,11 @@ spec:
         - name: worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          commands:
+          command:
             - sh
             - -c
             - |
-              celery -A funkwhale_api.taskapp worder -l INFO
+              celery -A funkwhale_api.taskapp worker -l INFO
           env:
             - name: C_FORCE_ROOT
               value: "true"
@@ -56,15 +56,15 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: {{ include "funkwhale.fullname" . }}-data
-      - name: config
-        configMap:
-          name: {{ include "funkwhale.fullname" . }}-front
-    {{- range .Values.celery.worker.extraVolumeMounts }}
-      - name: {{ .name }}
-        persistentVolumeClaim:
-          claimName: {{ .existingClaim }}
-    {{- end }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "funkwhale.fullname" . }}
+        - name: config
+          configMap:
+            name: {{ include "funkwhale.fullname" . }}-front
+      {{- range .Values.celery.worker.extraVolumeMounts }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .existingClaim }}
+      {{- end }}

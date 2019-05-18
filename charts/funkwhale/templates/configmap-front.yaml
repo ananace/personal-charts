@@ -11,7 +11,7 @@ metadata:
 data:
   nginx.conf: |
     upstream funkwhale-api {
-      server {{ include "funkwhale.fullname" . }}-api.{{ .Release.Namespace }}.svc:5000;
+      server {{ include "funkwhale.fullname" . }}-api:5000;
     }
 
     map $http_upgrade $connection_upgrade {

@@ -41,7 +41,7 @@ spec:
           #     port: http
           readinessProbe:
             tcpSocket:
-              port: http
+              port: api
           volumeMounts:
             - name: data
               mountPath: /srv/funkwhale/data
@@ -67,9 +67,9 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "funkwhale.fullname" . }}-data
+            claimName: {{ include "funkwhale.fullname" . }}
     {{- range .Values.api.extraVolumeMounts }}
         - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ .existingClaim }}
-    {{- end }}<Paste>
+    {{- end }}
