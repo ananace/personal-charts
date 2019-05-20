@@ -23,21 +23,21 @@ data:
 
   DJANGO_ALLOWED_HOSTS: '*'
 
-{{- if .Values.s3.enabled -}}
+{{- if .Values.s3.enabled }}
   AWS_ACCESS_KEY_ID: {{ .Values.s3.accessKey }}
   AWS_SECRET_ACCESS_KEY: {{ .Values.s3.secretKey }}
   AWS_STORAGE_BUCKET_NAME: {{ .Values.s3.bucket }}
-  {{- if .Values.s3.region -}}
+  {{- if .Values.s3.region }}
   AWS_S3_REGION_NAME: {{ .Values.s3.region }}
-  {{- end -}}
-  {{- if .Values.s3.location -}}
+  {{- end }}
+  {{- if .Values.s3.location }}
   AWS_LOCATION: {{ .Values.s3.location }}
-  {{- end -}}
-  {{- if .Values.s3.url -}}
+  {{- end }}
+  {{- if .Values.s3.url }}
   AWS_S3_ENDPOINT_URL: {{ .Values.s3.url }}
-  {{- end -}}
+  {{- end }}
   PROXY_MEDIA: {{ .Values.s3.proxy | quote }}
-{{- end -}}
+{{- end }}
 
 {{- with .Values.extraEnv -}}
   {{- toYaml . | nindent 2 }}
