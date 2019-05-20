@@ -39,9 +39,11 @@ spec:
               name: {{ include "funkwhale.fullname" . }}
           - secretRef:
               name: {{ include "funkwhale.fullname" . }}
+          {{- if .Values.persistence.enabled }}
           volumeMounts:
             - mountPath: /srv/funkwhale/data
               name: data
+          {{- end }}
           resources:
             {{- toYaml .Values.celery.worker.resources | nindent 12 }}
       {{- with .Values.celery.worker.nodeSelector }}
@@ -57,9 +59,11 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
+      {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "funkwhale.fullname" . }}
+      {{- end }}
         - name: config
           configMap:
             name: {{ include "funkwhale.fullname" . }}-front

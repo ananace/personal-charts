@@ -39,6 +39,6 @@ data:
   PROXY_MEDIA: {{ .Values.s3.proxy | quote }}
 {{- end }}
 
-{{- with .Values.extraEnv -}}
+{{- with .Values.extraEnv }}
   {{- toYaml . | nindent 2 }}
 {{- end -}}

@@ -30,10 +30,15 @@ spec:
             - sh
             - -c
             - |
+              set -x
               cp -r frontend/* /frontend/
+              cp -r /usr/lib/python3.6/site-packages/django/contrib/admin/static/* /static/
+              cp -r /app/funkwhale_api/static/* /static/
           volumeMounts:
             - mountPath: /frontend
               name: frontend
+            - mountPath: /static
+              name: static
           resources:
             limits:
               cpu: 50m
@@ -47,6 +52,7 @@ spec:
             - -c
             - |
               envsubst "`env | awk -F = '{printf \" $%s\", $1}'`" < /etc/nginx/funkwhale.template > /etc/nginx/conf.d/default.conf
+              echo "resolver $(grep nameserver /etc/resolv.conf | head -n1 | awk '{print $2}');" > /etc/nginx/conf.d/resolver.conf
               nginx -g 'daemon off;'
           envFrom:
           - configMapRef:
@@ -64,8 +70,12 @@ spec:
           volumeMounts:
             - mountPath: /frontend
               name: frontend
+            - mountPath: /srv/funkwhale/data/static/
+              name: static
+          {{- if .Values.persistence.enabled }}
             - mountPath: /srv/funkwhale/data
               name: data
+          {{- end }}
             - mountPath: /etc/nginx/funkwhale_proxy.conf
               name: config
               subPath: proxy.conf
@@ -89,9 +99,13 @@ spec:
       volumes:
         - name: frontend
           emptyDir: {}
+        - name: static
+          emptyDir: {}
+      {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "funkwhale.fullname" . }}
+      {{- end }}
         - name: config
           configMap:
             name: {{ include "funkwhale.fullname" . }}-front

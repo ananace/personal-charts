@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     audio.funkwhale/component: api
 spec:
-  replicas: 1
+  replicas: {{ .Values.api.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "funkwhale.name" . }}
@@ -42,13 +42,17 @@ spec:
           readinessProbe:
             tcpSocket:
               port: api
+          {{- if or .Values.persistence.enabled .Values.api.extraVolumeMounts }}
           volumeMounts:
+          {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /srv/funkwhale/data
+          {{- end }}
           {{- range .Values.api.extraVolumeMounts }}
             - name: {{ .name }}
               mountPath: {{ .mountPath }}
               readOnly: {{ .readOnly }}
+          {{- end }}
           {{- end }}
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
@@ -64,12 +68,16 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+    {{- if or .Values.persistence.enabled .Values.api.extraVolumeMounts }}
       volumes:
+    {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
             claimName: {{ include "funkwhale.fullname" . }}
+    {{- end }}
     {{- range .Values.api.extraVolumeMounts }}
         - name: {{ .name }}
           persistentVolumeClaim:
             claimName: {{ .existingClaim }}
+    {{- end }}
     {{- end }}

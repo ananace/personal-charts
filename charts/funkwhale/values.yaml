@@ -71,6 +71,7 @@ extraSecret: {}
   # DEFAULT_FROM_EMAIL: funkwhale@example.com
 
 persistence:
+  enabled: false
   size: 1Gi
   storageClass: "-"
 
@@ -86,6 +87,8 @@ s3:
   # url: http://s3.example.com
 
 api:
+  replicaCount: 1
+
   # Additional mounts to add to the API pod
   extraVolumeMounts: []
     # - name: extra-music-data
