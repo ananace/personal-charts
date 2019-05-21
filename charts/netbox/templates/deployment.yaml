@@ -7,17 +7,23 @@ metadata:
     helm.sh/chart: {{ include "netbox.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    com.digitalocean.netbox/component: api
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "netbox.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
+      com.digitalocean.netbox/component: api
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "netbox.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        com.digitalocean.netbox/component: api
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -28,20 +34,22 @@ spec:
                 name: {{ include "netbox.fullname" . }}
             - secretRef:
                 name: {{ include "netbox.fullname" . }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8001
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: api
+          #   initialDelaySeconds: 50
+          #   failureThreshold: 5
           readinessProbe:
             tcpSocket:
-              port: 8001
+              port: api
+          ports:
+            - name: api
+              containerPort: 8001
+              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: netbox-nginx-config
-              mountPath: /etc/netbox-nginx
-            - name: netbox-static-files
-              mountPath: /opt/netbox/netbox/static
+          volumeMounts: []
             # - name: netbox-configuration
             #   path: /etc/netbox/config
             #   readOnly: true
@@ -54,27 +62,6 @@ spec:
             # - name: netbox-reports
             #   path: /opt/netbox/reports
             #   readOnly: true
-        - name: nginx
-          image: "nginx:alpine"
-          imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            tcpSocket:
-              port: http
-          volumeMounts:
-            - name: netbox-nginx-config
-              mountPath: /etc/netbox-nginx
-              readOnly: true
-            - name: netbox-static-files
-              mountPath: /opt/netbox/netbox/static
-              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -92,10 +79,6 @@ spec:
         # - name: netbox-startup-scripts
         #   configMap:
         #     name: {{ .Chart.Name }}-startup-scripts
-        - name: netbox-nginx-config
-          emptyDir: {}
-        - name: netbox-static-files
-          emptyDir: {}
         - name: netbox-media-files
           emptyDir: {}
     {{- with .Values.affinity }}

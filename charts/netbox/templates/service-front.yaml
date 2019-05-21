@@ -7,6 +7,7 @@ metadata:
     helm.sh/chart: {{ include "netbox.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    com.digitalocean.netbox/component: front
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -17,3 +18,4 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "netbox.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+    com.digitalocean.netbox/component: front

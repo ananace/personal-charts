@@ -6,36 +6,8 @@ replicaCount: 1
 
 image:
   repository: netboxcommunity/netbox
-  tag: v2.5
+  tag: develop-2.6-ldap
   pullPolicy: Always
-
-env:
-  configuration:
-    DB_NAME: netbox
-    DB_USER: netbox
-    DB_HOST: localhost
-    EMAIL_SERVER: localhost
-    EMAIL_PORT: 25
-    EMAIL_USERNAME: netbox
-    EMAIL_TIMEOUT: 5
-    EMAIL_FROM: netbox@example.com
-    MEDIA_ROOT: /opt/netbox/netbox/media
-    NAPALM_USERNAME: ''
-    NAPALM_PASSWORD: ''
-    NAPALM_TIMEOUT: 10
-    MAX_PAGE_SIZE: 1000
-    REDIS_HOST: redis
-    SUPERUSER_NAME: admin
-    SUPERUSER_EMAIL: admin@example.com
-    WEBHOOKS_ENABLED: true
-
-  secrets:
-    DB_PASSWORD: netbox
-    EMAIL_PASSWORD: netbox
-    REDIS_PASSWORD: redis
-    SECRET_KEY: 0123456789abcdef0123456789abcdef01234567
-    SUPERUSER_PASSWORD: admin
-    SUPERUSER_API_TOKEN: 0123456789abcdef0123456789abcdef01234567
 
 nameOverride: ""
 fullnameOverride: ""
@@ -57,6 +29,57 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+database:
+  ## Database host
+  host: localhost
+
+  ## Database port
+  port: 5432
+
+  ## Database user
+  user: netbox
+
+  ## Database password
+  password: netbox
+
+  ## Database name
+  database: netbox
+
+redis:
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+  slave:
+    persistence:
+      enabled: false
+  password: netbox
+  redisPort: 6379
+
+djangoSecret: ''
+
+extraEnv: {}
+  # EMAIL_SERVER: localhost
+  # EMAIL_PORT: 25
+  # EMAIL_USERNAME: netbox
+  # EMAIL_TIMEOUT: 5
+  # EMAIL_FROM: netbox@example.com
+  # NAPALM_USERNAME: ''
+  # NAPALM_TIMEOUT: 10
+  # MAX_PAGE_SIZE: 1000
+  # WEBHOOKS_ENABLED: true
+
+extraSecrets: {}
+  # EMAIL_PASSWORD: netbox
+  # NAPALM_PASSWORD: ''
+
+superuser:
+  name: ''
+  email: ''
+  apiToken: ''
+  password: ''
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

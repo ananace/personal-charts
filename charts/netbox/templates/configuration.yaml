@@ -8,6 +8,18 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
-{{- range $key, $value := .Values.env.configuration }}
+  DB_NAME: {{ .Values.database.database }}
+  DB_USER: {{ .Values.database.user }}
+  DB_HOST: {{ .Values.database.host }}
+  DB_PORT: {{ .Values.database.port | quote }}
+
+  REDIS_HOST: {{ include "netbox.redisHost" . }}
+  REDIS_PORT: {{ .Values.redis.redisPort | quote }}
+  REDIS_SSL: "false"
+
+  SUPERUSER_NAME: {{ .Values.superuser.name }}
+  SUPERUSER_EMAIL: {{ .Values.superuser.email }}
+
+{{- range $key, $value := .Values.extraEnv }}
   {{ $key }}: {{ $value | quote }}
 {{- end }}

@@ -31,41 +31,41 @@ spec:
             - rqworker
           envFrom:
             - configMapRef:
-              name: {{ include "netbox.fullname" . }}
+                name: {{ include "netbox.fullname" . }}
             - secretRef:
-              name: {{ include "netbox.fullname" . }}
+                name: {{ include "netbox.fullname" . }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
-          volumeMounts:
-            - name: netbox-configuration
-              path: /etc/netbox/config
-              readOnly: true
-            - name: netbox-initializers
-              path: /opt/netbox/initializers
-              readOnly: true
-            - name: netbox-startup-scripts
-              path: /opt/netbox/startup_scripts
-              readOnly: true
-            - name: netbox-reports
-              path: /opt/netbox/reports
-              readOnly: true
+          volumeMounts: []
+            # - name: netbox-configuration
+            #   path: /etc/netbox/config
+            #   readOnly: true
+            # - name: netbox-initializers
+            #   path: /opt/netbox/initializers
+            #   readOnly: true
+            # - name: netbox-startup-scripts
+            #   path: /opt/netbox/startup_scripts
+            #   readOnly: true
+            # - name: netbox-reports
+            #   path: /opt/netbox/reports
+            #   readOnly: true
       {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      volumes:
-        - name: netbox-configuration
-          configMap:
-            name: {{ .Chart.Name }}-configuration
-        - name: netbox-initializers
-          configMap:
-            name: {{ .Chart.Name }}-initializers
-        - name: netbox-reports
-          configMap:
-            name: {{ .Chart.Name }}-reports
-        - name: netbox-startup-scripts
-          configMap:
-            name: {{ .Chart.Name }}-startup-scripts
+      volumes: []
+        # - name: netbox-configuration
+        #   configMap:
+        #     name: {{ .Chart.Name }}-configuration
+        # - name: netbox-initializers
+        #   configMap:
+        #     name: {{ .Chart.Name }}-initializers
+        # - name: netbox-reports
+        #   configMap:
+        #     name: {{ .Chart.Name }}-reports
+        # - name: netbox-startup-scripts
+        #   configMap:
+        #     name: {{ .Chart.Name }}-startup-scripts
     {{- with .Values.worker.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
