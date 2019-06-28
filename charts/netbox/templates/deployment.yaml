@@ -49,7 +49,16 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts: []
+          {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
+          volumeMounts:
+          {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /etc/netbox/media
+          {{- end }}
+{{- if .Values.extraVolumeMounts }}
+{{ toYaml .Values.extraVolumeMounts | indent 10 }}
+{{- end }}
+          {{- end }}
             # - name: netbox-configuration
             #   path: /etc/netbox/config
             #   readOnly: true
@@ -79,8 +88,14 @@ spec:
         # - name: netbox-startup-scripts
         #   configMap:
         #     name: {{ .Chart.Name }}-startup-scripts
-        - name: netbox-media-files
-          emptyDir: {}
+    {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "netbox.fullname" . }}
+    {{- end }}
+{{- if .Values.extraVolumes }}
+{{ toYaml .Values.extraVolumes | indent 8 }}
+{{- end }}
     {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}

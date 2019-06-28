@@ -100,6 +100,17 @@ tolerations: []
 
 affinity: {}
 
+extraVolumes: []
+
+extraVolumeMounts: []
+  # - name: extra-music-data
+  #   mountPath: /srv/funkwhale/data/music
+  #   readOnly: true
+  #   existingClaim: volume-claim
+
+persistence:
+  enabled: false
+
 worker:
   enabled: false
 
