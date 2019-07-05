@@ -44,10 +44,8 @@ spec:
               readOnly: true
             - name: netbox-socket
               mountPath: /tmp/netbox
-          {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /etc/netbox/media
-          {{- end }}
 {{- if .Values.extraVolumeMounts }}
 {{ toYaml .Values.extraVolumeMounts | indent 12 }}
 {{- end }}
@@ -93,11 +91,13 @@ spec:
           emptyDir: {}
         - name: netbox-socket
           emptyDir: {}
-    {{- if .Values.persistence.enabled }}
         - name: data
+      {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "netbox.fullname" . }}
-    {{- end }}
+            claimName: {{ .Values.persistence.existingClaim | default (include "netbox.fullname" .) }}
+      {{- else }}
+          emptyDir: {}
+      {{- end }}
 {{- if .Values.extraVolumes }}
 {{ toYaml .Values.extraVolumes | indent 8 }}
 {{- end }}
