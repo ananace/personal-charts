@@ -8,14 +8,12 @@ metadata:
     helm.sh/chart: {{ include "netbox.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    com.digitalocean.netbox/component: api
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "netbox.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-      com.digitalocean.netbox/component: api
   template:
     metadata:
       annotations:
@@ -24,7 +22,6 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "netbox.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-        com.digitalocean.netbox/component: api
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -35,19 +32,6 @@ spec:
                 name: {{ include "netbox.fullname" . }}
             - secretRef:
                 name: {{ include "netbox.fullname" . }}
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: api
-          #   initialDelaySeconds: 50
-          #   failureThreshold: 5
-          readinessProbe:
-            tcpSocket:
-              port: api
-          ports:
-            - name: api
-              containerPort: 8001
-              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
@@ -80,11 +64,13 @@ spec:
               containerPort: 8080
               protocol: TCP
           livenessProbe:
-            tcpSocket:
+            httpGet:
               port: http
+              path: /
           readinessProbe:
-            tcpSocket:
+            httpGet:
               port: http
+              path: /
           volumeMounts:
             - name: netbox-config-files
               mountPath: /etc/netbox-nginx/nginx.conf
