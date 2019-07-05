@@ -65,7 +65,7 @@ spec:
               mountPath: /etc/netbox/media
           {{- end }}
 {{- if .Values.extraVolumeMounts }}
-{{ toYaml .Values.extraVolumeMounts | indent 10 }}
+{{ toYaml .Values.extraVolumeMounts | indent 12 }}
 {{- end }}
           {{- end }}
         - name: nginx
