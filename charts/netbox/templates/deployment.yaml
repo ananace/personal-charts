@@ -51,6 +51,14 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
           volumeMounts:
+            - name: netbox-static-files
+              mountPath: /opt/netbox/netbox/static
+            - name: netbox-config-files
+              mountPath: /etc/netbox/config/gunicorn_config.py
+              subPath: gunicorn_config.py
+              readOnly: true
+            - name: netbox-socket
+              mountPath: /tmp/netbox
           {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /etc/netbox/media
@@ -71,11 +79,49 @@ spec:
             # - name: netbox-reports
             #   path: /opt/netbox/reports
             #   readOnly: true
+        - name: nginx
+          image: "nginx:alpine"
+          imagePullPolicy: Always
+          command:
+            - nginx
+            - -c
+            - /etc/netbox-nginx/nginx.conf
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+          volumeMounts:
+            - name: netbox-config-files
+              mountPath: /etc/netbox-nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: netbox-static-files
+              mountPath: /opt/netbox/netbox/static
+              readOnly: true
+            - name: netbox-socket
+              mountPath: /tmp/netbox
+          # resources:
+          #   limits:
+          #     cpu: 125m
+          #     memory: 50Mi
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+        - name: netbox-config-files
+          configMap:
+            name: {{ .Chart.Name }}-config-files
+        - name: netbox-static-files
+          emptyDir: {}
+        - name: netbox-socket
+          emptyDir: {}
         # - name: netbox-configuration
         #   configMap:
         #     name: {{ .Chart.Name }}-configuration
