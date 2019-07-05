@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -67,18 +68,6 @@ spec:
 {{ toYaml .Values.extraVolumeMounts | indent 10 }}
 {{- end }}
           {{- end }}
-            # - name: netbox-configuration
-            #   path: /etc/netbox/config
-            #   readOnly: true
-            # - name: netbox-initializers
-            #   path: /opt/netbox/initializers
-            #   readOnly: true
-            # - name: netbox-startup-scripts
-            #   path: /opt/netbox/startup_scripts
-            #   readOnly: true
-            # - name: netbox-reports
-            #   path: /opt/netbox/reports
-            #   readOnly: true
         - name: nginx
           image: "nginx:alpine"
           imagePullPolicy: Always
@@ -106,10 +95,6 @@ spec:
               readOnly: true
             - name: netbox-socket
               mountPath: /tmp/netbox
-          # resources:
-          #   limits:
-          #     cpu: 125m
-          #     memory: 50Mi
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -122,18 +107,6 @@ spec:
           emptyDir: {}
         - name: netbox-socket
           emptyDir: {}
-        # - name: netbox-configuration
-        #   configMap:
-        #     name: {{ .Chart.Name }}-configuration
-        # - name: netbox-initializers
-        #   configMap:
-        #     name: {{ .Chart.Name }}-initializers
-        # - name: netbox-reports
-        #   configMap:
-        #     name: {{ .Chart.Name }}-reports
-        # - name: netbox-startup-scripts
-        #   configMap:
-        #     name: {{ .Chart.Name }}-startup-scripts
     {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
