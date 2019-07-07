@@ -12,6 +12,9 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/keyring.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "radosgw.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}

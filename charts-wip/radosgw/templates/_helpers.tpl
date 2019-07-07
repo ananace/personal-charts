@@ -43,3 +43,19 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/*
+Generate a CEPH keyring file, suitable for base64 encoding
+*/}}
+{{- define "radosgw.keyringFile" -}}
+[client.{{ .Client }}]
+key = {{ .Key }}
+{{- end --}
+
+{{/*
+Helper for joining a list
+*/}}
+{{- define "helm-toolkit.utils.joinListWithComma" -}}
+{{- $local := dict "first" true -}}
+{{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- end -}}
