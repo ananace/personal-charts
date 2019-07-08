@@ -19,3 +19,8 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl port-forward $POD_NAME 8080:80
 {{- end }}
+
+For administration purposes you can either open a shell in a RadosGW pod or connect to one of your mon hosts:
+
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "radosgw.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl exec --namespace {{ .Release.Namespace }} $POD_NAME radosgw-admin --help
