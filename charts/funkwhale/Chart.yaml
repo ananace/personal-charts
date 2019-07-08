@@ -4,4 +4,4 @@ appVersion: "0.19.1"
 description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
 name: funkwhale
-version: 0.2.0
+version: 0.2.1
