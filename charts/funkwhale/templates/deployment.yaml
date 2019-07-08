@@ -88,7 +88,8 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
           readinessProbe:
             tcpSocket:
