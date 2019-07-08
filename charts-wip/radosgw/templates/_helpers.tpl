@@ -50,7 +50,7 @@ Generate a CEPH keyring file, suitable for base64 encoding
 {{- define "radosgw.keyringFile" -}}
 [client.{{ .Client }}]
 key = {{ .Key }}
-{{- end --}
+{{- end -}}
 
 {{/*
 Helper for joining a list
