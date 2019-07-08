@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "radosgw.labels" . | indent 4 }}
 data:
-  ceph.conf: |-
+  ceph.conf: |+
     [global]
     mon_host = {{ include "helm-toolkit.utils.joinListWithComma" .Values.monHosts }}
     rgw frontends = beast port=8008 endpoint=0.0.0.0:8080
