@@ -1,7 +1,7 @@
 # Default values for funkwhale.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+---
 image:
   repository: funkwhale/funkwhale
   tag: 0.19.1
@@ -9,6 +9,8 @@ image:
 
 nameOverride: ""
 fullnameOverride: ""
+
+replicaCount: 1
 
 service:
   type: ClusterIP
@@ -72,12 +74,14 @@ extraSecret: {}
 
 persistence:
   enabled: false
+  # existingClaim: netbox-data
+  # storageClass: "-"
+  accessMode: ReadWriteMany
   size: 1Gi
-  storageClass: "-"
 
 s3:
   enabled: false
-  proxy: false
+  proxy: true
 
   accessKey: ''
   secretKey: ''
@@ -87,7 +91,7 @@ s3:
   # url: http://s3.example.com
 
 api:
-  replicaCount: 1
+  # replicaCount: 1
 
   # Additional mounts to add to the API pod
   extraVolumeMounts: []
@@ -95,6 +99,8 @@ api:
     #   mountPath: /srv/funkwhale/data/music
     #   readOnly: true
     #   existingClaim: volume-claim
+  
+  extraVolumes: []
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -115,7 +121,7 @@ api:
   affinity: {}
 
 front:
-  replicaCount: 1
+  # replicaCount: 1
 
   image:
     repository: nginx
@@ -128,6 +134,8 @@ front:
     #   mountPath: /srv/funkwhale/data/music
     #   readOnly: true
     #   existingClaim: volume-claim
+
+  extraVolumes: []
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

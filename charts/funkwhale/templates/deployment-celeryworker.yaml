@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,11 +40,12 @@ spec:
               name: {{ include "funkwhale.fullname" . }}
           - secretRef:
               name: {{ include "funkwhale.fullname" . }}
-          {{- if .Values.persistence.enabled }}
           volumeMounts:
             - mountPath: /srv/funkwhale/data
               name: data
-          {{- end }}
+{{- if .Values.celery.worker.extraVolumeMounts }}
+{{ toYaml .Values.celery.worker.extraVolumeMounts | indent 12 }}
+{{- end }}
           resources:
             {{- toYaml .Values.celery.worker.resources | nindent 12 }}
       {{- with .Values.celery.worker.nodeSelector }}
@@ -59,16 +61,16 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
-      {{- if .Values.persistence.enabled }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ include "funkwhale.fullname" . }}
-      {{- end }}
         - name: config
           configMap:
             name: {{ include "funkwhale.fullname" . }}-front
-      {{- range .Values.celery.worker.extraVolumeMounts }}
-        - name: {{ .name }}
+        - name: data
+      {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim | default (include "funkwhale.fullname" .) }}
+      {{- else }}
+          emptyDir: {}
       {{- end }}
+{{- if .Values.celery.worker.extraVolumes }}
+{{ toYaml .Values.celery.worker.extraVolumes | indent 8 }}
+{{- end }}

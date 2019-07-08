@@ -1,5 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "funkwhale.fullname" . -}}
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -30,6 +31,6 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: {{ $fullName }}-front
+              serviceName: {{ $fullName }}
               servicePort: http
 {{- end }}
