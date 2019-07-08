@@ -44,6 +44,11 @@ spec:
                 sed -e 's!0.0.0.0:5000!unix:/run/funkwhale/funkwhale.sock!' -i compose/django/server.sh
                 compose/django/entrypoint.sh compose/django/server.sh
               fi
+          readinessProbe:
+            exec:
+              command:
+                - stat
+                - /run/funkwhale/funkwhale.sock
           envFrom:
           - configMapRef:
               name: {{ include "funkwhale.fullname" . }}
