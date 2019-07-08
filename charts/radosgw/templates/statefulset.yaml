@@ -54,7 +54,7 @@ spec:
               name: ceph-keyring
               subPath: client.admin.keyring
               readOnly: true
-            - mountPath: /var/lib/ceph/bootstrap-rgw.keyring
+            - mountPath: /var/lib/ceph/bootstrap-rgw/ceph.keyring
               name: ceph-keyring
               subPath: bootstrap-rgw.keyring
               readOnly: true
