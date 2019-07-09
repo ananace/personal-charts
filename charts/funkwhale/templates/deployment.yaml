@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     audio.funkwhale/component: app
 spec:
-  replicas: {{ .Values.api.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "funkwhale.name" . }}
