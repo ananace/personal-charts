@@ -54,7 +54,6 @@ spec:
               name: {{ include "funkwhale.fullname" . }}
           - secretRef:
               name: {{ include "funkwhale.fullname" . }}
-          {{- if or .Values.persistence.enabled .Values.api.extraVolumeMounts }}
           volumeMounts:
             - mountPath: /run/funkwhale
               name: funkwhale-sock
@@ -64,10 +63,9 @@ spec:
               name: frontend
             - name: data
               mountPath: /srv/funkwhale/data
-{{- if .Values.extraVolumeMounts }}
-{{ toYaml .Values.extraVolumeMounts | indent 12 }}
+{{- with .Values.extraVolumeMounts }}
+            {{ toYaml . | nindent 12 }}
 {{- end }}
-          {{- end }}
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
         - name: nginx
