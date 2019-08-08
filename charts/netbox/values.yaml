@@ -7,7 +7,7 @@ replicaCount: 1
 
 image:
   repository: netboxcommunity/netbox
-  tag: v2.6.1-ldap
+  tag: v2.6.2-ldap
   pullPolicy: Always
 
 nameOverride: ""
