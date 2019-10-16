@@ -76,6 +76,12 @@ persistence:
   enabled: false
   # existingClaim: netbox-data
   # storageClass: "-"
+
+  # Note; Using ReadWriteOnce for persistence will require the addition of
+  # a required affinity for the celery worker, as well as the use of only a
+  # single api replica.
+  #
+  # An example is provided for the worker affinity
   accessMode: ReadWriteMany
   size: 1Gi
 
@@ -189,5 +195,14 @@ celery:
 
     tolerations: []
 
+    # Example provided for always co-locating with the main application, for
+    # use with ReadWriteOnce volumes.
     affinity: {}
+      # requiredDuringSchedulingIgnoredDuringExecution:
+      # - labelSelector:
+      #     matchExpressions:
+      #     - key: audio.funkwhale/component
+      #       operator: In
+      #       values:
+      #       - app
 
