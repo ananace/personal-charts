@@ -36,7 +36,10 @@ spec:
               # Copy frontend files for the front pod
               cp -r frontend/* /srv/funkwhale/frontend/
 
-              # Ensure the server binds to a unix socket
+              # Apply any waiting migrations
+              /app/manage.py migrate
+
+              # Make the server bind to a unix socket
               if [ -e compose/django/daphne.sh ]; then
                 sed -e 's!-b 0.0.0.0 -p 5000!-u /run/funkwhale/funkwhale.sock!' -i compose/django/daphne.sh
                 compose/django/entrypoint.sh compose/django/daphne.sh
