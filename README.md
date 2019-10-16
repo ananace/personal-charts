@@ -6,8 +6,9 @@ Kubernetes applications packaged into helm charts
 Current applications
 --------------------
 
-- [Funkwhale](charts/funkwhale) 0.19.1
-- [Netbox](charts/netbox) 2.6.1
+- [Funkwhale](charts/funkwhale)
+- [Netbox](charts/netbox)
+- [CEPH RadosGW](charts/radosgw)
 
 Using
 -----
