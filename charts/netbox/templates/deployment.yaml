@@ -14,6 +14,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "netbox.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
+      component: app
   template:
     metadata:
       annotations:
@@ -22,6 +23,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "netbox.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        component: app
     spec:
       containers:
         - name: {{ .Chart.Name }}
