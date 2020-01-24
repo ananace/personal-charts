@@ -1,0 +1,56 @@
+{{- if .Values.worker.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "netbox.fullname" . }}-worker
+  labels:
+    app.kubernetes.io/name: {{ include "netbox.name" . }}
+    helm.sh/chart: {{ include "netbox.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "netbox.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      component: worker
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "netbox.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        component: worker
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          command:
+            - python3
+            - /opt/netbox/netbox/manage.py
+            - rqworker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "netbox.fullname" . }}
+            - secretRef:
+                name: {{ include "netbox.fullname" . }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}
