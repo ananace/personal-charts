@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-# podManagementPolicy: Parallel
+# podManagementPolicy: OrderedReady
 
 image:
   repository: ceph/daemon
