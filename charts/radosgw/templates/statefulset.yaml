@@ -1,3 +1,4 @@
+{{- $port := .Values.frontendPort | default 8008 -}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -35,7 +36,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ $port }}
               protocol: TCP
           livenessProbe:
             httpGet:

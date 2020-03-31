@@ -1,3 +1,4 @@
+{{- $port := .Values.frontendPort | default 8008 -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -11,9 +12,9 @@ data:
     mon_host = {{ include "helm-toolkit.utils.joinListWithComma" .Values.monHosts }}
     rgw dns name = {{ .Values.dnsName }}
 {{- if eq .Values.frontend "beast" }}
-    rgw frontends = beast port=80 endpoint=0.0.0.0
+    rgw frontends = beast endpoint=0.0.0.0 port={{ $port }}
 {{- else if eq .Values.frontend "civetweb" }}
-    rgw frontends = civetweb port=80
+    rgw frontends = civetweb port={{ $port }}
 {{- end }}
 {{- if .Values.extraCephConf }}
 

@@ -19,6 +19,7 @@ dnsName: chart-example.local
 
 # The RadosGW frontend to use, either beast or civetweb
 frontend: beast
+# frontendPort: 8008
 
 # extraCephConf: |-
 
