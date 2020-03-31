@@ -13,8 +13,11 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# monHosts: []
+monHosts: []
 dnsName: chart-example.local
+
+# The RadosGW frontend to use, either beast or civetweb
+frontend: beast
 
 # extraCephConf: |-
 

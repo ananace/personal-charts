@@ -9,7 +9,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-{{ include "radosgw.labels" . | indent 4 }}
+    {{ include "radosgw.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

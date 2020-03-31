@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ include "radosgw.fullname" . }}
   labels:
-{{ include "radosgw.labels" . | indent 4 }}
+    {{ include "radosgw.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:

@@ -4,13 +4,18 @@ kind: ConfigMap
 metadata:
   name: {{ include "radosgw.fullname" . }}
   labels:
-{{ include "radosgw.labels" . | indent 4 }}
+    {{ include "radosgw.labels" . | nindent 4 }}
 data:
   ceph.conf: |+
     [global]
     mon_host = {{ include "helm-toolkit.utils.joinListWithComma" .Values.monHosts }}
-    rgw frontends = beast port=8008 endpoint=0.0.0.0:8080
     rgw dns name = {{ .Values.dnsName }}
+{{- if eq .Values.frontend "beast" }}
+    rgw frontends = beast port=8008 endpoint=0.0.0.0
+{{- else if eq .Values.frontend "civetweb" }}
+    rgw frontends = civetweb port=8008
+{{- end }}
 {{- if .Values.extraCephConf }}
-{{ .Values.extraCephConf | indent 4 }}
-{{- end -}}
+
+    {{ .Values.extraCephConf | nindent 4 }}
+{{- end }}
