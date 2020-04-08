@@ -4,10 +4,9 @@ metadata:
   name: {{ include "netbox.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "netbox.name" . }}
-    helm.sh/chart: {{ include "netbox.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-    com.digitalocean.netbox/component: front
+    helm.sh/chart: {{ include "netbox.chart" . }}
 spec:
   type: {{ .Values.service.type }}
   ports:
