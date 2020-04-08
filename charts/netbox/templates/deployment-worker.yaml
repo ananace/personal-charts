@@ -32,7 +32,7 @@ spec:
             - python3
             - /opt/netbox/netbox/manage.py
             - rqworker
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
