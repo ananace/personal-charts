@@ -40,6 +40,7 @@ data:
           expires 30d;
           add_header Pragma public;
           add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+          add_header Service-Worker-Allowed "/";
       }
 
       location /federation/ {
