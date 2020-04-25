@@ -4,7 +4,7 @@
 ---
 image:
   repository: funkwhale/funkwhale
-  tag: 0.21
+  # tag:
   pullPolicy: IfNotPresent
 
 nameOverride: ""

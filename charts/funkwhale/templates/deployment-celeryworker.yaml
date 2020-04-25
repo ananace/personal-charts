@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: worker
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ include "funkwhale.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - sh

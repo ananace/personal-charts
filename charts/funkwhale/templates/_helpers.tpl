@@ -38,3 +38,10 @@ Create chart name and version as used by the chart label.
 {{- define "funkwhale.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Create the correct image tag name
+*/}}
+{{- define "funkwhale.imageTag" -}}
+{{- .Values.image.tag | default .Chart.AppVersion -}}
+{{- end -}}
