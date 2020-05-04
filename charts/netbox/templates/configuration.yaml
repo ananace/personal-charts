@@ -17,7 +17,7 @@ data:
 {{- else }}
   DB_NAME: {{ .Values.postgresql.postgresqlDatabase | quote }}
   DB_USER: {{ .Values.postgresql.postgresqlUsername | quote }}
-  DB_HOST: {{ include "netbox.postgresql.fullname" . }}
+  DB_HOST: {{ .Values.postgresql.postgresqlHost | default (include "netbox.postgresql.fullname" .) }}
   DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
 {{- end }}
 

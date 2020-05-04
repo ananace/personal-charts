@@ -3,7 +3,7 @@
     {{- "Both external and internal database enabled, you may want to set postgresql.enabled=false" | fail }}
   {{- end }}
 {{- else }}
-  {{- if not .Values.postgresql.enabled }}
+  {{- if not (or .Values.postgresql.enabled .Values.postgresql.postgresqlHost) }}
     {{- "Neither external nor internal database enabled, you may want to set postgresql.enabled=true" | fail }}
   {{- end }}
 {{- end }}
