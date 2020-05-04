@@ -31,21 +31,22 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-database:
-  ## Database host
-  host: localhost
+# Deprecated database keys
+# database:
 
-  ## Database port
-  port: 5432
+postgresql:
+  enabled: true
 
-  ## Database user
-  user: netbox
+  postgresqlDatabase: netbox
+  postgresqlUsername: netbox
 
-  ## Database password
-  password: netbox
-
-  ## Database name
-  database: netbox
+  # The following variables are only used when internal PG is disabled
+  # postgresqlHost: postgres
+  # postgresqlPassword: postgres
+  # postgresqlPort: 5432
+  # When defined the `postgresqlPassword` field is ignored
+  # existingSecret: secret-name
+  # existingSecretKey: postgresql-password
 
 redis:
   cluster:
@@ -56,10 +57,16 @@ redis:
   slave:
     persistence:
       enabled: false
-  password: netbox
+  # password: netbox
   redisPort: 6379
 
-djangoSecret: ''
+# NB; Not specifying a key or existing secret will cause it to regenerate on
+# every upgrade
+# djangoSecret: ''
+# existingDjangoSecret: netbox-django-secret
+# existingDjangoSecretKey: secret_key
+
+useUnixSocket: true
 
 extraEnv: {}
   # EMAIL_SERVER: localhost

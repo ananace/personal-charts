@@ -34,6 +34,24 @@ spec:
             - rqworker
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "netbox.redis.fullname" . }}
+                  key: redis-password
+          {{- if .Values.postgresql.enabled }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgresql.existingSecret }}
+                  name: {{ .Values.postgresql.existingSecret }}
+                  key: {{ .Values.postgresql.existingSecretKey }}
+                {{- else }}
+                  name: {{ include "netbox.postgresql.fullname" . }}
+                  key: postgresql-password
+                {{- end }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "netbox.fullname" . }}

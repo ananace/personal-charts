@@ -1,3 +1,12 @@
+{{- if .Values.database }}
+  {{- if .Values.postgresql.enabled }}
+    {{- "Both external and internal database enabled, you may want to set postgresql.enabled=false" | fail }}
+  {{- end }}
+{{- else }}
+  {{- if not .Values.postgresql.enabled }}
+    {{- "Neither external nor internal database enabled, you may want to set postgresql.enabled=true" | fail }}
+  {{- end }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,6 +38,33 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.redis.usePassword }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "netbox.redis.fullname" . }}
+                  key: redis-password
+          {{- end }}
+          {{- if .Values.existingDjangoSecret }}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingDjagonSecret }}
+                  key: {{ .Values.existingDjangoSecretKey }}
+          {{- end }}
+          {{- if .Values.postgresql.enabled }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgresql.existingSecret }}
+                  name: {{ .Values.postgresql.existingSecret }}
+                  key: {{ .Values.postgresql.existingSecretKey }}
+                {{- else }}
+                  name: {{ include "netbox.postgresql.fullname" . }}
+                  key: postgresql-password
+                {{- end }}
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "netbox.fullname" . }}
@@ -36,7 +72,6 @@ spec:
                 name: {{ include "netbox.fullname" . }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
           volumeMounts:
             - name: netbox-static-files
               mountPath: /opt/netbox/netbox/static
@@ -44,14 +79,15 @@ spec:
               mountPath: /etc/netbox/config/gunicorn_config.py
               subPath: gunicorn_config.py
               readOnly: true
+            {{- if .Values.useUnixSocket }}
             - name: netbox-socket
               mountPath: /tmp/netbox
+            {{- end }}
             - name: data
               mountPath: /etc/netbox/media
-{{- if .Values.extraVolumeMounts }}
-{{ toYaml .Values.extraVolumeMounts | indent 12 }}
-{{- end }}
-          {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{ toYaml . | nindent 12 }}
+            {{- end }}
         - name: nginx
           image: "nginx:alpine"
           imagePullPolicy: Always
@@ -80,8 +116,10 @@ spec:
             - name: netbox-static-files
               mountPath: /opt/netbox/netbox/static
               readOnly: true
+            {{- if .Values.useUnixSocket }}
             - name: netbox-socket
               mountPath: /tmp/netbox
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -92,8 +130,10 @@ spec:
             name: {{ .Chart.Name }}-config-files
         - name: netbox-static-files
           emptyDir: {}
+        {{- if .Values.useUnixSocket }}
         - name: netbox-socket
           emptyDir: {}
+        {{- end }}
         - name: data
       {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:

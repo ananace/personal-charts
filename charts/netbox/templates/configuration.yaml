@@ -9,17 +9,28 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "netbox.chart" . }}
 data:
-  DB_NAME: {{ .Values.database.database }}
-  DB_USER: {{ .Values.database.user }}
-  DB_HOST: {{ .Values.database.host }}
-  DB_PORT: {{ .Values.database.port | quote }}
+{{- if .Values.database }}
+  DB_NAME: {{ .Values.database.database | default "netbox" | quote }}
+  DB_USER: {{ .Values.database.user | default "netbox" | quote }}
+  DB_HOST: {{ .Values.database.host | quote }}
+  DB_PORT: {{ .Values.database.port | default 5432 | quote }}
+{{- else }}
+  DB_NAME: {{ .Values.postgresql.postgresqlDatabase | quote }}
+  DB_USER: {{ .Values.postgresql.postgresqlUsername | quote }}
+  DB_HOST: {{ include "netbox.postgresql.fullname" . }}
+  DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
+{{- end }}
 
   REDIS_HOST: {{ include "netbox.redisHost" . }}
   REDIS_PORT: {{ .Values.redis.redisPort | quote }}
   REDIS_SSL: "false"
 
-  SUPERUSER_NAME: {{ .Values.superuser.name }}
-  SUPERUSER_EMAIL: {{ .Values.superuser.email }}
+{{- if .Values.superuser.name }}
+  SUPERUSER_NAME: {{ .Values.superuser.name | quote }}
+{{- end }}
+{{- if .Values.superuser.email }}
+  SUPERUSER_EMAIL: {{ .Values.superuser.email | quote }}
+{{- end }}
 
 {{- range $key, $value := .Values.extraEnv }}
   {{ $key }}: {{ $value | quote }}

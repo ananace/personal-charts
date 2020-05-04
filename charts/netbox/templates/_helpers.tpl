@@ -39,5 +39,21 @@ Create chart name and version as used by the chart label.
 Get the correct image tag name
 */}}
 {{- define "netbox.imageTag" -}}
-{{- .Values.image.tag | default (printf "%s-ldap" .Chart.AppVersion) -}}
+{{- .Values.image.tag | default (printf "v%s-ldap" .Chart.AppVersion) -}}
+{{- end -}}
+
+{{/*
+Get the installed postgresql fullname
+*/}}
+{{- define "netbox.postgresql.fullname" -}}
+{{- $name := default "postgresql" .Values.postgresql.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Get the installed redis fullname
+*/}}
+{{- define "netbox.redis.fullname" -}}
+{{- $name := default "redis" .Values.redis.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
