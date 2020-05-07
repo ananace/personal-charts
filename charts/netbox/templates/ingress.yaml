@@ -29,6 +29,9 @@ spec:
   {{- end }}
 {{- end }}
   rules:
+  {{- if .Values.ingress.rules }}
+    {{ toYaml .Values.ingress.rules | nindent 4 }}
+  {{- else }}
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
@@ -36,4 +39,5 @@ spec:
             backend:
               serviceName: {{ $fullName }}
               servicePort: http
+  {{- end }}
 {{- end }}
