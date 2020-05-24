@@ -17,9 +17,9 @@ pages:
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   script:
-    - helm init --client-only
-    - mkdir -p ./public/
+    - mkdir -p public
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
+    - helm init --client-only
     - (cd public; helm package ../charts/*)
     - helm repo index public --url ${CI_PAGES_URL}
   artifacts:
