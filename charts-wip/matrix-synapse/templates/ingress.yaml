@@ -1,0 +1,77 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "matrix-synapse.fullname" . -}}
+{{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "wellknown-lighttpd") -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- if default .Values.ingress.includeServerName true }}
+    {{- $hosts := concat (list .Values.config.serverName) .Values.ingress.hosts }}
+  {{- else }}
+    {{- $hosts := .Values.ingress.hosts }}
+  {{- end }}
+  {{- range $hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+        {{- $default := $.Values.workers.default }}
+        {{- range $worker, $config := $.Values.workers }}
+          {{- $name := $worker | replace "_" "-" }}
+          {{- if and $config.enabled $config.listeners $config.paths }}
+            {{- $service := include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
+            {{- range $config.paths }}
+              {{- if $.Values.ingress.traefikPaths }}
+          - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
+            backend:
+              serviceName: {{ $service }}
+              servicePort: 8083
+              {{- else }}
+          - path: {{ . | quote }}
+            backend:
+              serviceName: {{ $service }}
+              servicePort: 8083
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+
+          - path: /_matrix
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: 8008
+
+          - path: /.well-known/matrix/client
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: 8008
+
+        {{- if $.Values.wellknown.enabled }}
+          - path: /.well-known/matrix/server
+            backend:
+              serviceName: {{ $wkName }}
+              servicePort: 80
+        {{- end }}
+  {{- end }}
+{{- end }}

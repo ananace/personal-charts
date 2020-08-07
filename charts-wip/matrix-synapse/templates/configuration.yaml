@@ -1,0 +1,228 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+data:
+  log.yaml: |
+    version: 1
+    formatters:
+      precise:
+       format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s- %(message)s'
+    filters:
+      context:
+        (): synapse.util.logcontext.LoggingContextFilter
+        request: ""
+    handlers:
+      console:
+        class: logging.StreamHandler
+        formatter: precise
+        filters: [context]
+        level: {{ .Values.config.logLevel }}
+    loggers:
+        synapse:
+            level: {{ .Values.config.logLevel }}
+    root:
+        level: {{ .Values.config.logLevel }}
+        handlers: [console]
+  homeserver.yaml: |
+    # NOTE:
+    # Secrets are stored in separate configs to better fit K8s concepts
+
+    ## Server ##
+
+    server_name: {{ .Values.config.serverName | quote }}
+    pid_file: /homeserver.pid
+    web_client: False
+    soft_file_limit: 0
+    log_config: "/synapse/config/log.yaml"
+
+    trusted_third_party_id_servers:
+{{ .Values.config.thirdPartyIDServers | toYaml | indent 6 }}
+
+    ## Ports ##
+
+    listeners:
+      - port: 8008
+        tls: false
+        bind_addresses: ['::']
+        type: http
+        x_forwarded: true
+
+        resources:
+          - names: [client,federation]
+            compress: false
+
+      - port: 9090
+        tls: false
+        bind_addresses: ['::']
+        type: http
+        resources:
+          - names: [metrics]
+            compress: false
+
+      - port: 9093
+        tls: false
+        bind_addresses: ['::']
+        type: http
+        resources:
+          - names: [replication]
+            compress: false
+
+    ## Performance ##
+
+    event_cache_size: {{ .Values.config.eventCacheSize | default "10K" | quote }}
+
+    ## Ratelimiting ##
+
+    rc_messages_per_second: 0.2
+    rc_message_burst_count: 10.0
+    federation_rc_window_size: 1000
+    federation_rc_sleep_limit: 10
+    federation_rc_sleep_delay: 500
+    federation_rc_reject_limit: 50
+    federation_rc_concurrent: 3
+
+    ## Files ##
+
+    media_store_path: "/synapse/data/media"
+    uploads_path: "/synapse/data/uploads"
+    max_upload_size: {{ .Values.config.maxUploadSize | default "10M" | quote }}
+    max_image_pixels: "32M"
+    dynamic_thumbnails: false
+
+    # List of thumbnail to precalculate when an image is uploaded.
+    thumbnail_sizes:
+    - width: 32
+      height: 32
+      method: crop
+    - width: 96
+      height: 96
+      method: crop
+    - width: 320
+      height: 240
+      method: scale
+    - width: 640
+      height: 480
+      method: scale
+    - width: 800
+      height: 600
+      method: scale
+
+    url_preview_enabled: false
+    max_spider_size: "10M"
+
+    {{- if .Values.config.recaptcha }}
+    ## Captcha ##
+
+    recaptcha_public_key: {{ .Values.config.recaptcha.publicKey | quote }}
+    enable_registration_captcha: True
+    recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+    {{- end }}
+
+    {{- if .Values.config.turnUris }}
+    ## Turn ##
+
+    turn_uris:
+      {{ toYaml .Values.config.turnUris | nindent 6 }}
+    turn_user_lifetime: "1h"
+    turn_allow_guests: True
+    {{- end }}
+
+    ## Registration ##
+
+    enable_registration: {{ .Values.config.enableRegistration | default false }}
+    bcrypt_rounds: 12
+    allow_guest_access: {{ .Values.config.allowGuests | default false }}
+    enable_group_creation: true
+
+    ## Metrics ###
+
+    enable_metrics: True
+    report_stats: {{ .Values.config.reportStats | default false }}
+
+    ## API Configuration ##
+
+    room_invite_state_types:
+      - "m.room.join_rules"
+      - "m.room.canonical_alias"
+      - "m.room.avatar"
+      - "m.room.name"
+
+    expire_access_token: False
+
+    ## Signing Keys ##
+
+    signing_key_path: "/synapse/keys/signing.key"
+    old_signing_keys: {}
+    key_refresh_interval: "1d" # 1 Day.
+
+    # The trusted servers to download signing keys from.
+    perspectives:
+      servers:
+{{ .Values.config.perspectiveServers | toYaml | indent 8 }}
+
+    ## Workers ##
+{{- $default := .Values.workers.default -}}
+{{- range $worker, $config := .Values.workers -}}
+{{- if $config.enabled -}}
+{{- if eq $worker "pusher" }}
+    start_pushers: false
+{{- else if eq $worker "appservice" }}
+    notify_appservices: false
+{{- else if eq $worker "federation_sender" }}
+    send_federation: false
+{{- else if eq $worker "media_repository" }}
+    enable_media_repo: false
+{{- else if eq $worker "user_dir" }}
+    update_user_directory: false
+{{- end }}
+{{- end }}
+{{- end }}
+
+    {{- with .Values.extraConfig }}
+    ## Extra config ##
+
+    {{ . | toYaml }}
+    {{- end }}
+
+{{- $default := .Values.workers.default -}}
+{{- range $worker, $config := .Values.workers -}}
+{{- if $config.enabled -}}
+{{- $name := $worker | replace "_" "-" }}
+
+  {{ $name }}.worker: |
+    worker_app: "synapse.app.{{ $worker }}"
+
+    # The replication listener on the synapse to talk to.
+    worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:8008
+    worker_replication_host: {{ include "matrix-synapse.replicationname" $ | quote }}
+    worker_replication_http_port: 9093
+
+    {{- if or $config.listeners ($config.metrics | default $default.metrics) }}
+    worker_listeners:
+    {{- if $config.listeners }}
+      - type: http
+        tls: false
+        port: 8083
+        resources:
+          - names:
+              {{ toYaml $config.listeners | nindent 14 }}
+            compress: false
+    {{- end }}
+    {{- if $config.metrics | default $default.metrics }}
+      - type: http
+        bind_addresses: ['0.0.0.0']
+        tls: false
+        port: 9090
+        resources:
+          - names: [metrics]
+            compress: false
+    {{- end }}
+    {{- end }}
+
+    worker_log_config: /synapse/config/log.yaml
+{{- end }}
+{{- end }}

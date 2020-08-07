@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "matrix-synapse.fullname" . }}-test-connection"
+  labels:
+{{ include "matrix-synapse.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['{{ include "matrix-synapse.fullname" . }}:8008/_matrix/client/versions']
+  restartPolicy: Never

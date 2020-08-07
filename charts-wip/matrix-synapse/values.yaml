@@ -1,0 +1,312 @@
+---
+# Docker image configuration, used for Synapse and workers
+image:
+  repository: ananace/matrix-synapse
+  # tag: ''
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+signingkey:
+  job:
+    enabled: true
+
+  # existingSecret:
+  # existingSecretKey:
+
+config:
+  # serverName: 'example.com'
+  eventCacheSize: 10K
+  maxUploadSize: 10M
+
+  logLevel: INFO
+
+  # recaptcha:
+  #   publicKey:
+  #   privateKey:
+
+  # turnUris: []
+  turnSecret: ''
+
+  enableRegistration: false
+  registrationSharedSecret: ''
+  allowGuests: false
+
+  reportStats: false
+
+  federationBlacklistIPs:
+    - '127.0.0.0/8'
+    - '10.0.0.0/8'
+    - '172.16.0.0/12'
+    - '192.168.0.0/16'
+    - '100.64.0.0/10'
+    - '169.254.0.0/16'
+    - '::1/128'
+    - 'fe80::/64'
+    - 'fc00::/7'
+
+  thirdPartyIDServers:
+    - matrix.org
+    - vector.im
+
+  perspectiveServers:
+    matrix.org:
+      verify_keys:
+        ed25519:auto:
+          key: "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
+
+# Specify arbitrary synapse configuration;
+extraConfig: {}
+#  use_presence: false
+#  enable_search: false
+#  federation_domain_whitelist:
+#    - lon.example.com
+#    - nyc.example.com
+#    - syd.example.com
+
+wellknown:
+  enabled: false
+  # host: matrix.example.com
+  # port: 443
+
+postgresql:
+  enabled: true
+  nameOverride: synapse-postgresql
+
+  postgresqlUsername: synapse
+  postgresqlDatabase: synapse
+
+  postgresqlInitdbArgs: "--lc-collate=C --lc-ctype=C"
+
+  persistence:
+    size: 16G
+
+externalPostgresql:
+  # host: postgres
+  port: 5432
+  username: synapse
+  # password: synapse
+  database: synapse
+  # sslMode: require
+
+redis:
+  enabled: true
+  nameOverride: synapse-redis
+
+  # usePassword: false
+  # password: synapse
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+    statefulset:
+      updateStrategy: RollingUpdate
+
+externalRedis:
+  # host: redis
+  port: 6379
+  # password: synapse
+
+# Configuration for handling Synapse workers, which are useful for handling
+# high-load deployments.
+# More information is available at;
+# https://github.com/matrix-org/synapse/blob/master/docs/workers.md
+workers:
+  # Default configuration, this is inherited into all workers
+  default:
+    # The number of worker replicas, note that some workers require special
+    # handling. Refer to the information URL above.
+    replicaCount: 1
+
+    # Should workers provide Prometheus metrics.
+    metrics: false
+
+    # Additional volume mounts to add to the worker.
+    # Useful for the media repo.
+    volumeMounts: {}
+
+    # Additional volumes to add to the worker.
+    # Useful for the media repo.
+    volumes: {}
+
+    podSecurityContext: {}
+    #   fsGroup: 666
+    #   runAsGroup: 666
+    #   runAsUser: 666
+    securityContext: {}
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: true
+    #   runAsNonRoot: true
+    #   runAsUser: 666
+    resources: {}
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+  # The generic worker can be used to handle most endpoints.
+  # Be careful when enabling the sync endpoints as they can eat large amounts of
+  # resources. Refer to the information URL above for more info.
+  # Proper load balancing with the K8s Ingress resource may not be possible.
+  generic_worker:
+    enabled: false
+    listeners: [client, federation]
+    paths:
+    # - "/_matrix/client/(v2_alpha|r0)/sync"
+      - "/_matrix/client/(api/v1|v2_alpha|r0)/events"
+    # - "/_matrix/client/(api/v1|r0)/initialSync"
+    # - "/_matrix/client/(api/v1|r0)/rooms/[^/]+/initialSync"
+      - "/_matrix/federation/v1/event/"
+      - "/_matrix/federation/v1/state/"
+      - "/_matrix/federation/v1/state_ids/"
+      - "/_matrix/federation/v1/backfill/"
+      - "/_matrix/federation/v1/get_missing_events/"
+      - "/_matrix/federation/v1/publicRooms"
+      - "/_matrix/federation/v1/query/"
+      - "/_matrix/federation/v1/make_join/"
+      - "/_matrix/federation/v1/make_leave/"
+      - "/_matrix/federation/v1/send_join/"
+      - "/_matrix/federation/v2/send_join/"
+      - "/_matrix/federation/v1/send_leave/"
+      - "/_matrix/federation/v2/send_leave/"
+      - "/_matrix/federation/v1/invite/"
+      - "/_matrix/federation/v2/invite/"
+      - "/_matrix/federation/v1/query_auth/"
+      - "/_matrix/federation/v1/event_auth/"
+      - "/_matrix/federation/v1/exchange_third_party_invite/"
+      - "/_matrix/federation/v1/user/devices/"
+      - "/_matrix/federation/v1/get_groups_publicised"
+      - "/_matrix/key/v2/query"
+      - "/_matrix/federation/v1/send/"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicRooms"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/joined_members"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/context/.*"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/members"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state"
+      - "/_matrix/client/(api/v1|r0|unstable)/account/3pid"
+      - "/_matrix/client/(api/v1|r0|unstable)/keys/query"
+      - "/_matrix/client/(api/v1|r0|unstable)/keys/changes"
+      - "/_matrix/client/versions"
+      - "/_matrix/client/(api/v1|r0|unstable)/voip/turnServer"
+      - "/_matrix/client/(api/v1|r0|unstable)/joined_groups"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups/"
+      - "/_matrix/client/(api/v1|r0|unstable)/login"
+      - "/_matrix/client/(r0|unstable)/register"
+      - "/_matrix/client/(r0|unstable)/auth/.*/fallback/web"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/send"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state/"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/(join|invite|leave|ban|unban|kick)"
+      - "/_matrix/client/(api/v1|r0|unstable)/join/"
+      - "/_matrix/client/(api/v1|r0|unstable)/profile/"
+
+  # This worker deals with pushing notifications.
+  # NB; Only one instance of this worker can be run at a time, refer to the
+  # information URL above.
+  pusher:
+    enabled: false
+
+  # This worker handles sending data to registered appservices.
+  # NB; Only one instance of this worker can be run at at time, refer to the
+  # information URL above.
+  appservice:
+    enabled: false
+
+  # This worker handles sending federation traffic to other Synapse servers.
+  federation_sender:
+    enabled: false
+
+  # This worker deals with serving and storing media.
+  # NB; Running multiple instances will conflict with background jobs.
+  media_repository:
+    enabled: false
+    listeners: [media]
+    paths:
+      - "/_matrix/media/"
+      - "/_synapse/admin/v1/purge_media_cache"
+      - "/_synapse/admin/v1/room/.*/media.*"
+      - "/_synapse/admin/v1/user/.*/media.*"
+      - "/_synapse/admin/v1/media/.*"
+      - "/_synapse/admin/v1/quarantine_media/.*"
+
+  # This worker deals with user directory searches.
+  user_dir:
+    enabled: false
+    listeners: [client]
+    paths:
+      - "/_matrix/client/(api/v1|r0|unstable)/user_directory/search"
+
+  # This worker handles key uploads, and may also stub out presence if that is
+  # disabled. If you set extraConfig.use_presence=false then you may want to
+  # uncomment the second path.
+  frontend_proxy:
+    enabled: false
+    listeners: [client]
+    paths:
+      - "/_matrix/client/(api/v1|r0|unstable)/keys/upload"
+    # - "/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status"
+
+podSecurityContext: {}
+#  fsGroup: 666
+#  runAsGroup: 666
+#  runAsUser: 666
+
+securityContext: {}
+#  capabilities:
+#    drop:
+#    - ALL
+#  readOnlyRootFilesystem: true
+#  runAsNonRoot: true
+#  runAsUser: 666
+
+ingress:
+  enabled: true
+
+  # Generate traefik-compatible regex paths instead of nginx-compatible ones
+  traefikPaths: false
+
+  # Annotations to apply to the created ingress resource
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  #  kubernetes.io/ingress.class: nginx
+  #  kubernetes.io/tls-acme: "true"
+
+  # Additional hosts to add to the ingress configuration
+  # NB; config.serverName is included if includeServerName is set (default)
+  hosts: []
+  #  - matrix.example.com
+
+  # Should config.serverName be included in the list of ingress paths, can be
+  # set to false if the main domain is managed in some external way.
+  # includeServerName: false
+
+  # TLS configuration to include in the ingress configuration
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - example.com
+  #      - matrix.example.com
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

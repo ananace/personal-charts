@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8008
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    component: synapse
+    {{- include "matrix-synapse.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrix-synapse.replicationname" . }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9093
+      targetPort: replication
+      protocol: TCP
+      name: replication
+  selector:
+    {{- include "matrix-synapse.selectorLabels" . | nindent 4 }}
+    component: synapse
+{{- $default := .Values.workers.default }}
+{{- range $worker, $config := .Values.workers }}
+{{- if and $config.enabled $config.listeners }}
+{{- $name := $worker | replace "_" "-" }}
+{{- $release := $.Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
+  labels:
+    {{- include "matrix-synapse.labels" $ | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8083
+      targetPort: listener
+      protocol: TCP
+      name: listener
+  selector:
+    {{- include "matrix-synapse.selectorLabels" $ | nindent 4 }}
+    component: worker
+    worker: {{ $name }}
+{{- end }}
+{{- end }}

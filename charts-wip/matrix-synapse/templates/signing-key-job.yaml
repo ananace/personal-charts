@@ -1,0 +1,115 @@
+{{- if and .Values.signingkey.job.enabled (not .Values.signingkey.existingSecret) }}
+{{- $name := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey-job") }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - update
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $name }}
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    component: job
+    job: signing-key-generation
+spec:
+  template:
+    metadata:
+      labels:
+        {{- include "matrix-synapse.labels" . | nindent 8 }}
+        component: job
+        job: signing-key-generation
+    spec:
+      containers:
+        - command:
+            - sh
+            - -c
+            - |
+              echo "Copying key upload script..."
+              cp /key-upload /scripts/
+              echo "Generating signing key..."
+              /usr/local/bin/generate_signing_key.py -o /synapse/keys/signing.key
+          image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          name: signing-key-generate
+          resources:
+            requests:
+              memory: 10Mi
+              cpu: 10m
+            limits:
+              memory: 25Mi
+              cpu: 100m
+          volumeMounts:
+            - mountPath: /scripts
+              name: scripts
+            - mountPath: /synapse/keys
+              name: matrix-synapse-keys
+        - command:
+            - sh
+            - -c
+            - |
+              printf "Checking rights to create secret... "
+              kubectl auth can-i create secret/${SECRET_NAME}
+              echo "Waiting for key upload script"
+              while ! [ -f /scripts/key-upload ]; do sleep 1; done
+              /scripts/key-upload
+          env:
+            - name: SECRET_NAME
+              value: {{ $name }}
+          image: bitnami/kubectl
+          name: signing-key-upload
+          resources:
+            requests:
+              memory: 10Mi
+              cpu: 10m
+            limits:
+              memory: 50Mi
+              cpu: 100m
+          volumeMounts:
+            - mountPath: /scripts
+              name: scripts
+              readOnly: true
+            - mountPath: /synapse/keys
+              name: matrix-synapse-keys
+              readOnly: true
+      restartPolicy: Never
+      serviceAccount: {{ $name }}
+      volumes:
+        - name: scripts
+          emptyDir: {}
+        - name: matrix-synapse-keys
+          emptyDir: {}
+{{- end }}

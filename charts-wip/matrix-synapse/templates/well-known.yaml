@@ -1,0 +1,101 @@
+{{- if .Values.wellknown.enabled }}
+{{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "wellknown-lighttpd") -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $wkName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    component: well-known
+data:
+  lighttpd.conf: |
+    var.basedir  = "/var/www/localhost"
+    var.logdir   = "/var/log/lighttpd"
+    var.statedir = "/var/lib/lighttpd"
+    server.modules = (
+      "mod_rewrite",
+      "mod_status",
+      "mod_accesslog"
+    )
+    include "mime-types.conf"
+    server.username      = "lighttpd"
+    server.groupname     = "lighttpd"
+    server.document-root = var.basedir + "/htdocs"
+    server.pid-file      = "/run/lighttpd.pid"
+    server.errorlog      = "/dev/stderr"
+    status.status-url    = "/server-status"
+    url.rewrite-once     = (
+      "^/\.well-known/matrix/server" => "/server.json"
+    )
+    accesslog.filename   = "/dev/stderr"
+
+  server.json: |-
+{{ dict "m.server" (printf "%s:%d" (default .Values.wellknown.host .Values.config.serverName) (default .Values.wellknown.port 443)) | toJson | indent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $wkName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    component: well-known
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "matrix-synapse.selectorLabels" . | nindent 4 }}
+    component: well-known
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $wkName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    component: well-known
+spec:
+  replicas: {{ default .Values.wellknown.replicaCount 1 }}
+  selector:
+    matchLabels:
+      {{- include "matrix-synapse.selectorLabels" . | nindent 6 }}
+      component: well-known
+  template:
+    metadata:
+      annotations:
+        checksum/server-addr: {{ sha256sum (printf "%s:%d" (default .Values.wellknown.host .Values.config.serverName) (default .Values.wellknown.port 443)) }}
+      labels:
+        {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
+        component: well-known
+    spec:
+      containers:
+        - name: lighttpd
+          image: m4rcu5/lighttpd
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /server-status
+              port: http
+          volumeMounts:
+            - mountPath: /etc/lighttpd/lighttpd.conf
+              name: files
+              subPath: lighttpd.conf
+            - mountPath: /var/www/localhost/htdocs/server.json
+              name: files
+              subPath: server.json
+      volumes:
+        - name: files
+          configMap:
+            name: {{ $wkName }}
+{{- end }}

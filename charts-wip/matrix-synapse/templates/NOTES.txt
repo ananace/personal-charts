@@ -1,0 +1,14 @@
+{{- if not .Values.ingress.enabled }}
+Synapse has been installed without an ingress, you will need to manage
+accesses to the services yourself.
+{{- else }}
+Your Synapse install is now running, you should be able to access it on the
+following URL(s);
+  {{- range (concat .Values.ingress.hosts (list .Values.config.serverName)) }}
+    {{- if $.Values.ingress.tls }}
+https://{{ . }}
+    {{- else }}
+http://{{ . }}
+    {{- end }}
+  {{- end }}
+{{- end }}
