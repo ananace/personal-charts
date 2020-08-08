@@ -90,6 +90,8 @@ spec:
               mountPath: /synapse/secrets
             - name: signingkey
               mountPath: /synapse/keys
+            - name: media
+              mountPath: /synapse/data
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
@@ -107,6 +109,20 @@ spec:
                 path: signing.key
         - name: tmpconf
           emptyDir: {}
+        - name: media
+
+        {{- $mediaworker := false }}
+        {{- range $worker, $config := .Values.workers }}
+          {{- if eq $worker "media-repository" }}
+            {{- $mediaworker = true }}
+          {{- end }}
+        {{- end }}
+        {{- if and .Values.persistence.enabled (not $mediaworker) }}
+          persistentVolumeClaim:
+            claimName: {{ default .Values.persistence.existingClaim (include "matrix-synapse.fullname" .) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -236,8 +252,12 @@ spec:
           emptyDir: {}
       {{- if eq $name "media-repository" }}
         - name: media
+        {{- if $.Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: 
+            claimName: {{ default $.Values.persistence.existingClaim (include "matrix-synapse.fullname" $) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
       {{- end }}
       {{- with $config.volumes }}
         {{ . | toYaml | nindent 8 }}

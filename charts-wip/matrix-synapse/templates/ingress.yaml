@@ -27,10 +27,9 @@ spec:
   {{- end }}
 {{- end }}
   rules:
+  {{- $hosts := .Values.ingress.hosts }}
   {{- if default .Values.ingress.includeServerName true }}
-    {{- $hosts := concat (list .Values.config.serverName) .Values.ingress.hosts }}
-  {{- else }}
-    {{- $hosts := .Values.ingress.hosts }}
+    {{- $hosts = concat (list .Values.config.serverName) $hosts }}
   {{- end }}
   {{- range $hosts }}
     - host: {{ . | quote }}

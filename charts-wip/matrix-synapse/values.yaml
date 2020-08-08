@@ -110,6 +110,19 @@ externalRedis:
   port: 6379
   # password: synapse
 
+# Persistence configuration for the media repository.
+# This PVC will be mounted in either Synapse or a media_repo worker.
+#
+# NB; If you want to be able to scale this, you will have to set the
+# accessMode to RWX/ReadWriteMany.
+persistence:
+  enabled: true
+  # existingClaim: synapse-data
+
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
 # Configuration for handling Synapse workers, which are useful for handling
 # high-load deployments.
 # More information is available at;
