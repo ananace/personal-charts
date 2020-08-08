@@ -6,6 +6,9 @@ appVersion: 1.18.0
 
 type: application
 version: 0.1.0
+maintainers:
+  - name: Alexander Olofsson
+    email: ace@haxalot.com
 
 dependencies:
   - name: postgresql

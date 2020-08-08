@@ -1,63 +1,116 @@
 ---
-# Docker image configuration, used for Synapse and workers
+## Docker image configuration, used for Synapse and workers.
+##
 image:
   repository: ananace/matrix-synapse
+  ## Tag to override with, will default to the application version.
+  ##
   # tag: ''
   pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  # pullSecrets:
+  #   - myRegistryKeySecretName
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+## Override part of the installed name, will still keep release name.
+##
+# nameOverride: ""
 
+## Override the full name of the installed chart.
+##
+# fullnameOverride: ""
+
+## The source of the signing key used by Synapse in federation.
+##
 signingkey:
+  ## Enable a Kubernetes job to generate and store a signing key if one does not
+  ## exist.
+  ##
   job:
     enabled: true
 
+  ## Specify an existing signing key secret, will need to be created in advance.
+  ##
   # existingSecret:
-  # existingSecretKey:
+  # existingSecretKey: signing.key
 
+## Common Matrix configuration values, for any value not handled by this block,
+## you will want to instead set it in extraConfig.
+##
 config:
+  ## The Matrix domain name, this is what will be used for the domain part in
+  ## your MXIDs.
+  ##
   # serverName: 'example.com'
-  eventCacheSize: 10K
-  maxUploadSize: 10M
 
-  logLevel: INFO
+  ## The publicly accessible URL for the Synapse instance, will default to
+  ## https://<serverName>.
+  ##
+  # publicBaseurl: 'https://example.com'
 
+  ## The size of the event cache.
+  ##
+  # eventCacheSize: 10K
+
+  ## The maximum allowed size of uploaded media.
+  ##
+  # maxUploadSize: 10M
+
+  ## The log level for Synapse and all modules.
+  ##
+  # logLevel: INFO
+
+  ## The recaptcha configuration for registering. (optional)
+  ##
   # recaptcha:
   #   publicKey:
   #   privateKey:
 
+  ## URIs and secret key for TURN servers to use to help establish 1:1 WebRTC
+  ## calls.
+  ##
   # turnUris: []
-  turnSecret: ''
+  # turnSecret: ''
 
-  enableRegistration: false
-  registrationSharedSecret: ''
-  allowGuests: false
+  ## Registration configuration, note that registration with the
+  ## container-internal register_new_matrix_user tool is always possible.
+  ##
+  # enableRegistration: false
+  ## Note; this value will default to a random string if not specified.
+  # registrationSharedSecret: ''
+  # allowGuests: false
 
-  reportStats: false
+  ## Should the Synapse instance report stats.
+  ##
+  # reportStats: false
 
-  federationBlacklistIPs:
-    - '127.0.0.0/8'
-    - '10.0.0.0/8'
-    - '172.16.0.0/12'
-    - '192.168.0.0/16'
-    - '100.64.0.0/10'
-    - '169.254.0.0/16'
-    - '::1/128'
-    - 'fe80::/64'
-    - 'fc00::/7'
-
+  ## Servers to contact when doing 3PID lookups - for example when searching for
+  ## Matrix users by email/phone number.
+  ##
   thirdPartyIDServers:
     - matrix.org
     - vector.im
 
+  ## A set of fallback servers - and their key fingerprint - to contact if a
+  ## server doesn't respond to a signing key request.
+  ##
   perspectiveServers:
     matrix.org:
       verify_keys:
         ed25519:auto:
           key: "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
 
-# Specify arbitrary synapse configuration;
+  ## Extra listeners to configure.
+  ##
+  extraListeners: []
+  #  - port: 9000
+  #    bind_addresses: ['::']
+  #    type: manhole
+
+## Specify arbitrary synapse configuration here;
+##
 extraConfig: {}
 #  use_presence: false
 #  enable_search: false
@@ -66,14 +119,39 @@ extraConfig: {}
 #    - nyc.example.com
 #    - syd.example.com
 
+## Annotations to apply to the main Synapse pod.
+##
+annotations: {}
+#  prometheus.io/scrape: "true"
+#  prometheus.io/port: 9090
+
+## Labels to apply to the main Synapse pod.
+##
+labels: {}
+
+## Additional environment variables to apply to the main Synapse pod
+##
+extraEnv: {}
+#  - name: USE_JEMALLOC
+#    value: "1"
+#  - name: SYNAPSE_CACHE_FACTOR
+#    value: "2"
+
+## This will set up a Lighttpd server to respond to any
+## /.well-known/matrix/server requests, to make federation possible without any
+## DNS changes.
+##
 wellknown:
   enabled: false
   # host: matrix.example.com
   # port: 443
 
+## This configuration is for setting up the internally provided Postgres server,
+## if you instead want to use an existing server, then you may want to set
+## enabled to false and configure the externalPostgresql block.
+##
 postgresql:
   enabled: true
-  nameOverride: synapse-postgresql
 
   postgresqlUsername: synapse
   postgresqlDatabase: synapse
@@ -83,6 +161,9 @@ postgresql:
   persistence:
     size: 16G
 
+## An externally configured Postgres server to use for Synapse's database, note
+## that the database needs to have both COLLATE and CTYPE set to "C".
+##
 externalPostgresql:
   # host: postgres
   port: 5432
@@ -91,9 +172,12 @@ externalPostgresql:
   database: synapse
   # sslMode: require
 
+## This configuration is for the internal Redis that's deployed for use with
+## workers/sharding, for an external Redis server you want to set enabled to
+## false and configure the externalRedis block.
+##
 redis:
   enabled: true
-  nameOverride: synapse-redis
 
   # usePassword: false
   # password: synapse
@@ -101,20 +185,26 @@ redis:
     enabled: false
   master:
     persistence:
+      ## Note that Synapse only uses redis as a synchronization utility, so no
+      ## data will ever need to be persisted.
+      ##
       enabled: false
     statefulset:
       updateStrategy: RollingUpdate
 
+## An externally configured Redis server to use for workers/sharding.
+##
 externalRedis:
   # host: redis
   port: 6379
   # password: synapse
 
-# Persistence configuration for the media repository.
-# This PVC will be mounted in either Synapse or a media_repo worker.
-#
-# NB; If you want to be able to scale this, you will have to set the
-# accessMode to RWX/ReadWriteMany.
+## Persistence configuration for the media repository function.
+## This PVC will be mounted in either Synapse or a media_repo worker.
+##
+## NB; If you want to be able to scale this, you will have to set the
+## accessMode to RWX/ReadWriteMany.
+##
 persistence:
   enabled: true
   # existingClaim: synapse-data
@@ -123,32 +213,55 @@ persistence:
   accessMode: ReadWriteOnce
   size: 10Gi
 
-# Configuration for handling Synapse workers, which are useful for handling
-# high-load deployments.
-# More information is available at;
-# https://github.com/matrix-org/synapse/blob/master/docs/workers.md
+## Configuration for handling Synapse workers, which are useful for handling
+## high-load deployments.
+##
+## More information is available at;
+## https://github.com/matrix-org/synapse/blob/master/docs/workers.md
+##
 workers:
-  # Default configuration, this is inherited into all workers
+  ## Default configuration, this is inherited into all workers, and can also be
+  ## overriden on each worker type.
+  ##
   default:
-    # The number of worker replicas, note that some workers require special
-    # handling. Refer to the information URL above.
+    ## The number of worker replicas, note that some workers require special
+    ## handling. Refer to the information URL above.
+    ##
     replicaCount: 1
 
-    # Should workers provide Prometheus metrics.
-    metrics: false
+    ## Annotations to apply to the worker.
+    ##
+    annotations: {}
+    #  prometheus.io/scrape: "true"
+    #  prometheus.io/port: 9090
 
-    # Additional volume mounts to add to the worker.
-    # Useful for the media repo.
+    ## Additional environment variables to add to the worker.
+    ##
+    extraEnv: {}
+    #  - name: USE_JEMALLOC
+    #    value: "1"
+    #  - name: SYNAPSE_CACHE_FACTOR
+    #    value: "2"
+
+    ## Additional volume mounts to add to the worker.
+    ## Useful for the media repo.
+    ##
     volumeMounts: {}
 
-    # Additional volumes to add to the worker.
-    # Useful for the media repo.
+    ## Additional volumes to add to the worker.
+    ## Useful for the media repo.
+    ##
     volumes: {}
 
+    ## Security context information to set to the worker.
+    ##
     podSecurityContext: {}
     #   fsGroup: 666
     #   runAsGroup: 666
     #   runAsUser: 666
+
+    ## Container security context information to set to the worker.
+    ##
     securityContext: {}
     #   capabilities:
     #     drop:
@@ -156,6 +269,9 @@ workers:
     #   readOnlyRootFilesystem: true
     #   runAsNonRoot: true
     #   runAsUser: 666
+
+    ## Resources to apply to the worker.
+    ##
     resources: {}
     #   limits:
     #     cpu: 100m
@@ -163,14 +279,24 @@ workers:
     #   requests:
     #     cpu: 100m
     #     memory: 128Mi
+
+    ## Node selector configuration to set on the worker.
+    ##
     nodeSelector: {}
+
+    ## Toleration configuration to set on the worker.
+    ##
     tolerations: []
+
+    ## Affinity configuration to set on the worker.
+    ##
     affinity: {}
 
-  # The generic worker can be used to handle most endpoints.
-  # Be careful when enabling the sync endpoints as they can eat large amounts of
-  # resources. Refer to the information URL above for more info.
-  # Proper load balancing with the K8s Ingress resource may not be possible.
+  ## The generic worker can be used to handle most endpoints.
+  ## Be careful when enabling the sync endpoints as they can eat large amounts of
+  ## resources. Refer to the information URL above for more info.
+  ## Proper load balancing with the K8s Ingress resource may not be possible.
+  ##
   generic_worker:
     enabled: false
     listeners: [client, federation]
@@ -223,24 +349,28 @@ workers:
       - "/_matrix/client/(api/v1|r0|unstable)/join/"
       - "/_matrix/client/(api/v1|r0|unstable)/profile/"
 
-  # This worker deals with pushing notifications.
-  # NB; Only one instance of this worker can be run at a time, refer to the
-  # information URL above.
+  ## This worker deals with pushing notifications.
+  ## NB; Only one instance of this worker can be run at a time, refer to the
+  ## information URL above.
+  ##
   pusher:
     enabled: false
 
-  # This worker handles sending data to registered appservices.
-  # NB; Only one instance of this worker can be run at at time, refer to the
-  # information URL above.
+  ## This worker handles sending data to registered appservices.
+  ## NB; Only one instance of this worker can be run at at time, refer to the
+  ## information URL above.
+  ##
   appservice:
     enabled: false
 
-  # This worker handles sending federation traffic to other Synapse servers.
+  ## This worker handles sending federation traffic to other Synapse servers.
+  ##
   federation_sender:
     enabled: false
 
-  # This worker deals with serving and storing media.
-  # NB; Running multiple instances will conflict with background jobs.
+  ## This worker deals with serving and storing media.
+  ## NB; Running multiple instances will conflict with background jobs.
+  ##
   media_repository:
     enabled: false
     listeners: [media]
@@ -252,16 +382,18 @@ workers:
       - "/_synapse/admin/v1/media/.*"
       - "/_synapse/admin/v1/quarantine_media/.*"
 
-  # This worker deals with user directory searches.
+  ## This worker deals with user directory searches.
+  ##
   user_dir:
     enabled: false
     listeners: [client]
     paths:
       - "/_matrix/client/(api/v1|r0|unstable)/user_directory/search"
 
-  # This worker handles key uploads, and may also stub out presence if that is
-  # disabled. If you set extraConfig.use_presence=false then you may want to
-  # uncomment the second path.
+  ## This worker handles key uploads, and may also stub out presence if that is
+  ## disabled. If you set extraConfig.use_presence=false then you may want to
+  ## uncomment the second path.
+  ##
   frontend_proxy:
     enabled: false
     listeners: [client]
@@ -269,11 +401,38 @@ workers:
       - "/_matrix/client/(api/v1|r0|unstable)/keys/upload"
     # - "/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status"
 
+## Set up an init container to chown the mounted media if necessary.
+##
+volumePermissions:
+  enabled: false
+
+  image:
+    repository: alpine
+    tag: latest
+    pullPolicy: Always
+
+  resources: {}
+  # resources:
+  #   requests:
+  #     memory: 128Mi
+  #     cpu: 100m
+
+## Configuration for the pod security policy, Synapse will by default run as its
+## own user, even if not set.
+## Note that changing this may also require you to use the volumePermission
+## helper depending on your storage.
+##
+## NB; The synapse install is currently unable to run as anything but UID:GID
+## 666:666.
+##
 podSecurityContext: {}
 #  fsGroup: 666
 #  runAsGroup: 666
 #  runAsUser: 666
 
+## Configuration for the container security policy, refer to the above
+## podSecurityContext for more relevant information.
+##
 securityContext: {}
 #  capabilities:
 #    drop:
@@ -282,44 +441,76 @@ securityContext: {}
 #  runAsNonRoot: true
 #  runAsUser: 666
 
+## The K8s ingress configuration, this will be quite heavily used in order to set
+## up all routing necessary for use with a sharded Synapse instance.
+## If you're not using a Ingress compatible K8s ingress, you will need to set up
+## your own routing instead.
+##
 ingress:
   enabled: true
 
-  # Generate traefik-compatible regex paths instead of nginx-compatible ones
+  ## Generate traefik-compatible regex paths instead of nginx-compatible ones.
+  ##
   traefikPaths: false
 
-  # Annotations to apply to the created ingress resource
+  ## Annotations to apply to the created ingress resource.
+  ##
   annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
+  #  nginx.ingress.kubernetes.io/use-regex: "true"
   #  kubernetes.io/ingress.class: nginx
   #  kubernetes.io/tls-acme: "true"
 
-  # Additional hosts to add to the ingress configuration
-  # NB; config.serverName is included if includeServerName is set (default)
+  ## Additional hosts to add to the ingress configuration.
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
   hosts: []
   #  - matrix.example.com
 
-  # Should config.serverName be included in the list of ingress paths, can be
-  # set to false if the main domain is managed in some external way.
+  ## Additional paths to add to the ingress blocks, will be inserted before the
+  ## /_matrix and /synapse catch-all paths.
+  ##
+  paths: []
+  #  - path: /_matrix/media
+  #    backend:
+  #      serviceName: matrix-media-repo
+  #      servicePort: 8000
+
+  ## Should the /_synapse path be included in the ingress, admin APIs are
+  ## provided under this path.
+  ##
+  includeUnderscoreSynapse: true
+
+  ## Should config.serverName be included in the list of ingress paths, can be
+  ## set to false if the main domain is managed in some external way.
+  ##
   # includeServerName: false
 
-  # TLS configuration to include in the ingress configuration
+  ## TLS configuration to include in the ingress configuration
+  ##
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - example.com
   #      - matrix.example.com
 
+## Resources to apply to the main Synapse pod.
+##
 resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+#  limits:
+#    cpu: 1000m
+#    memory: 2500Mi
+#  requests:
+#    cpu: 1000m
+#    memory: 2500Mi
 
+## Node selectors to set for the main Synapse pod.
+##
 nodeSelector: {}
 
+## Tolerations to set for the main Synapse pod.
+##
 tolerations: []
 
+## Affinity to set for the main Synapse pod.
+##
 affinity: {}

@@ -56,10 +56,21 @@ spec:
           {{- end }}
         {{- end }}
 
+        {{- with $.Values.ingress.paths }}
+          {{ . | toYaml | nindent 10 }}
+        {{- end }}
+
           - path: /_matrix
             backend:
               serviceName: {{ $fullName }}
               servicePort: 8008
+
+        {{- if $.Values.ingress.includeUnderscoreSynapse }}
+          - path: /_synapse
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: 8008
+        {{- end }}
 
           - path: /.well-known/matrix/client
             backend:

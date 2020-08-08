@@ -33,14 +33,14 @@ data:
 
     ## Server ##
 
-    server_name: {{ .Values.config.serverName | quote }}
+    server_name: {{ required "You need to specify a server name" .Values.config.serverName | quote }}
+    public_baseurl: {{ .Values.config.publicBaseurl | default (printf "https://%s" .Values.config.serverName) | quote }}
     pid_file: /homeserver.pid
     web_client: False
     soft_file_limit: 0
     log_config: "/synapse/config/log.yaml"
 
-    trusted_third_party_id_servers:
-{{ .Values.config.thirdPartyIDServers | toYaml | indent 6 }}
+    trusted_third_party_id_servers: {{- .Values.config.thirdPartyIDServers | toYaml | nindent 6 }}
 
     ## Ports ##
 
@@ -70,6 +70,9 @@ data:
         resources:
           - names: [replication]
             compress: false
+    {{- if .Values.config.extraListeners }}
+      {{ .Values.config.extraListeners | toYaml | nindent 6 }}
+    {{- end }}
 
     ## Performance ##
 
@@ -161,58 +164,46 @@ data:
 
     # The trusted servers to download signing keys from.
     perspectives:
-      servers:
-{{ .Values.config.perspectiveServers | toYaml | indent 8 }}
+      servers: {{- .Values.config.perspectiveServers | toYaml | nindent 8 }}
 
     ## Workers ##
-{{- $default := .Values.workers.default -}}
-{{- range $worker, $config := .Values.workers -}}
-{{- if $config.enabled -}}
-{{- if eq $worker "pusher" }}
+
+    {{- $default := .Values.workers.default }}
+    {{- range $worker, $config := .Values.workers }}
+      {{- if $config.enabled }}
+        {{- if eq $worker "pusher" }}
     start_pushers: false
-{{- else if eq $worker "appservice" }}
+        {{- else if eq $worker "appservice" }}
     notify_appservices: false
-{{- else if eq $worker "federation_sender" }}
+        {{- else if eq $worker "federation_sender" }}
     send_federation: false
-{{- else if eq $worker "media_repository" }}
+        {{- else if eq $worker "media_repository" }}
     enable_media_repo: false
-{{- else if eq $worker "user_dir" }}
+        {{- else if eq $worker "user_dir" }}
     update_user_directory: false
-{{- end }}
-{{- end }}
-{{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
 
     {{- with .Values.extraConfig }}
     ## Extra config ##
 
-    {{ . | toYaml }}
+    {{ . | toYaml | nindent 4 }}
     {{- end }}
 
 {{- $default := .Values.workers.default -}}
 {{- range $worker, $config := .Values.workers -}}
-{{- if $config.enabled -}}
-{{- $name := $worker | replace "_" "-" }}
+  {{- if $config.enabled -}}
+    {{- $name := $worker | replace "_" "-" }}
 
   {{ $name }}.worker: |
     worker_app: "synapse.app.{{ $worker }}"
 
-    # The replication listener on the synapse to talk to.
     worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:8008
     worker_replication_host: {{ include "matrix-synapse.replicationname" $ | quote }}
     worker_replication_http_port: 9093
 
-    {{- if or $config.listeners ($config.metrics | default $default.metrics) }}
     worker_listeners:
-    {{- if $config.listeners }}
-      - type: http
-        tls: false
-        port: 8083
-        resources:
-          - names:
-              {{ toYaml $config.listeners | nindent 14 }}
-            compress: false
-    {{- end }}
-    {{- if $config.metrics | default $default.metrics }}
       - type: http
         bind_addresses: ['0.0.0.0']
         tls: false
@@ -220,9 +211,15 @@ data:
         resources:
           - names: [metrics]
             compress: false
-    {{- end }}
+    {{- if $config.listeners }}
+      - type: http
+        tls: false
+        port: 8083
+        resources:
+          - names: {{- toYaml $config.listeners | nindent 14 }}
+            compress: false
     {{- end }}
 
     worker_log_config: /synapse/config/log.yaml
-{{- end }}
+  {{- end }}
 {{- end }}

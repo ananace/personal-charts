@@ -86,7 +86,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name "synapse-postgresql" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -99,7 +99,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name "synapse-redis" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -111,7 +111,7 @@ Set postgres host
 {{- if .Values.postgresql.enabled -}}
 {{- template "matrix-synapse.postgresql.fullname" . -}}
 {{- else -}}
-{{ required "A valid .Values.externalPostgresql.host is required" .Values.externalPostgresql.host }}
+{{ required "A valid externalPostgresql.host is required" .Values.externalPostgresql.host }}
 {{- end -}}
 {{- end -}}
 
@@ -137,7 +137,7 @@ Set postgres port
 5432
 {{- end -}}
 {{- else -}}
-{{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
+{{- required "A valid externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -148,7 +148,7 @@ Set postgresql username
 {{- if .Values.postgresql.enabled -}}
 {{- default "postgres" .Values.postgresql.postgresqlUsername }}
 {{- else -}}
-{{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
+{{ required "A valid externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
 {{- end -}}
 
@@ -159,7 +159,7 @@ Set postgresql password
 {{- if .Values.postgresql.enabled -}}
 {{- default "" .Values.postgresql.postgresqlPassword }}
 {{- else -}}
-{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
+{{ required "A valid externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
 
@@ -170,7 +170,7 @@ Set postgresql database
 {{- if .Values.postgresql.enabled -}}
 {{- default "synapse" .Values.postgresql.postgresqlDatabase }}
 {{- else -}}
-{{ required "A valid .Values.externalPostgresql.database is required" .Values.externalPostgresql.database }}
+{{ required "A valid externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
 {{- end -}}
 
@@ -181,7 +181,7 @@ Set redis host
 {{- if .Values.redis.enabled -}}
 {{- template "matrix-synapse.redis.fullname" . -}}-master
 {{- else -}}
-{{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
+{{ required "A valid externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
 {{- end -}}
 
@@ -203,7 +203,7 @@ Set redis port
 {{- if .Values.redis.enabled -}}
 {{- default 6379 .Values.redis.redisPort }}
 {{- else -}}
-{{ required "A valid .Values.externalRedis.port is required" .Values.externalRedis.port }}
+{{ required "A valid externalRedis.port is required" .Values.externalRedis.port }}
 {{- end -}}
 {{- end -}}
 

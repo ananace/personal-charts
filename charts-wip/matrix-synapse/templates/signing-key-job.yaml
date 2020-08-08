@@ -3,6 +3,7 @@
 {{- fail "Can't specify both signingkey.job.enabled and signingkey.existingSecret" }}
 {{- end }}
 {{- $name := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey-job") }}
+{{- $secretName := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey") }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -10,6 +11,7 @@ metadata:
   name: {{ $name }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: signingkey-job
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -17,11 +19,14 @@ metadata:
   name: {{ $name }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: signingkey-job
 rules:
   - apiGroups:
       - ""
     resources:
       - secrets
+    resourceNames:
+     - {{ $secretName }}
     verbs:
       - get
       - update
@@ -31,6 +36,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ $name }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    app.kubernetes.io/component: signingkey-job
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -46,16 +54,14 @@ metadata:
   name: {{ $name }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
-    component: job
-    job: signing-key-generation
+    app.kubernetes.io/component: signingkey-job
 spec:
   ttlSecondsAfterFinished: 0
   template:
     metadata:
       labels:
         {{- include "matrix-synapse.labels" . | nindent 8 }}
-        component: job
-        job: signing-key-generation
+        app.kubernetes.io/component: signingkey-job
     spec:
       containers:
         - command:
@@ -85,22 +91,22 @@ spec:
             - sh
             - -c
             - |
-              printf "Checking rights to create secret... "
-              kubectl auth can-i create secret/${SECRET_NAME}
+              printf "Checking rights to update secret... "
+              kubectl auth can-i update secret/${SECRET_NAME}
               echo "Waiting for key upload script"
               while ! [ -f /scripts/key-upload ]; do sleep 1; done
               /scripts/key-upload
           env:
             - name: SECRET_NAME
-              value: {{ $name }}
+              value: {{ $secretName }}
           image: bitnami/kubectl
           name: signing-key-upload
           resources:
             requests:
-              memory: 50Mi
+              memory: 100Mi
               cpu: 100m
             limits:
-              memory: 50Mi
+              memory: 100Mi
               cpu: 100m
           volumeMounts:
             - mountPath: /scripts
@@ -109,6 +115,7 @@ spec:
             - mountPath: /synapse/keys
               name: matrix-synapse-keys
               readOnly: true
+      restartPolicy: Never
       serviceAccount: {{ $name }}
       volumes:
         - name: scripts

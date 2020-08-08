@@ -1,6 +1,7 @@
 {{- if not .Values.config.serverName -}}
 {{- fail "A valid .Values.config.serverName is required" -}}
 {{- end -}}
+{{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -8,21 +9,27 @@ metadata:
   name: {{ include "matrix-synapse.fullname" . }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
-    component: synapse
+    app.kubernetes.io/component: synapse
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" . | nindent 6 }}
-      component: synapse
+      app.kubernetes.io/component: synapse
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- with .Values.annotations }}
+        {{ . | toYaml | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
-        component: synapse
+        app.kubernetes.io/component: synapse
+        {{- with .Values.labels }}
+        {{ . | toYaml | nindent 8 }}
+        {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -58,6 +65,9 @@ spec:
                 secretKeyRef:
                   name: {{ include "matrix-synapse.redis.fullname" . }}
                   key: redis-password
+          {{- end }}
+          {{- with .Values.extraEnv }}
+            {{ . | toYaml }}
           {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -147,24 +157,27 @@ metadata:
   name: {{ include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
   labels:
     {{- include "matrix-synapse.labels" $ | nindent 4 }}
-    component: worker
-    worker: {{ $name }}
+    app.kubernetes.io/component: {{ $name }}
 spec:
   replicas: {{ $config.replicaCount | default $default.replicaCount }}
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" $ | nindent 6 }}
-      component: worker
-      worker: {{ $name }}
+      app.kubernetes.io/component: {{ $name }}
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") $ | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") $ | sha256sum }}
+      {{- with ($config.annotations | default $default.annotations) }}
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "matrix-synapse.selectorLabels" $ | nindent 8 }}
-        component: worker
-        worker: {{ $name }}
+        app.kubernetes.io/component: {{ $name }}
+      {{- with ($config.labels | default $default.labels) }}
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
     spec:
     {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
@@ -172,6 +185,19 @@ spec:
     {{- end }}
       securityContext:
         {{- $config.podSecurityContext | default $default.podSecurityContext | toYaml | nindent 8 }}
+    {{- if and $needsVolumePermissions (eq $name "media-repository") }}
+      initContainers:
+        - name: volume-permissions
+          command: ["chown", "-R", "666:666", "/synapse/data"]
+          image: "{{ $.Values.volumePermissions.repository }}:{{ $.Values.volumePermissions.tag }}"
+          imagePullPolicy: {{ $.Values.volumePermissions.pullPolicy }}
+          securityContext:
+            runAsUser: 0
+          resources: {{ $.Values.volumePermissions.resources | toYaml | nindent 10 }}
+          volumeMounts:
+            - name: media
+              mountPath: /synapse/data
+    {{- end }}
       containers:
         - name: {{ $name }}
           command:
@@ -184,16 +210,32 @@ spec:
                        > /synapse/config/conf.d/secrets.yaml
 
               /matrix-synapse synapse.app.{{ $worker }} -c /synapse/config/{{ $name }}.worker
+          env:
+          {{- if $.Values.postgresql.enabled }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-synapse.postgresql.fullname" $ }}
+                  key: postgresql-password
+          {{- end }}
+          {{- if and $.Values.redis.enabled (default $.Values.redis.usePassword true) }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "matrix-synapse.redis.fullname" $ }}
+                  key: redis-password
+          {{- end }}
+          {{- with default $config.extraEnv $default.extraEnv }}
+            {{ . | toYaml }}
+          {{- end }}
           securityContext:
             {{- $config.securityContext | default $default.securityContext | toYaml | nindent 12 }}
           image: "{{ $.Values.image.repository }}:{{ $.Chart.AppVersion }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
-          {{- if $config.metrics | default $default.metrics }}
             - name: metrics
               containerPort: 9090
               protocol: TCP
-          {{- end }}
           {{- if $config.listeners }}
             - name: listener
               containerPort: 8083
