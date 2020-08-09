@@ -109,7 +109,7 @@ config:
   #    bind_addresses: ['::']
   #    type: manhole
 
-## Specify arbitrary synapse configuration here;
+## Specify arbitrary Synapse configuration here;
 ##
 extraConfig: {}
 #  use_presence: false
@@ -119,99 +119,72 @@ extraConfig: {}
 #    - nyc.example.com
 #    - syd.example.com
 
-## Annotations to apply to the main Synapse pod.
+## Configuration to apply to the main Synapse pod.
 ##
-annotations: {}
-#  prometheus.io/scrape: "true"
-#  prometheus.io/port: 9090
+synapse:
+  ## Annotations to apply to the main Synapse pod.
+  ##
+  annotations: {}
+  #  prometheus.io/scrape: "true"
+  #  prometheus.io/port: 9090
 
-## Labels to apply to the main Synapse pod.
-##
-labels: {}
+  ## Labels to apply to the main Synapse pod.
+  ##
+  labels: {}
 
-## Additional environment variables to apply to the main Synapse pod
-##
-extraEnv: {}
-#  - name: USE_JEMALLOC
-#    value: "1"
-#  - name: SYNAPSE_CACHE_FACTOR
-#    value: "2"
+  ## Additional environment variables to apply to the main Synapse pod
+  ##
+  extraEnv: {}
+  #  - name: USE_JEMALLOC
+  #    value: "1"
+  #  - name: SYNAPSE_CACHE_FACTOR
+  #    value: "2"
 
-## This will set up a Lighttpd server to respond to any
-## /.well-known/matrix/server requests, to make federation possible without any
-## DNS changes.
-##
-wellknown:
-  enabled: false
-  # host: matrix.example.com
-  # port: 443
+  ## Configuration for the pod security policy, Synapse will by default run as its
+  ## own user, even if not set.
+  ## Note that changing this may also require you to use the volumePermission
+  ## helper depending on your storage.
+  ##
+  ## NB; The synapse install is currently unable to run as anything but UID:GID
+  ## 666:666.
+  ##
+  podSecurityContext: {}
+  #  fsGroup: 666
+  #  runAsGroup: 666
+  #  runAsUser: 666
 
-## This configuration is for setting up the internally provided Postgres server,
-## if you instead want to use an existing server, then you may want to set
-## enabled to false and configure the externalPostgresql block.
-##
-postgresql:
-  enabled: true
+  ## Configuration for the container security policy, refer to the above
+  ## podSecurityContext for more relevant information.
+  ##
+  securityContext: {}
+  #  capabilities:
+  #    drop:
+  #    - ALL
+  #  readOnlyRootFilesystem: true
+  #  runAsNonRoot: true
+  #  runAsUser: 666
 
-  postgresqlUsername: synapse
-  postgresqlDatabase: synapse
+  ## Resources to apply to the main Synapse pod.
+  ##
+  resources: {}
+  #  limits:
+  #    cpu: 1000m
+  #    memory: 2500Mi
+  #  requests:
+  #    cpu: 1000m
+  #    memory: 2500Mi
 
-  postgresqlInitdbArgs: "--lc-collate=C --lc-ctype=C"
+  ## Node selectors to set for the main Synapse pod.
+  ##
+  nodeSelector: {}
 
-  persistence:
-    size: 16G
+  ## Tolerations to set for the main Synapse pod.
+  ##
+  tolerations: []
 
-## An externally configured Postgres server to use for Synapse's database, note
-## that the database needs to have both COLLATE and CTYPE set to "C".
-##
-externalPostgresql:
-  # host: postgres
-  port: 5432
-  username: synapse
-  # password: synapse
-  database: synapse
-  # sslMode: require
-
-## This configuration is for the internal Redis that's deployed for use with
-## workers/sharding, for an external Redis server you want to set enabled to
-## false and configure the externalRedis block.
-##
-redis:
-  enabled: true
-
-  # usePassword: false
-  # password: synapse
-  cluster:
-    enabled: false
-  master:
-    persistence:
-      ## Note that Synapse only uses redis as a synchronization utility, so no
-      ## data will ever need to be persisted.
-      ##
-      enabled: false
-    statefulset:
-      updateStrategy: RollingUpdate
-
-## An externally configured Redis server to use for workers/sharding.
-##
-externalRedis:
-  # host: redis
-  port: 6379
-  # password: synapse
-
-## Persistence configuration for the media repository function.
-## This PVC will be mounted in either Synapse or a media_repo worker.
-##
-## NB; If you want to be able to scale this, you will have to set the
-## accessMode to RWX/ReadWriteMany.
-##
-persistence:
-  enabled: true
-  # existingClaim: synapse-data
-
-  # storageClass: "-"
-  accessMode: ReadWriteOnce
-  size: 10Gi
+  ## Affinity to set for the main Synapse pod.
+  ##
+  affinity: {}
 
 ## Configuration for handling Synapse workers, which are useful for handling
 ## high-load deployments.
@@ -300,11 +273,33 @@ workers:
   generic_worker:
     enabled: false
     listeners: [client, federation]
-    paths:
+    csPaths:
     # - "/_matrix/client/(v2_alpha|r0)/sync"
       - "/_matrix/client/(api/v1|v2_alpha|r0)/events"
     # - "/_matrix/client/(api/v1|r0)/initialSync"
     # - "/_matrix/client/(api/v1|r0)/rooms/[^/]+/initialSync"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicRooms"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/joined_members"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/context/.*"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/members"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state"
+      - "/_matrix/client/(api/v1|r0|unstable)/account/3pid"
+      - "/_matrix/client/(api/v1|r0|unstable)/keys/query"
+      - "/_matrix/client/(api/v1|r0|unstable)/keys/changes"
+      - "/_matrix/client/versions"
+      - "/_matrix/client/(api/v1|r0|unstable)/voip/turnServer"
+      - "/_matrix/client/(api/v1|r0|unstable)/joined_groups"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups"
+      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups/"
+      - "/_matrix/client/(api/v1|r0|unstable)/login"
+      - "/_matrix/client/(r0|unstable)/register"
+      - "/_matrix/client/(r0|unstable)/auth/.*/fallback/web"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/send"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state/"
+      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/(join|invite|leave|ban|unban|kick)"
+      - "/_matrix/client/(api/v1|r0|unstable)/join/"
+      - "/_matrix/client/(api/v1|r0|unstable)/profile/"
+    paths:
       - "/_matrix/federation/v1/event/"
       - "/_matrix/federation/v1/state/"
       - "/_matrix/federation/v1/state_ids/"
@@ -327,27 +322,6 @@ workers:
       - "/_matrix/federation/v1/get_groups_publicised"
       - "/_matrix/key/v2/query"
       - "/_matrix/federation/v1/send/"
-      - "/_matrix/client/(api/v1|r0|unstable)/publicRooms"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/joined_members"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/context/.*"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/members"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state"
-      - "/_matrix/client/(api/v1|r0|unstable)/account/3pid"
-      - "/_matrix/client/(api/v1|r0|unstable)/keys/query"
-      - "/_matrix/client/(api/v1|r0|unstable)/keys/changes"
-      - "/_matrix/client/versions"
-      - "/_matrix/client/(api/v1|r0|unstable)/voip/turnServer"
-      - "/_matrix/client/(api/v1|r0|unstable)/joined_groups"
-      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups"
-      - "/_matrix/client/(api/v1|r0|unstable)/publicised_groups/"
-      - "/_matrix/client/(api/v1|r0|unstable)/login"
-      - "/_matrix/client/(r0|unstable)/register"
-      - "/_matrix/client/(r0|unstable)/auth/.*/fallback/web"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/send"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/state/"
-      - "/_matrix/client/(api/v1|r0|unstable)/rooms/.*/(join|invite|leave|ban|unban|kick)"
-      - "/_matrix/client/(api/v1|r0|unstable)/join/"
-      - "/_matrix/client/(api/v1|r0|unstable)/profile/"
 
   ## This worker deals with pushing notifications.
   ## NB; Only one instance of this worker can be run at a time, refer to the
@@ -374,20 +348,22 @@ workers:
   media_repository:
     enabled: false
     listeners: [media]
-    paths:
+    csPaths:
       - "/_matrix/media/"
       - "/_synapse/admin/v1/purge_media_cache"
       - "/_synapse/admin/v1/room/.*/media.*"
       - "/_synapse/admin/v1/user/.*/media.*"
       - "/_synapse/admin/v1/media/.*"
       - "/_synapse/admin/v1/quarantine_media/.*"
+    paths:
+      - "/_matrix/media/"
 
   ## This worker deals with user directory searches.
   ##
   user_dir:
     enabled: false
     listeners: [client]
-    paths:
+    csPaths:
       - "/_matrix/client/(api/v1|r0|unstable)/user_directory/search"
 
   ## This worker handles key uploads, and may also stub out presence if that is
@@ -397,9 +373,146 @@ workers:
   frontend_proxy:
     enabled: false
     listeners: [client]
-    paths:
+    csPaths:
       - "/_matrix/client/(api/v1|r0|unstable)/keys/upload"
     # - "/_matrix/client/(api/v1|r0|unstable)/presence/[^/]+/status"
+
+## This will set up a Lighttpd server to respond to any
+## /.well-known/matrix/server requests, to make federation possible without
+## adding SRV-records to DNS.
+##
+wellknown:
+  enabled: false
+  replicaCount: 1
+
+  ## The host and port combo to serve on .well-known/matrix/server.
+  ##
+  # host: matrix.example.com
+  # port: 443
+
+  ## A custom htdocs path, useful when running another image.
+  ##
+  htdocsPath: /var/www/localhost/htdocs
+
+  ## The lighttpd image to run.
+  ##
+  image:
+    repository: m4rcu5/lighttpd
+    tag: latest
+    pullPolicy: Always
+
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ##
+    # pullSecrets:
+    #   - myRegistryKeySecretName
+
+  ## Configuration for the pod security policy.
+  ##
+  podSecurityContext: {}
+  #  fsGroup: 101
+  #  runAsGroup: 101
+  #  runAsUser: 100
+
+  ## Configuration for the container security policy.
+  ##
+  securityContext: {}
+  #  capabilities:
+  #    drop:
+  #    - ALL
+  #  readOnlyRootFilesystem: true
+  #  runAsNonRoot: true
+  #  runAsUser: 100
+
+  ## Resource configuration to apply to the well-known server.
+  ##
+  resources: {}
+  #  limits:
+  #    cpu: 5m
+  #    memory: 15Mi
+  #  requests:
+  #    cpu: 5m
+  #    memory: 15Mi
+
+  ## Node selectors to set for the well-known server.
+  ##
+  nodeSelector: {}
+
+  ## Tolerations to set for the well-known server.
+  ##
+  tolerations: []
+
+  ## Affinity to set for the main well-known server.
+  ##
+  affinity: {}
+
+## This configuration is for setting up the internally provided Postgres server,
+## if you instead want to use an existing server, then you may want to set
+## enabled to false and configure the externalPostgresql block.
+##
+postgresql:
+  enabled: true
+
+  postgresqlUsername: synapse
+  postgresqlDatabase: synapse
+
+  postgresqlInitdbArgs: "--lc-collate=C --lc-ctype=C"
+
+  persistence:
+    size: 16G
+
+## An externally configured Postgres server to use for Synapse's database, note
+## that the database needs to have both COLLATE and CTYPE set to "C".
+##
+externalPostgresql:
+  # host: postgres
+  port: 5432
+  username: synapse
+  # password: synapse
+  database: synapse
+  # sslMode: require
+
+## This configuration is for the internal Redis that's deployed for use with
+## workers/sharding, for an external Redis server you want to set enabled to
+## false and configure the externalRedis block.
+##
+redis:
+  enabled: true
+
+  # usePassword: false
+  # password: synapse
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      ## Note that Synapse only uses redis as a synchronization utility, so no
+      ## data will ever need to be persisted.
+      ##
+      enabled: false
+    statefulset:
+      updateStrategy: RollingUpdate
+
+## An externally configured Redis server to use for workers/sharding.
+##
+externalRedis:
+  # host: redis
+  port: 6379
+  # password: synapse
+
+## Persistence configuration for the media repository function.
+## This PVC will be mounted in either Synapse or a media_repo worker.
+##
+## NB; If you want to be able to scale this, you will have to set the
+## accessMode to RWX/ReadWriteMany.
+##
+persistence:
+  enabled: true
+  # existingClaim: synapse-data
+
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 10Gi
 
 ## Set up an init container to chown the mounted media if necessary.
 ##
@@ -411,35 +524,18 @@ volumePermissions:
     tag: latest
     pullPolicy: Always
 
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ##
+    # pullSecrets:
+    #   - myRegistryKeySecretName
+
   resources: {}
   # resources:
   #   requests:
   #     memory: 128Mi
   #     cpu: 100m
-
-## Configuration for the pod security policy, Synapse will by default run as its
-## own user, even if not set.
-## Note that changing this may also require you to use the volumePermission
-## helper depending on your storage.
-##
-## NB; The synapse install is currently unable to run as anything but UID:GID
-## 666:666.
-##
-podSecurityContext: {}
-#  fsGroup: 666
-#  runAsGroup: 666
-#  runAsUser: 666
-
-## Configuration for the container security policy, refer to the above
-## podSecurityContext for more relevant information.
-##
-securityContext: {}
-#  capabilities:
-#    drop:
-#    - ALL
-#  readOnlyRootFilesystem: true
-#  runAsNonRoot: true
-#  runAsUser: 666
 
 ## The K8s ingress configuration, this will be quite heavily used in order to set
 ## up all routing necessary for use with a sharded Synapse instance.
@@ -455,21 +551,48 @@ ingress:
 
   ## Annotations to apply to the created ingress resource.
   ##
-  annotations:
+  annotations: {}
   #  nginx.ingress.kubernetes.io/use-regex: "true"
   #  kubernetes.io/ingress.class: nginx
   #  kubernetes.io/tls-acme: "true"
 
-  ## Additional hosts to add to the ingress configuration.
+  ## Hosts to add to the ingress configuration for handling Client-to-Server
+  ## API request paths.
+  ##
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
+  csHosts: []
+  #  - matrix.example.com
+
+  ## Additional hosts to add to the ingress configuration for handling
+  ## Server-to-Server API requests.
+  ##
   ## NB; config.serverName is included if includeServerName is set. (default)
   ##
   hosts: []
-  #  - matrix.example.com
+  #  - example.com
 
-  ## Additional paths to add to the ingress blocks, will be inserted before the
-  ## /_matrix and /synapse catch-all paths.
+  ## Additional hosts to add to the ingress configuration for handling
+  ## well-known requests.
+  ##
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
+  wkHosts: []
+  #  - example.com
+
+  ## Additional paths to add to the Server-to-Server ingress blocks, will be
+  ## inserted before the /_matrix catch-all path.
   ##
   paths: []
+  #  - path: /_matrix/media
+  #    backend:
+  #      serviceName: matrix-media-repo
+  #      servicePort: 8000
+
+  ## Additional paths to add to the Client-to-Server ingress blocks, will be
+  ## inserted before the /_matrix and /_synapse catch-all paths.
+  ##
+  csPaths: []
   #  - path: /_matrix/media
   #    backend:
   #      serviceName: matrix-media-repo
@@ -483,7 +606,7 @@ ingress:
   ## Should config.serverName be included in the list of ingress paths, can be
   ## set to false if the main domain is managed in some external way.
   ##
-  # includeServerName: false
+  includeServerName: true
 
   ## TLS configuration to include in the ingress configuration
   ##
@@ -492,25 +615,3 @@ ingress:
   #    hosts:
   #      - example.com
   #      - matrix.example.com
-
-## Resources to apply to the main Synapse pod.
-##
-resources: {}
-#  limits:
-#    cpu: 1000m
-#    memory: 2500Mi
-#  requests:
-#    cpu: 1000m
-#    memory: 2500Mi
-
-## Node selectors to set for the main Synapse pod.
-##
-nodeSelector: {}
-
-## Tolerations to set for the main Synapse pod.
-##
-tolerations: []
-
-## Affinity to set for the main Synapse pod.
-##
-affinity: {}

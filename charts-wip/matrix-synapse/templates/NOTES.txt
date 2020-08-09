@@ -1,9 +1,10 @@
 ** Note, this chart may take a while to finish setup, please be patient **
-
 {{- if not .Values.ingress.enabled }}
+
 Synapse has been installed without an ingress, you will need to manage
 accesses to the services yourself.
 {{- else }}
+
 Your Synapse install is now starting, you should soon be able to access it on
 the following URL(s);
   {{- range (concat .Values.ingress.hosts (list .Values.config.serverName)) }}
@@ -19,6 +20,7 @@ set up a /.well-known/matrix/server response.
 Refer to https://github.com/matrix-org/synapse/blob/master/docs/federate.md
 for more information.
 {{- end }}
+{{- end }}
 
 {{- if .Values.config.enableRegistration }}
 You should be able to connect to your Synapse install with any compatible
@@ -30,6 +32,6 @@ You can create a user in your new Synapse install by running the following
 command;
 {{- end }}
 
-    kubectl exec --namespace {{ .Release.Namespace }} {{ template "matrix-synapse" . }} -- register_new_matrix_user -c /synapse/config/homeserver.yaml -c /synapse/config/conf.d/secrets.yaml -u USERNAME -p PASSWORD --admin http://localhost:8008
+    kubectl exec --namespace {{ .Release.Namespace }} {{ template "matrix-synapse.fullname" . }} -- register_new_matrix_user -c /synapse/config/homeserver.yaml -c /synapse/config/conf.d/secrets.yaml -u USERNAME -p PASSWORD --admin http://localhost:8008
 
 You can also specify --no-admin to create a non-admin user.

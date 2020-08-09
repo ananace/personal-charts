@@ -4,7 +4,7 @@ kind: Pod
 metadata:
   name: "{{ include "matrix-synapse.fullname" . }}-test-connection"
   labels:
-{{ include "matrix-synapse.labels" . | nindent 4 }}
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:

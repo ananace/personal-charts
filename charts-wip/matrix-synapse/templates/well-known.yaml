@@ -1,5 +1,5 @@
 {{- if .Values.wellknown.enabled }}
-{{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "wellknown-lighttpd") -}}
+{{- $wkName := include "matrix-synapse.externalname" (dict "global" . "external" "wellknown-lighttpd") -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -10,9 +10,6 @@ metadata:
     component: well-known
 data:
   lighttpd.conf: |
-    var.basedir  = "/var/www/localhost"
-    var.logdir   = "/var/log/lighttpd"
-    var.statedir = "/var/lib/lighttpd"
     server.modules = (
       "mod_rewrite",
       "mod_status",
@@ -21,13 +18,13 @@ data:
     include "mime-types.conf"
     server.username      = "lighttpd"
     server.groupname     = "lighttpd"
-    server.document-root = var.basedir + "/htdocs"
+    server.document-root = {{ .Values.wellknown.htdocsPath | quote }}
     server.pid-file      = "/run/lighttpd.pid"
     server.errorlog      = "/dev/stderr"
-    status.status-url    = "/server-status"
     url.rewrite-once     = (
       "^/\.well-known/matrix/server" => "/server.json"
     )
+    status.status-url    = "/server-status"
     accesslog.filename   = "/dev/stderr"
 
   server.json: |-
@@ -59,7 +56,7 @@ metadata:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     component: well-known
 spec:
-  replicas: {{ default .Values.wellknown.replicaCount 1 }}
+  replicas: {{ .Values.wellknown.replicaCount | default 1 }}
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" . | nindent 6 }}
@@ -72,10 +69,15 @@ spec:
         {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
         component: well-known
     spec:
+      {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        {{- toYaml .Values.wellknown.podSecurityContext | nindent 8 }}
       containers:
         - name: lighttpd
-          image: m4rcu5/lighttpd
-          imagePullPolicy: Always
+          image: "{{ .Values.wellknown.image.repository }}:{{ .Values.wellknown.image.tag }}"
+          imagePullPolicy: {{ .Values.wellknown.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.wellknown.securityContext | nindent 12 }}
           ports:
             - containerPort: 80
               name: http
@@ -91,11 +93,25 @@ spec:
             - mountPath: /etc/lighttpd/lighttpd.conf
               name: files
               subPath: lighttpd.conf
-            - mountPath: /var/www/localhost/htdocs/server.json
+            - mountPath: {{ .Values.wellknown.htdocsPath }}/server.json
               name: files
               subPath: server.json
+          resources:
+            {{- toYaml .Values.wellknown.resources | nindent 12 }}
       volumes:
         - name: files
           configMap:
             name: {{ $wkName }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
 {{- end }}

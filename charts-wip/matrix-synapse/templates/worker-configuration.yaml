@@ -1,0 +1,41 @@
+{{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "workers") -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $wkName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+data:
+{{- $default := .Values.workers.default -}}
+{{- range $worker, $config := .Values.workers -}}
+  {{- if $config.enabled -}}
+    {{- $name := $worker | replace "_" "-" }}
+
+  {{ $name }}.worker: |
+    worker_app: "synapse.app.{{ $worker }}"
+
+    worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:8008
+    worker_replication_host: {{ include "matrix-synapse.replicationname" $ | quote }}
+    worker_replication_http_port: 9093
+
+    worker_listeners:
+      - type: http
+        bind_addresses: ['0.0.0.0']
+        tls: false
+        port: 9090
+        resources:
+          - names: [metrics]
+            compress: false
+    {{- if $config.listeners }}
+      - type: http
+        tls: false
+        port: 8083
+        resources:
+          - names: {{- toYaml $config.listeners | nindent 14 }}
+            compress: false
+    {{- end }}
+
+    worker_log_config: /synapse/config/log.yaml
+  {{- end }}
+{{- end }}

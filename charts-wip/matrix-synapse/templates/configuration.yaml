@@ -20,12 +20,12 @@ data:
         class: logging.StreamHandler
         formatter: precise
         filters: [context]
-        level: {{ .Values.config.logLevel }}
+        level: {{ .Values.config.logLevel | default "INFO" }}
     loggers:
         synapse:
-            level: {{ .Values.config.logLevel }}
+            level: {{ .Values.config.logLevel | default "INFO" }}
     root:
-        level: {{ .Values.config.logLevel }}
+        level: {{ .Values.config.logLevel | default "INFO" }}
         handlers: [console]
   homeserver.yaml: |
     # NOTE:
@@ -116,22 +116,22 @@ data:
 
     url_preview_enabled: false
     max_spider_size: "10M"
-
     {{- if .Values.config.recaptcha }}
+
     ## Captcha ##
 
     recaptcha_public_key: {{ .Values.config.recaptcha.publicKey | quote }}
-    enable_registration_captcha: True
+    enable_registration_captcha: true
     recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
     {{- end }}
-
     {{- if .Values.config.turnUris }}
+
     ## Turn ##
 
     turn_uris:
       {{ toYaml .Values.config.turnUris | nindent 6 }}
     turn_user_lifetime: "1h"
-    turn_allow_guests: True
+    turn_allow_guests: true
     {{- end }}
 
     ## Registration ##
@@ -143,7 +143,7 @@ data:
 
     ## Metrics ###
 
-    enable_metrics: True
+    enable_metrics: true
     report_stats: {{ .Values.config.reportStats | default false }}
 
     ## API Configuration ##
@@ -167,7 +167,6 @@ data:
       servers: {{- .Values.config.perspectiveServers | toYaml | nindent 8 }}
 
     ## Workers ##
-
     {{- $default := .Values.workers.default }}
     {{- range $worker, $config := .Values.workers }}
       {{- if $config.enabled }}
@@ -184,42 +183,9 @@ data:
         {{- end }}
       {{- end }}
     {{- end }}
-
     {{- with .Values.extraConfig }}
+
     ## Extra config ##
 
     {{ . | toYaml | nindent 4 }}
     {{- end }}
-
-{{- $default := .Values.workers.default -}}
-{{- range $worker, $config := .Values.workers -}}
-  {{- if $config.enabled -}}
-    {{- $name := $worker | replace "_" "-" }}
-
-  {{ $name }}.worker: |
-    worker_app: "synapse.app.{{ $worker }}"
-
-    worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:8008
-    worker_replication_host: {{ include "matrix-synapse.replicationname" $ | quote }}
-    worker_replication_http_port: 9093
-
-    worker_listeners:
-      - type: http
-        bind_addresses: ['0.0.0.0']
-        tls: false
-        port: 9090
-        resources:
-          - names: [metrics]
-            compress: false
-    {{- if $config.listeners }}
-      - type: http
-        tls: false
-        port: 8083
-        resources:
-          - names: {{- toYaml $config.listeners | nindent 14 }}
-            compress: false
-    {{- end }}
-
-    worker_log_config: /synapse/config/log.yaml
-  {{- end }}
-{{- end }}

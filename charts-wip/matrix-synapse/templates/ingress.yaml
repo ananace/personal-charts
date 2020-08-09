@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "matrix-synapse.fullname" . -}}
-{{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "wellknown-lighttpd") -}}
+{{- $wkName := include "matrix-synapse.externalname" (dict "global" . "external" "wellknown-lighttpd") -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -27,51 +27,88 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- $hosts := .Values.ingress.hosts }}
-  {{- if default .Values.ingress.includeServerName true }}
-    {{- $hosts = concat (list .Values.config.serverName) $hosts }}
+  {{- $csHosts := .Values.ingress.csHosts }}
+  {{- if .Values.ingress.includeServerName }}
+    {{- $csHosts = concat (list .Values.config.serverName) $csHosts }}
   {{- end }}
+  {{- $s2sHosts := .Values.ingress.hosts }}
+  {{- if .Values.ingress.includeServerName }}
+    {{- $s2sHosts = concat (list .Values.config.serverName) $s2sHosts }}
+  {{- end }}
+  {{- $wkHosts := .Values.ingress.wkHosts }}
+  {{- if .Values.ingress.includeServerName }}
+    {{- $wkHosts = concat (list .Values.config.serverName) $wkHosts }}
+  {{- end }}
+  {{- $hosts := uniq (concat $s2sHosts $csHosts $wkHosts) }}
   {{- range $hosts }}
+    {{- $host := . }}
     - host: {{ . | quote }}
       http:
         paths:
         {{- $default := $.Values.workers.default }}
         {{- range $worker, $config := $.Values.workers }}
           {{- $name := $worker | replace "_" "-" }}
-          {{- if and $config.enabled $config.listeners $config.paths }}
+          {{- if and $config.enabled $config.listeners (or $config.paths $config.csPaths) }}
             {{- $service := include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
-            {{- range $config.paths }}
-              {{- if $.Values.ingress.traefikPaths }}
+            {{- if has $host $csHosts }}
+              {{- range $config.csPaths }}
+                {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
             backend:
               serviceName: {{ $service }}
               servicePort: 8083
-              {{- else }}
+                {{- else }}
           - path: {{ . | quote }}
             backend:
               serviceName: {{ $service }}
               servicePort: 8083
+                {{- end }}
+              {{- end }}
+            {{- end }}
+            {{- if has $host $s2sHosts }}
+              {{- range $config.paths }}
+                {{- if $.Values.ingress.traefikPaths }}
+          - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
+            backend:
+              serviceName: {{ $service }}
+              servicePort: 8083
+                {{- else }}
+          - path: {{ . | quote }}
+            backend:
+              serviceName: {{ $service }}
+              servicePort: 8083
+                {{- end }}
               {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
 
+        {{- if has . $csHosts }}
+        {{- with $.Values.ingress.csPaths }}
+          {{ . | toYaml | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if has . $s2sHosts }}
         {{- with $.Values.ingress.paths }}
           {{ . | toYaml | nindent 10 }}
         {{- end }}
+        {{- end }}
 
+        {{- if or (has . $csHosts) (has . $s2sHosts) }}
           - path: /_matrix
             backend:
               serviceName: {{ $fullName }}
               servicePort: 8008
+        {{- end }}
 
-        {{- if $.Values.ingress.includeUnderscoreSynapse }}
+        {{- if and (has . $csHosts) $.Values.ingress.includeUnderscoreSynapse }}
           - path: /_synapse
             backend:
               serviceName: {{ $fullName }}
               servicePort: 8008
         {{- end }}
 
+        {{- if has . $wkHosts }}
           - path: /.well-known/matrix/client
             backend:
               serviceName: {{ $fullName }}
@@ -82,6 +119,7 @@ spec:
             backend:
               serviceName: {{ $wkName }}
               servicePort: 80
+        {{- end }}
         {{- end }}
   {{- end }}
 {{- end }}

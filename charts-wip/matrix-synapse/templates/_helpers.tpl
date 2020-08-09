@@ -25,19 +25,27 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Create a default fully qualified app name.
+Create a default replication name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-synapse.replicationname" -}}
-{{- printf "%s-%s-%s" .Release.Name .Chart.Name "matrix-synapse-replication" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s-%s" .Release.Name .Chart.Name "replication" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Create a default fully qualified app name.
+Create a default worker name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-synapse.workername" -}}
 {{- printf "%s-%s-%s" .global.Release.Name .global.Chart.Name .worker | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create a default external component name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "matrix-synapse.externalname" -}}
+{{- printf "%s-%s" .global.Release.Name .external | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -72,6 +80,24 @@ Selector labels
 {{- define "matrix-synapse.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "matrix-synapse.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Pull secrets
+*/}}
+{{- define "matrix-synapse.imagePullSecrets" -}}
+{{- if or .Values.image.pullSecrets .Values.wellknown.image.pullSecrets .Values.volumePermissions.pullSecrets }}
+imagePullSecrets:
+{{- with .Values.image.pullSecrets }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- with .Values.wellknown.image.pullSecrets }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- with .Values.volumePermissions.image.pullSecrets }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}
+{{- end -}}
 {{- end -}}
 
 {{/*
