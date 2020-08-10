@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "matrix-media-repo.fullname" . }}-test-connection"
+  labels:
+    {{- include "matrix-media-repo.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "matrix-media-repo.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

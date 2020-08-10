@@ -1,0 +1,147 @@
+---
+replicaCount: 1
+
+image:
+  repository: turt2live/matrix-media-repo
+  pullPolicy: IfNotPresent
+  # tag: ""
+
+imagePullSecrets: []
+# nameOverride: ""
+# fullnameOverride: ""
+
+## Global configuration
+## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/config.sample.yaml
+##
+config:
+  datastores:
+    - type: file
+      enabled: true
+      forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
+      opts:
+        path: /media
+#
+#   - type: s3
+#     enabled: true
+#     forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
+#     opts:
+#       tempPath: "/tmp/mediarepo_s3_upload"
+#       endpoint: sfo2.digitaloceanspaces.com
+#       accessKeyId: ""
+#       accessSecret: ""
+#       ssl: true
+#       bucketName: "your-media-bucket"
+#       region: "sfo2"
+#
+# admins:
+#   - "@user:example.org"
+#
+# featureSupport:
+#   MSC2448:
+#     enabled: true
+
+## Per-domain configuration
+## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/docs/config.md
+##
+homeservers: {}
+# example.org:
+#   csApi: 'https://example.org'
+#   backoffAt: 10
+#   adminApiKind: 'matrix'
+#   identicons:
+#     enabled: false
+
+## Media persistence
+## Can be disabled if no datastore uses it
+##
+persistence:
+  enabled: true
+
+  # existingClaim: matrix-media-repo
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 16Gi
+
+
+## This configuration is for setting up the internally provided Postgres server,
+## if you instead want to use an existing server, then you may want to set
+## enabled to false and configure the externalPostgresql block.
+##
+postgresql:
+  enabled: true
+
+  postgresqlUsername: matrix-media-repo
+  postgresqlDatabase: matrix-media-repo
+
+  persistence:
+    size: 16G
+
+## An externally configured Postgres server
+##
+externalPostgresql:
+  # host: postgres
+  port: 5432
+  username: matrix-media-repo
+  # password: matrix-media-repo
+  database: matrix-media-repo
+  # sslMode: require
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # limits:
+  #   cpu: 250m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 250m
+  #   memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
