@@ -80,6 +80,8 @@ config:
   # enableRegistration: false
   ## Note; this value will default to a random string if not specified.
   # registrationSharedSecret: ''
+  ## Note; Strongly recommended to set this to a secure value.
+  # macaroonSecretKey: ''
   # allowGuests: false
 
   ## Should the Synapse instance report stats.

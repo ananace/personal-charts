@@ -10,6 +10,7 @@ metadata:
     component: well-known
 data:
   lighttpd.conf: |
+    server.port = 8080
     server.modules = (
       "mod_rewrite",
       "mod_status",
@@ -79,7 +80,7 @@ spec:
           securityContext:
             {{- toYaml .Values.wellknown.securityContext | nindent 12 }}
           ports:
-            - containerPort: 80
+            - containerPort: 8080
               name: http
               protocol: TCP
           readinessProbe:
@@ -96,12 +97,16 @@ spec:
             - mountPath: {{ .Values.wellknown.htdocsPath }}/server.json
               name: files
               subPath: server.json
+            - mountPath: /run
+              name: run
           resources:
             {{- toYaml .Values.wellknown.resources | nindent 12 }}
       volumes:
         - name: files
           configMap:
             name: {{ $wkName }}
+        - name: run
+          emptyDir: {}
     {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
