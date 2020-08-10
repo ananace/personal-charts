@@ -29,7 +29,7 @@ data:
     accesslog.filename   = "/dev/stderr"
 
   server.json: |-
-{{ dict "m.server" (printf "%s:%d" (default .Values.wellknown.host .Values.config.serverName) (default .Values.wellknown.port 443)) | toJson | indent 4 }}
+{{ dict "m.server" (printf "%s:%d" (.Values.wellknown.host | default .Values.config.serverName) (.Values.wellknown.port | default 443)) | toJson | indent 4 }}
 ---
 apiVersion: v1
 kind: Service
