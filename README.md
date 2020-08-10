@@ -10,6 +10,10 @@ Current applications
 - [Netbox](charts/netbox)
 - [CEPH RadosGW](charts/radosgw)
 
+WIP;
+- [Matrix Synapse](charts/matrix-synapse)
+- [Matrix Media Repo](charts/matrix-media-repo)
+
 Using
 -----
 
