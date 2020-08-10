@@ -1,6 +1,4 @@
-{{- if not .Values.config.serverName -}}
-{{- fail "A valid .Values.config.serverName is required" -}}
-{{- end -}}
+# {{- required "A valid .Values.config.serverName is required" .Values.config.serverName -}}
 {{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
 ---
 apiVersion: apps/v1
