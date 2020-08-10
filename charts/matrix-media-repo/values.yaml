@@ -40,6 +40,11 @@ config:
 #   MSC2448:
 #     enabled: true
 
+## For setting extra parameters on the repo block
+##
+extraRepo: {}
+#  useForwardedHost: false
+
 ## Per-domain configuration
 ## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/docs/config.md
 ##
@@ -70,8 +75,8 @@ persistence:
 postgresql:
   enabled: true
 
-  postgresqlUsername: matrix-media-repo
-  postgresqlDatabase: matrix-media-repo
+  postgresqlUsername: matrix_media_repo
+  postgresqlDatabase: matrix_media_repo
 
   persistence:
     size: 16G
@@ -81,9 +86,9 @@ postgresql:
 externalPostgresql:
   # host: postgres
   port: 5432
-  username: matrix-media-repo
-  # password: matrix-media-repo
-  database: matrix-media-repo
+  username: matrix_media_repo
+  # password:
+  database: matrix_media_repo
   # sslMode: require
 
 serviceAccount:

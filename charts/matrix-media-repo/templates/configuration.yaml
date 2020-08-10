@@ -10,6 +10,9 @@ data:
       bindAddress: '0.0.0.0'
       port: 8000
       logDirectory: '-'
+    {{- with .Values.extraRepo }}
+      {{- . | toYaml | nindent 6 }}
+    {{- end }}
 
     metrics:
       enabled: true
