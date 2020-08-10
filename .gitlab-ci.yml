@@ -19,7 +19,6 @@ pages:
   script:
     - mkdir -p public
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
-    - helm init
     - (cd public; helm package ../charts/*)
     - helm repo index public --url ${CI_PAGES_URL}
   artifacts:
