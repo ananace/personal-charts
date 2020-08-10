@@ -1,6 +1,6 @@
-# {{- required "A valid .Values.config.serverName is required" .Values.config.serverName -}}
 {{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
 ---
+# Server: {{ required "A valid .Values.config.serverName is required" .Values.config.serverName -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,27 +47,29 @@ spec:
           args:
             - synapse.app.homeserver
           env:
-          {{- if .Values.postgresql.enabled }}
+{{- $postgresPass := include "matrix-synapse.postgresql.password" . }}
+          {{- if and .Values.postgresql.enabled (not $postgresPass) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix-synapse.postgresql.fullname" . }}
                   key: postgresql-password
           {{- end }}
-          {{- if and .Values.redis.enabled (default .Values.redis.usePassword true) }}
+{{- $redisPass := include "matrix-synapse.redis.password" . }}
+          {{- if and .Values.redis.enabled (default .Values.redis.usePassword true) (not $redisPass) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "matrix-synapse.redis.fullname" . }}
                   key: redis-password
           {{- end }}
-          {{- with .Values.extraEnv }}
+          {{- with .Values.synapse.extraEnv }}
             {{ . | toYaml }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.synapse.securityContext | nindent 12 }}
           ports:
             - name: http
               containerPort: 8008
@@ -98,7 +100,7 @@ spec:
             - name: media
               mountPath: /synapse/data
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.synapse.resources | nindent 12 }}
       volumes:
         - name: config
           configMap:
@@ -115,7 +117,6 @@ spec:
         - name: tmpconf
           emptyDir: {}
         - name: media
-
         {{- $mediaworker := false }}
         {{- range $worker, $config := .Values.workers }}
           {{- if eq $worker "media-repository" }}
@@ -128,15 +129,15 @@ spec:
         {{- else }}
           emptyDir: {}
         {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.synapse.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.synapse.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.synapse.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}

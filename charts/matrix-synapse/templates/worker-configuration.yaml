@@ -1,3 +1,11 @@
+{{- $any := false }}
+{{- range $worker, $config := .Values.workers }}
+  {{- if $config.enabled }}
+    {{- $any = true }}
+  {{- end }}
+{{- end }}
+
+{{- if $any }}
 {{- $wkName := include "matrix-synapse.workername" (dict "global" . "worker" "workers") -}}
 ---
 apiVersion: v1
@@ -38,4 +46,5 @@ data:
 
     worker_log_config: /synapse/config/log.yaml
   {{- end }}
+{{- end }}
 {{- end }}
