@@ -1,0 +1,40 @@
+{{- if .Values.wellknown.enabled }}
+{{- $wkName := include "matrix-synapse.externalname" (dict "global" . "external" "wellknown-lighttpd") -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $wkName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+    component: well-known
+data:
+  lighttpd.conf: |
+    server.port = 8080
+    server.modules = (
+      "mod_rewrite",
+      "mod_status",
+      "mod_accesslog",
+      "mod_extforward",
+      "mod_setenv"
+    )
+    include "mime-types.conf"
+    server.username      = "lighttpd"
+    server.groupname     = "lighttpd"
+    server.document-root = {{ .Values.wellknown.htdocsPath | quote }}
+    server.pid-file      = "/run/lighttpd.pid"
+    server.errorlog      = "/dev/stderr"
+    url.rewrite-once     = (
+      "^/\.well-known/matrix/server" => "/server.json"
+    )
+    status.status-url    = "/server-status"
+    accesslog.filename   = "/dev/stderr"
+    extforward.forwarder = ( "all" => "trust")
+    setenv.add-response-header = (
+      "access-control-allow-headers" => "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+      "access-control-allow-methods" => "GET, POST, PUT, DELETE, OPTIONS",
+      "access-control-allow-origin" => "*"
+    )
+  server.json: |-
+{{ dict "m.server" (printf "%s:%d" (.Values.wellknown.host | default .Values.config.serverName) (.Values.wellknown.port | default 443)) | toJson | indent 4 }}
+{{- end }}
