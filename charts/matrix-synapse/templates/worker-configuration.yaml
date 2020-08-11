@@ -28,17 +28,22 @@ data:
     worker_replication_http_port: 9093
 
     worker_listeners:
-      - type: http
-        bind_addresses: ['0.0.0.0']
+      - port: 9090
         tls: false
-        port: 9090
+        bind_addresses: ['0.0.0.0']
+        type: http
+
         resources:
           - names: [metrics]
             compress: false
     {{- if $config.listeners }}
-      - type: http
+
+      - port: 8083
         tls: false
-        port: 8083
+        bind_addresses: ['::']
+        type: http
+        x_forwarded: true
+
         resources:
           - names: {{- toYaml $config.listeners | nindent 14 }}
             compress: false

@@ -59,6 +59,7 @@ data:
         tls: false
         bind_addresses: ['::']
         type: http
+
         resources:
           - names: [metrics]
             compress: false
@@ -67,6 +68,7 @@ data:
         tls: false
         bind_addresses: ['::']
         type: http
+
         resources:
           - names: [replication]
             compress: false
