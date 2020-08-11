@@ -128,6 +128,7 @@ synapse:
   ##
   annotations: {}
   #  prometheus.io/scrape: "true"
+  #  prometheus.io/path: /_synapse/metrics
   #  prometheus.io/port: 9090
 
   ## Labels to apply to the main Synapse pod.
@@ -208,6 +209,7 @@ workers:
     ##
     annotations: {}
     #  prometheus.io/scrape: "true"
+    #  prometheus.io/path: /_synapse/metrics
     #  prometheus.io/port: 9090
 
     ## Additional environment variables to add to the worker.
@@ -216,7 +218,7 @@ workers:
     #  - name: USE_JEMALLOC
     #    value: "1"
     #  - name: SYNAPSE_CACHE_FACTOR
-    #    value: "2"
+    #    value: "1.0"
 
     ## Additional volume mounts to add to the worker.
     ## Useful for the media repo.
