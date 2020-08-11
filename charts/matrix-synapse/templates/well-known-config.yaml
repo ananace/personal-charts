@@ -35,6 +35,9 @@ data:
       "access-control-allow-methods" => "GET, POST, PUT, DELETE, OPTIONS",
       "access-control-allow-origin" => "*"
     )
+    setenv.set-response-header = (
+      "content-type" => "application/json"
+    )
   server.json: |-
 {{ dict "m.server" (printf "%s:%d" (.Values.wellknown.host | default .Values.config.serverName) (.Values.wellknown.port | default 443)) | toJson | indent 4 }}
 {{- end }}
