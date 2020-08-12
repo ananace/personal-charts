@@ -1,0 +1,13 @@
+{{- $m_homeserver := (dict "base_url" (required "Must specify a default homeserver" .Values.defaultServer.url) "server_name" (required "Must specify a default server name" .Values.defaultServer.name)) -}}
+{{- $m_identity_server := (dict "base_url" (.Values.defaultServer.identity_url | default "https://vector.im")) -}}
+{{- $default_server_config := dict "default_server_config" (dict "m.homeserver" $m_homeserver "m.identity_server" $m_identity_server) -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "element-web.fullname" . }}
+  labels:
+    {{- include "element-web.labels" . | nindent 4 }}
+data:
+  config.json: |
+    {{- merge $default_server_config .Values.config | toJson | nindent 4 }}
