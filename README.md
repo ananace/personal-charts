@@ -13,6 +13,7 @@ Current applications
 WIP;
 - [Matrix Synapse](charts/matrix-synapse)
 - [Matrix Media Repo](charts/matrix-media-repo)
+- [Element Web](charts/element-web)
 
 Using
 -----
