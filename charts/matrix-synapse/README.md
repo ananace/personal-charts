@@ -28,13 +28,13 @@ Refer to [the main Synapse docs](https://github.com/matrix-org/synapse/blob/mast
 For the simplest possible Matrix install, you can run your Synapse install on the root of the domain you wish in your MXIDs.
 If you - for instance - own the domain `chosenin.space` and want to run Matrix on it, you would simply install the chart as;
 
-    helm install matrix-synapse --set config.serverName=chosenin.space --set wellknown.enabled=true
+    helm install matrix-synapse --set serverName=chosenin.space --set wellknown.enabled=true
 
 This would set up Synapse with client-server and federation both exposed on `chosenin.space/_matrix`, as well as a tiny lighttpd server that responds to federation lookups on `chosenin.space/.well-known/matrix/server`.
 
 You can also use this to run a Synapse on a subdomain, with said subdomain as part of your MXIDs; (`@user:matrix.chosenin.space` in this case)
 
-    helm install matrix-synapse --set config.serverName=matrix.chosenin.space --set wellknown.enabled=true
+    helm install matrix-synapse --set serverName=matrix.chosenin.space --set wellknown.enabled=true
 
 ### On separate subdomain
 
@@ -42,17 +42,21 @@ If - on the other hand - you own the domain `example.com`, want your MXIDs in th
 
 For DNS, you could install the chart as;
 
-    helm install matrix-synapse --set config.serverName=example.com --set config.publicBaseUrl=https://matrix.example.com --set ingress.includeServerName=false --set ingress.hosts={example.com} --set ingress.csHosts={matrix.example.com} 
+    helm install matrix-synapse --set serverName=example.com --set publicServerName=matrix.example.com
 
-This will add only federation endpoints to `example.com`, along with client endpoints on `matrix.example.com`. You will also need to have valid certs for both `example.com` as well as `matrix.example.com` for your Synapse to use.
-To get federation working with such a setup, you would need to add an SRV record to your DNS - for example;  
-`_matrix._tcp.example.com 10 1 443 matrix.example.com`
+This will add federation endpoints to `example.com`, along with client endpoints on `matrix.example.com`. For this to work, you will need to have valid certs for both `example.com` as well as `matrix.example.com` for your Synapse to use.
+To get federation working with such a setup, you would also need to add an SRV record to your DNS - for example;  
 
-If you want to use a well-known file for federation instead, then your install might look more like;
+    _matrix._tcp.example.com 10 1 443 matrix.example.com
 
-    helm install matrix-synapse --set config.serverName=example.com --set config.publicBaseUrl=https://matrix.example.com --set wellknown.enabled=true --set wellknown.host=matrix.example.com --set ingress.includeServerName=false --set ingress.hosts={matrix.example.com} --set ingress.csHosts={matrix.example.com} --set ingress.wkHosts={example.com}
+If you want to use a well-known file for federation instead of an SRV record, then your install might look more like;
 
-With well-known federation, your client-to-server/public host is the one that needs to handle both client and federation traffic. On your main domain you'll instead only need something that can respond with a JSON file on the URL `example.com/.well-known/matrix/server`, which the included wellknown server will do.  
-When using well-known federation, your Synapse cert would only need to be valid for `matrix.example.com`.
+    helm install matrix-synapse --set serverName=example.com --set publicServerName=matrix.example.com --set wellknown.enabled=true
 
+With well-known federation, your client-to-server/public host is the one that needs to handle both client and federation traffic. On your main domain you'll instead only need something that can respond with a JSON file on the URL `example.com/.well-known/matrix/server` - which the included wellknown server will gladly do for you.  
+Additionally, when using well-known federation, your Synapse cert only needs to be valid for `matrix.example.com`.
 
+&nbsp;
+
+More advanced setups can be made using `ingress.hosts`, `ingress.csHosts`, and `ingress.wkHosts` for server-server, client-server, and well-known endpoints respectively.  
+Alternatively, you can use your own ingress setup, or switch the main service to `LoadBalancer` and add a TLS listener.

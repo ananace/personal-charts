@@ -29,7 +29,7 @@ spec:
   rules:
   {{- $csHosts := .Values.ingress.csHosts }}
   {{- if .Values.ingress.includeServerName }}
-    {{- $csHosts = concat (list .Values.config.serverName) $csHosts }}
+    {{- $csHosts = concat (list (.Values.config.publicServerName | default .Values.config.serverName)) $csHosts }}
   {{- end }}
   {{- $s2sHosts := .Values.ingress.hosts }}
   {{- if .Values.ingress.includeServerName }}

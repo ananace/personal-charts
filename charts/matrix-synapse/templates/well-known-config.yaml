@@ -39,5 +39,5 @@ data:
       "content-type" => "application/json"
     )
   server.json: |-
-{{ dict "m.server" (printf "%s:%d" (.Values.wellknown.host | default .Values.config.serverName) (.Values.wellknown.port | default 443)) | toJson | indent 4 }}
+{{ dict "m.server" (printf "%s:%d" (.Values.wellknown.host | default (.Values.config.publicServerName | default .Values.config.serverName)) (.Values.wellknown.port | default 443)) | toJson | indent 4 }}
 {{- end }}

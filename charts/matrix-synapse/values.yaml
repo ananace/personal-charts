@@ -36,19 +36,23 @@ signingkey:
   # existingSecret:
   # existingSecretKey: signing.key
 
+## The Matrix domain name, this is what will be used for the domain part in
+## your MXIDs.
+##
+# serverName: 'example.com'
+
+## The public Matrix server name, this will be used for any public URLs
+## in config as well as for client API links in the ingress.
+# publicServerName: 'matrix.example.com'
+
 ## Common Matrix configuration values, for any value not handled by this block,
 ## you will want to instead set it in extraConfig.
 ##
 config:
-  ## The Matrix domain name, this is what will be used for the domain part in
-  ## your MXIDs.
-  ##
-  # serverName: 'example.com'
-
   ## The publicly accessible URL for the Synapse instance, will default to
-  ## https://<serverName>.
+  ## https://<publicServerName>.
   ##
-  # publicBaseurl: 'https://example.com'
+  # publicBaseurl: 'https://matrix.example.com'
 
   ## The size of the event cache.
   ##
@@ -143,8 +147,8 @@ synapse:
   #  - name: SYNAPSE_CACHE_FACTOR
   #    value: "2"
 
-  ## Configuration for the pod security policy, Synapse will by default run as its
-  ## own user, even if not set.
+  ## Configuration for the pod security policy, Synapse will by always run as
+  ## its own user, even if not set.
   ## Note that changing this may also require you to use the volumePermission
   ## helper depending on your storage.
   ##
@@ -541,8 +545,17 @@ volumePermissions:
   #     memory: 128Mi
   #     cpu: 100m
 
-## The K8s ingress configuration, this will be quite heavily used in order to set
-## up all routing necessary for use with a sharded Synapse instance.
+## Configuration for the main Synapse service.
+## To use TLS inside Synapse itself, add an TLS listener, and change the ports
+## configured in here.
+##
+service:
+  type: ClusterIP
+  port: 8008
+  targetPort: http
+
+## The K8s ingress configuration, this will be quite heavily used in order to
+## set up all routing necessary for use with a sharded Synapse instance.
 ## If you're not using a Ingress compatible K8s ingress, you will need to set up
 ## your own routing instead.
 ##
