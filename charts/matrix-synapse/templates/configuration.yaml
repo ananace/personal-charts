@@ -33,8 +33,8 @@ data:
 
     ## Server ##
 
-    server_name: {{ required "You need to specify a server name" .Values.config.serverName | quote }}
-    public_baseurl: {{ .Values.config.publicBaseurl | default (printf "https://%s" (.Values.config.publicServerName | default .Values.config.serverName)) | quote }}
+    server_name: {{ required "You need to specify a serverName" .Values.serverName | quote }}
+    public_baseurl: {{ .Values.config.publicBaseurl | default (printf "https://%s" (.Values.publicServerName | default .Values.serverName)) | quote }}
     pid_file: /homeserver.pid
     web_client: False
     soft_file_limit: 0

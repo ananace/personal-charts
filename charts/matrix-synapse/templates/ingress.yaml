@@ -29,15 +29,15 @@ spec:
   rules:
   {{- $csHosts := .Values.ingress.csHosts }}
   {{- if .Values.ingress.includeServerName }}
-    {{- $csHosts = concat (list (.Values.config.publicServerName | default .Values.config.serverName)) $csHosts }}
+    {{- $csHosts = concat (list (.Values.publicServerName | default .Values.serverName)) $csHosts }}
   {{- end }}
   {{- $s2sHosts := .Values.ingress.hosts }}
   {{- if .Values.ingress.includeServerName }}
-    {{- $s2sHosts = concat (list .Values.config.serverName) $s2sHosts }}
+    {{- $s2sHosts = concat (list .Values.serverName) $s2sHosts }}
   {{- end }}
   {{- $wkHosts := .Values.ingress.wkHosts }}
   {{- if .Values.ingress.includeServerName }}
-    {{- $wkHosts = concat (list .Values.config.serverName) $wkHosts }}
+    {{- $wkHosts = concat (list .Values.serverName) $wkHosts }}
   {{- end }}
   {{- $hosts := uniq (concat $s2sHosts $csHosts $wkHosts) }}
   {{- range $hosts }}

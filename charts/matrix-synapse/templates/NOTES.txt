@@ -7,7 +7,7 @@ accesses to the services yourself.
 
 Your Synapse install is now starting, you should soon be able to access it on
 the following URL(s);
-  {{- range (concat .Values.ingress.hosts (list .Values.config.serverName)) }}
+  {{- range (concat .Values.ingress.csHosts (list (.Values.publicServerName | default .Values.serverName))) }}
     {{- if $.Values.ingress.tls }}
 https://{{ . }}
     {{- else }}

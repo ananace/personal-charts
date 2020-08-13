@@ -1,6 +1,6 @@
 {{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
 ---
-# Server: {{ required "A valid .Values.config.serverName is required" .Values.config.serverName }}
+# Server: {{ required "A valid serverName is required" .Values.serverName }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
