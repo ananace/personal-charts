@@ -1,6 +1,10 @@
 ---
+## Number of replicas for the media repo
+##
 replicaCount: 1
 
+## Image configuration for the media repo
+##
 image:
   repository: turt2live/matrix-media-repo
   pullPolicy: IfNotPresent
@@ -10,7 +14,7 @@ imagePullSecrets: []
 # nameOverride: ""
 # fullnameOverride: ""
 
-## Global configuration
+## Global configuration.
 ## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/config.sample.yaml
 ##
 config:
@@ -40,12 +44,14 @@ config:
 #   MSC2448:
 #     enabled: true
 
-## For setting extra parameters on the repo block
+## For setting extra parameters on the repo block, separated to avoid breaking
+## the defaults when merging multiple configurations.
+## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/config.sample.yaml#L1-L22
 ##
 extraRepo: {}
 #  useForwardedHost: false
 
-## Per-domain configuration
+## Per-domain configuration.
 ## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/docs/config.md
 ##
 homeservers: {}
@@ -56,8 +62,8 @@ homeservers: {}
 #   identicons:
 #     enabled: false
 
-## Media persistence
-## Can be disabled if no datastore uses it
+## Media persistence, mounted in the pod as /media.
+## Can be disabled if no datastore uses it.
 ##
 persistence:
   enabled: true
@@ -81,7 +87,7 @@ postgresql:
   persistence:
     size: 16G
 
-## An externally configured Postgres server
+## An externally configured Postgres server.
 ##
 externalPostgresql:
   # host: postgres
@@ -91,20 +97,28 @@ externalPostgresql:
   database: matrix_media_repo
   # sslMode: require
 
+## Configures an application-specific service account.
+##
 serviceAccount:
-  # Specifies whether a service account should be created
   create: false
+
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+## Additional annotations to add to the pod.
+##
 podAnnotations: {}
 
+## Security context configuration to add to the pod.
+##
 podSecurityContext: {}
   # fsGroup: 2000
 
+## Security context configuration to add to the container inside the pod.
+##
 securityContext: {}
   # capabilities:
   #   drop:
@@ -113,10 +127,14 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+## Service configuration.
+##
 service:
   type: ClusterIP
   port: 80
 
+## Ingress configuration.
+##
 ingress:
   enabled: false
   annotations: {}
@@ -130,6 +148,8 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+## Resource configuration for the application.
+##
 resources: {}
   # limits:
   #   cpu: 250m
@@ -138,6 +158,9 @@ resources: {}
   #   cpu: 250m
   #   memory: 512Mi
 
+## Configure auto-scaling for the application.
+## NB; Make sure to read all relevant documentation before playing with this.
+##
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -145,8 +168,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+## Node selectors to use when deploying the application.
+##
 nodeSelector: {}
 
+## Tolerations to apply to the application.
+##
 tolerations: []
 
+## Affinities to set on the application.
+##
 affinity: {}

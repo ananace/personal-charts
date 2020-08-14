@@ -41,11 +41,14 @@ spec:
                 done
               ) &
 
-              REPO_CONFIG=/config/combined media_repo
+              media_repo
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ include "matrix-media-repo.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REPO_CONFIG
+              value: /config/combined
           ports:
             - name: http
               containerPort: 8000
@@ -62,7 +65,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /config/combined
-              name: empty
+              name: empty-combined
             - mountPath: /config/config
               name: config
             - mountPath: /config/secrets
@@ -70,7 +73,7 @@ spec:
             - mountPath: /media
               name: data
       volumes:
-        - name: empty
+        - name: empty-combined
           emptyDir: {}
         - name: config
           configMap:
