@@ -29,7 +29,7 @@ Create a default replication name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-synapse.replicationname" -}}
-{{- printf "%s-%s-%s" .Release.Name .Chart.Name "replication" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "replication" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -37,7 +37,7 @@ Create a default worker name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-synapse.workername" -}}
-{{- printf "%s-%s-%s" .global.Release.Name .global.Chart.Name .worker | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .global.Release.Name .worker | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
