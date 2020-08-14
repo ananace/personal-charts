@@ -60,6 +60,10 @@ config:
   ##
   # logLevel: INFO
 
+  ## Should usage stats be reported
+  ##
+  reportStats: false
+
   ## Protect registration with recaptcha. (optional)
   ##
   # recaptcha:

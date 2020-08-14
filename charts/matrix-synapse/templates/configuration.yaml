@@ -39,6 +39,7 @@ data:
     web_client: False
     soft_file_limit: 0
     log_config: "/synapse/config/log.yaml"
+    report_stats: {{ required "You need to specify config.reportStats" .Values.config.reportStats }}
 
     ## Ports ##
 
