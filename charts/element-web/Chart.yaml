@@ -10,7 +10,7 @@ icon: https://element.io/images/element-logo.svg
 appVersion: 1.7.3
 
 type: application
-version: 0.1.2
+version: 1.0.0
 
 maintainers:
   - name: Alexander Olofsson

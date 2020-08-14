@@ -1,14 +1,18 @@
 ---
+## Number of replicas
+##
 replicaCount: 1
 
+## Image configuration
+##
 image:
   repository: vectorim/riot-web
   pullPolicy: IfNotPresent
   # tag: ""
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+# nameOverride: ""
+# fullnameOverride: ""
 
 ## Default server for the Element install. (Required)
 ## This will configure the default_server_config block in the config.json
@@ -24,20 +28,28 @@ defaultServer:
 ##
 config: {}
 
+## Configures an application-specific service account.
+##
 serviceAccount:
-  # Specifies whether a service account should be created
   create: true
+
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+## Additional annotations to add to the pod.
+##
 podAnnotations: {}
 
+## Security context configuration to add to the pod.
+##
 podSecurityContext: {}
   # fsGroup: 2000
 
+## Security context configuration to add to the container inside the pod.
+##
 securityContext: {}
   # capabilities:
   #   drop:
@@ -46,10 +58,14 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+## Service configuration.
+##
 service:
   type: ClusterIP
   port: 80
 
+## Ingress configuration.
+##
 ingress:
   enabled: false
   annotations: {}
@@ -62,6 +78,8 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+## Resource configuration for the application.
+##
 resources: {}
   # limits:
   #   cpu: 100m
@@ -70,15 +88,23 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+## Configure auto-scaling for the application.
+##
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 5
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+## Node selectors to use when deploying the application.
+##
 nodeSelector: {}
 
+## Tolerations to apply to the application.
+##
 tolerations: []
 
+## Affinities to set on the application.
+##
 affinity: {}
