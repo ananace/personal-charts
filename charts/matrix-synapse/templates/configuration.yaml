@@ -40,8 +40,6 @@ data:
     soft_file_limit: 0
     log_config: "/synapse/config/log.yaml"
 
-    trusted_third_party_id_servers: {{- .Values.config.thirdPartyIDServers | toYaml | nindent 6 }}
-
     ## Ports ##
 
     listeners:
@@ -76,55 +74,16 @@ data:
       {{ .Values.config.extraListeners | toYaml | nindent 6 }}
     {{- end }}
 
-    ## Performance ##
-
-    event_cache_size: {{ .Values.config.eventCacheSize | default "10K" | quote }}
-
-    ## Ratelimiting ##
-
-    rc_messages_per_second: 0.2
-    rc_message_burst_count: 10.0
-    federation_rc_window_size: 1000
-    federation_rc_sleep_limit: 10
-    federation_rc_sleep_delay: 500
-    federation_rc_reject_limit: 50
-    federation_rc_concurrent: 3
-
     ## Files ##
 
     media_store_path: "/synapse/data/media"
     uploads_path: "/synapse/data/uploads"
-    max_upload_size: {{ .Values.config.maxUploadSize | default "10M" | quote }}
-    max_image_pixels: "32M"
-    dynamic_thumbnails: false
-
-    # List of thumbnail to precalculate when an image is uploaded.
-    thumbnail_sizes:
-    - width: 32
-      height: 32
-      method: crop
-    - width: 96
-      height: 96
-      method: crop
-    - width: 320
-      height: 240
-      method: scale
-    - width: 640
-      height: 480
-      method: scale
-    - width: 800
-      height: 600
-      method: scale
-
-    url_preview_enabled: false
-    max_spider_size: "10M"
     {{- if .Values.config.recaptcha }}
 
     ## Captcha ##
 
     recaptcha_public_key: {{ .Values.config.recaptcha.publicKey | quote }}
     enable_registration_captcha: true
-    recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
     {{- end }}
     {{- if .Values.config.turnUris }}
 
@@ -132,55 +91,41 @@ data:
 
     turn_uris:
       {{ toYaml .Values.config.turnUris | nindent 6 }}
-    turn_user_lifetime: "1h"
-    turn_allow_guests: true
     {{- end }}
 
     ## Registration ##
 
     enable_registration: {{ .Values.config.enableRegistration | default false }}
-    bcrypt_rounds: 12
-    allow_guest_access: {{ .Values.config.allowGuests | default false }}
-    enable_group_creation: true
 
     ## Metrics ###
 
     enable_metrics: true
-    report_stats: {{ .Values.config.reportStats | default false }}
-
-    ## API Configuration ##
-
-    room_invite_state_types:
-      - "m.room.join_rules"
-      - "m.room.canonical_alias"
-      - "m.room.avatar"
-      - "m.room.name"
-
-    expire_access_token: False
 
     ## Signing Keys ##
 
     signing_key_path: "/synapse/keys/signing.key"
-    old_signing_keys: {}
-    key_refresh_interval: "1d" # 1 Day.
 
     # The trusted servers to download signing keys from.
-    perspectives:
-      servers: {{- .Values.config.perspectiveServers | toYaml | nindent 8 }}
+    trusted_key_servers: {{- .Values.config.trustedKeyServers | toYaml | nindent 6 }}
 
     ## Workers ##
     {{- $default := .Values.workers.default }}
     {{- range $worker, $config := .Values.workers }}
       {{- if $config.enabled }}
-        {{- if eq $worker "pusher" }}
+        {{ if eq $worker "pusher" }}
+    # For pusher worker
     start_pushers: false
-        {{- else if eq $worker "appservice" }}
+        {{ else if eq $worker "appservice" }}
+    # For appservice worker
     notify_appservices: false
-        {{- else if eq $worker "federation_sender" }}
+        {{ else if eq $worker "federation_sender" }}
+    # For federation_sender worker
     send_federation: false
-        {{- else if eq $worker "media_repository" }}
+        {{ else if eq $worker "media_repository" }}
+    # For media_repository worker
     enable_media_repo: false
-        {{- else if eq $worker "user_dir" }}
+        {{ else if eq $worker "user_dir" }}
+    # For user_dir worker
     update_user_directory: false
         {{- end }}
       {{- end }}
@@ -188,6 +133,5 @@ data:
     {{- with .Values.extraConfig }}
 
     ## Extra config ##
-
     {{ . | toYaml | nindent 4 }}
     {{- end }}

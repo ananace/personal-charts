@@ -45,8 +45,10 @@ signingkey:
 ## in config as well as for client API links in the ingress.
 # publicServerName: 'matrix.example.com'
 
-## Common Matrix configuration values, for any value not handled by this block,
-## you will want to instead set it in extraConfig.
+## Matrix configuration values that affect other parts of the chart, for any
+## value not handled by this block, you will want to instead set it in
+## extraConfig below.
+## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 config:
   ## The publicly accessible URL for the Synapse instance, will default to
@@ -54,23 +56,15 @@ config:
   ##
   # publicBaseurl: 'https://matrix.example.com'
 
-  ## The size of the event cache.
-  ##
-  # eventCacheSize: 10K
-
-  ## The maximum allowed size of uploaded media.
-  ##
-  # maxUploadSize: 10M
-
   ## The log level for Synapse and all modules.
   ##
   # logLevel: INFO
 
-  ## The recaptcha configuration for registering. (optional)
+  ## Protect registration with recaptcha. (optional)
   ##
   # recaptcha:
-  #   publicKey:
-  #   privateKey:
+  #   publicKey: ''
+  #   privateKey: ''
 
   ## URIs and secret key for TURN servers to use to help establish 1:1 WebRTC
   ## calls.
@@ -82,31 +76,20 @@ config:
   ## container-internal register_new_matrix_user tool is always possible.
   ##
   # enableRegistration: false
-  ## Note; this value will default to a random string if not specified.
+
+  ## NB; this value will default to a random string if not specified.
   # registrationSharedSecret: ''
-  ## Note; Strongly recommended to set this to a secure value.
+
+  ## NB; Strongly recommended to set this to a secure value.
   # macaroonSecretKey: ''
-  # allowGuests: false
 
-  ## Should the Synapse instance report stats.
+  ## A set of trusted servers to contact if another server doesn't respond to a
+  ## signing key request.
   ##
-  # reportStats: false
-
-  ## Servers to contact when doing 3PID lookups - for example when searching for
-  ## Matrix users by email/phone number.
-  ##
-  thirdPartyIDServers:
-    - matrix.org
-    - vector.im
-
-  ## A set of fallback servers - and their key fingerprint - to contact if a
-  ## server doesn't respond to a signing key request.
-  ##
-  perspectiveServers:
-    matrix.org:
-      verify_keys:
-        ed25519:auto:
-          key: "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
+  trustedKeyServers:
+    - server_name: matrix.org
+  #   verify_keys:
+  #     "ed25519:auto": "Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw"
 
   ## Extra listeners to configure.
   ##
@@ -116,6 +99,7 @@ config:
   #    type: manhole
 
 ## Specify arbitrary Synapse configuration here;
+## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 extraConfig: {}
 #  use_presence: false
@@ -124,6 +108,15 @@ extraConfig: {}
 #    - lon.example.com
 #    - nyc.example.com
 #    - syd.example.com
+#  dynamic_thumbnails: true
+
+## Specify arbitrary - secret - Synapse configuration here;
+## These values will be stored in secrets instead of configmaps
+## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
+##
+extraSecrets: {}
+#  password_config:
+#    pepper: ''
 
 ## Configuration to apply to the main Synapse pod.
 ##
