@@ -6,14 +6,12 @@ Kubernetes applications packaged into helm charts
 Current applications
 --------------------
 
+- [Element Web](charts/element-web)
 - [Funkwhale](charts/funkwhale)
+- [Matrix Media Repo](charts/matrix-media-repo)
+- [Matrix Synapse](charts/matrix-synapse)
 - [Netbox](charts/netbox)
 - [CEPH RadosGW](charts/radosgw)
-
-WIP;
-- [Matrix Synapse](charts/matrix-synapse)
-- [Matrix Media Repo](charts/matrix-media-repo)
-- [Element Web](charts/element-web)
 
 Using
 -----
