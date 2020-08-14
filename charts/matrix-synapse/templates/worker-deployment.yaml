@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") $ | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/worker-configuration.yaml") $ | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") $ | sha256sum }}
       {{- with ($config.annotations | default $default.annotations) }}
         {{ . | toYaml | nindent 8 }}

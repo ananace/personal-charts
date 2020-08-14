@@ -7,7 +7,7 @@ metadata:
   name: {{ $wkName }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
-    component: well-known
+    app.kubernetes.io/component: well-known
 spec:
   type: ClusterIP
   ports:
@@ -17,7 +17,7 @@ spec:
       name: http
   selector:
     {{- include "matrix-synapse.selectorLabels" . | nindent 4 }}
-    component: well-known
+    app.kubernetes.io/component: well-known
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,20 +25,20 @@ metadata:
   name: {{ $wkName }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
-    component: well-known
+    app.kubernetes.io/component: well-known
 spec:
   replicas: {{ .Values.wellknown.replicaCount | default 1 }}
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" . | nindent 6 }}
-      component: well-known
+      app.kubernetes.io/component: well-known
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print .Template.BasePath "/well-known-config.yaml") . | sha256sum }}
       labels:
         {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
-        component: well-known
+        app.kubernetes.io/component: well-known
     spec:
       {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
       securityContext:
