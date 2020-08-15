@@ -53,10 +53,16 @@ spec:
             - mountPath: /app/config.json
               name: config
               subPath: config.json
+          {{- with .Values.extraVolumeMounts }}
+          {{- . | toYaml | nindent 12 }}
+          {{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ include "element-web.fullname" . }}
+      {{- with .Values.extraVolumes }}
+      {{- . | toYaml | nindent 8 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

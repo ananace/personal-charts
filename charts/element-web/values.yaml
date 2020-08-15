@@ -28,6 +28,16 @@ defaultServer:
 ##
 config: {}
 
+## Configuration for mounting additional volumes into the application container.
+##
+extraVolumes: {}
+# - name: backgrounds
+#   persistentVolumeClaim:
+#     claimName: element-backgrounds
+extraVolumeMounts: {}
+# - name: backgrounds
+#   mountPath: /app/themes/element/img/backgrounds/
+
 ## Configures an application-specific service account.
 ##
 serviceAccount:
