@@ -82,11 +82,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /_matrix/client/versions
+              path: /health
               port: http
           readinessProbe:
             httpGet:
-              path: /_matrix/client/versions
+              path: /health
               port: http
           volumeMounts:
             - name: config

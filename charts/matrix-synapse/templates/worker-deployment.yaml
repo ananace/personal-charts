@@ -94,10 +94,12 @@ spec:
               containerPort: 8083
               protocol: TCP
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: listener
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: listener
           {{- end }}
           resources:
