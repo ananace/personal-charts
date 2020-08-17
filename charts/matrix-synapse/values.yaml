@@ -144,6 +144,20 @@ synapse:
   #  - name: SYNAPSE_CACHE_FACTOR
   #    value: "2"
 
+  ## Additional volumes to mount into Synapse
+  ##
+  extraVolumes: {}
+  #  - name: spamcheck
+  #    flexVolume:
+  #      driver: ananace/git-live
+  #      options:
+  #        repo: https://github.com/company/synapse-module
+  #        interval: 1d
+  #      readOnly: true
+  extraVolumeMounts: {}
+  #  - name: spamcheck
+  #    mountPath: /usr/local/lib/python3.7/site-packages/company
+
   ## Configuration for the pod security policy, Synapse will by always run as
   ## its own user, even if not set.
   ## Note that changing this may also require you to use the volumePermission
@@ -221,15 +235,11 @@ workers:
     #  - name: SYNAPSE_CACHE_FACTOR
     #    value: "1.0"
 
-    ## Additional volume mounts to add to the worker.
-    ## Useful for the media repo.
-    ##
-    volumeMounts: {}
-
     ## Additional volumes to add to the worker.
-    ## Useful for the media repo.
+    ## Useful for the media repo, or for adding Python modules.
     ##
     volumes: {}
+    volumeMounts: {}
 
     ## Security context information to set to the worker.
     ##

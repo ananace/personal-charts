@@ -99,6 +99,9 @@ spec:
               mountPath: /synapse/keys
             - name: media
               mountPath: /synapse/data
+          {{- with .Values.synapse.extraVolumeMounts }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.synapse.resources | nindent 12 }}
       volumes:
@@ -128,6 +131,9 @@ spec:
             claimName: {{ .Values.persistence.existingClaim | default (include "matrix-synapse.fullname" .) }}
         {{- else }}
           emptyDir: {}
+        {{- end }}
+        {{- with .Values.synapse.extraVolumes }}
+          {{- . | toYaml | nindent 8 }}
         {{- end }}
       {{- with .Values.synapse.nodeSelector }}
       nodeSelector:
