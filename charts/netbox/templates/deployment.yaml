@@ -75,11 +75,11 @@ spec:
           volumeMounts:
             - name: netbox-static-files
               mountPath: /opt/netbox/netbox/static
+            {{- if .Values.useUnixSocket }}
             - name: netbox-config-files
               mountPath: /etc/netbox/config/gunicorn_config.py
               subPath: gunicorn_config.py
               readOnly: true
-            {{- if .Values.useUnixSocket }}
             - name: netbox-socket
               mountPath: /tmp/netbox
             {{- end }}
