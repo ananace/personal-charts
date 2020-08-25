@@ -534,6 +534,9 @@ persistence:
 volumePermissions:
   enabled: false
 
+  uid: 666
+  gid: 666
+
   image:
     repository: alpine
     tag: latest

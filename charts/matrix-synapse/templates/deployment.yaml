@@ -32,6 +32,24 @@ spec:
       {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
       securityContext:
         {{- toYaml .Values.synapse.podSecurityContext | nindent 8 }}
+    {{- if $needsVolumePermissions }}
+      initContainers:
+        - name: volume-permissions
+          command:
+            - sh
+            - -c
+            - |
+              chown {{ .Values.volumePermissions.uid }}:{{ .Values.volumePermissions.gid }} -R /synapse/data
+          image: "{{ .Values.volumePermissions.image.repository }}:{{ .Values.volumePermissions.image.tag }}"
+          resources:
+            {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          volumeMounts:
+            - name: media
+              mountPath: /synapse/data
+    {{- end }}
       containers:
         - name: synapse
           command:
