@@ -161,7 +161,7 @@ spec:
         - name: media
         {{- if $.Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ $.Values.persistence.existingClaim | (include "matrix-synapse.fullname" $) }}
+            claimName: {{ $.Values.persistence.existingClaim | default (include "matrix-synapse.fullname" $) }}
         {{- else }}
           emptyDir: {}
         {{- end }}
