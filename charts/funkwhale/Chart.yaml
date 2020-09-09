@@ -1,7 +1,7 @@
 ---
 apiVersion: v1
-appVersion: "0.21.2"
+appVersion: "1.0"
 description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
 name: funkwhale
-version: 0.3.4
+version: 0.3.5
