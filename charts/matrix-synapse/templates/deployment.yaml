@@ -61,6 +61,13 @@ spec:
                     -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
                        > /synapse/config/conf.d/secrets.yaml
 
+              {{- if .Values.synapse.extraCommands }}
+
+              {{ range .Values.synapse.extraCommands }}
+              {{ . }}
+              {{- end }}
+              {{- end }}
+
               /matrix-synapse $@
           args:
             - synapse.app.homeserver

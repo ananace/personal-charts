@@ -158,6 +158,12 @@ synapse:
   #  - name: spamcheck
   #    mountPath: /usr/local/lib/python3.7/site-packages/company
 
+  ## Extra commands to run when starting Synapse
+  ##
+  extraCommands: []
+  # - 'apt-get update -yqq && apt-get install patch -yqq'
+  # - 'patch -d/usr/local/lib/python3.7/site-packages/synapse -p2 < /synapse/patches/something.patch'
+
   ## Configuration for the pod security policy, Synapse will by always run as
   ## its own user, even if not set.
   ## Note that changing this may also require you to use the volumePermission
