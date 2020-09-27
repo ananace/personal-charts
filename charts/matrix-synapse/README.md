@@ -3,6 +3,8 @@ Matrix Synapse
 
 [Synapse](https://github.com/matrix-org/synapse) is the current reference implementation of the [Matrix protocol](https://matrix.org).
 
+For questions/help on the chart, feel free to drop in at [#matrix-on-kubernetes:fiksel.info](https://matrix.to/#/#matrix-on-kubernetes:fiksel.info).
+
 ## Prerequisites
 
 - Kubernetes 1.15+
