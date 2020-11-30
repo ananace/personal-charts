@@ -9,17 +9,10 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "netbox.chart" . }}
 data:
-{{- if .Values.database }}
-  DB_NAME: {{ .Values.database.database | default "netbox" | quote }}
-  DB_USER: {{ .Values.database.user | default "netbox" | quote }}
-  DB_HOST: {{ .Values.database.host | quote }}
-  DB_PORT: {{ .Values.database.port | default 5432 | quote }}
-{{- else }}
   DB_NAME: {{ .Values.postgresql.postgresqlDatabase | quote }}
   DB_USER: {{ .Values.postgresql.postgresqlUsername | quote }}
   DB_HOST: {{ .Values.postgresql.postgresqlHost | default (include "netbox.postgresql.fullname" .) }}
   DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
-{{- end }}
 
   REDIS_HOST: {{ include "netbox.redisHost" . }}
   REDIS_PORT: {{ .Values.redis.redisPort | quote }}

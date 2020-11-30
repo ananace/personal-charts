@@ -36,7 +36,7 @@ data:
         sendfile             on;
         tcp_nopush           on;
         keepalive_timeout    65;
-        gzip                 off;
+        gzip                 on;
         server_tokens        off;
         client_max_body_size 10M;
 
@@ -44,7 +44,7 @@ data:
           {{- if .Values.useUnixSocket }}
           server unix:/tmp/netbox/gunicorn.sock fail_timeout=0;
           {{- else }}
-          server http://localhost:8001 fail_timeout=0;
+          server localhost:8001 fail_timeout=0;
           {{- end }}
         }
 
@@ -57,11 +57,20 @@ data:
             }
 
             location / {
-              proxy_pass http://netbox;
+                proxy_pass http://netbox;
                 proxy_set_header X-Forwarded-Host $http_host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-Proto $scheme;
                 add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+            }
+        }
+
+        server {
+            listen      8081;
+            access_log  off;
+
+            location = /stub_status {
+                stub_status;
             }
         }
     }

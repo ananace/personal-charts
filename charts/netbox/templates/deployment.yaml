@@ -77,7 +77,7 @@ spec:
               mountPath: /opt/netbox/netbox/static
             {{- if .Values.useUnixSocket }}
             - name: netbox-config-files
-              mountPath: /etc/netbox/config/gunicorn_config.py
+              mountPath: /etc/netbox/gunicorn_config.py
               subPath: gunicorn_config.py
               readOnly: true
             - name: netbox-socket
@@ -99,11 +99,13 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+            - name: status
+              containerPort: 8081
+              protocol: TCP
           livenessProbe:
             httpGet:
-              port: http
-              path: /
-            initialDelaySeconds: 30
+              port: status
+              path: /stub_status
           readinessProbe:
             httpGet:
               port: http

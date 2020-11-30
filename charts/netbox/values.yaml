@@ -7,7 +7,7 @@ replicaCount: 1
 
 image:
   repository: netboxcommunity/netbox
-  # tag: v2.7.12-ldap
+  # tag:
   pullPolicy: Always
 
 nameOverride: ""
@@ -36,9 +36,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-# Deprecated database keys
-# database:
 
 postgresql:
   enabled: true
@@ -72,7 +69,7 @@ redis:
 # existingDjangoSecret: netbox-django-secret
 # existingDjangoSecretKey: secret_key
 
-useUnixSocket: true
+useUnixSocket: false
 
 extraEnv: {}
   # EMAIL_SERVER: localhost

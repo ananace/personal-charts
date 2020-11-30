@@ -39,7 +39,7 @@ Create chart name and version as used by the chart label.
 Get the correct image tag name
 */}}
 {{- define "netbox.imageTag" -}}
-{{- .Values.image.tag | default (printf "v%s-ldap" .Chart.AppVersion) -}}
+{{- .Values.image.tag | default (printf "v%s" .Chart.AppVersion) -}}
 {{- end -}}
 
 {{/*
