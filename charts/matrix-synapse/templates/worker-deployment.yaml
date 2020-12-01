@@ -83,7 +83,7 @@ spec:
                   key: redis-password
           {{- end }}
           {{- with $config.extraEnv | default $default.extraEnv }}
-            {{ . | toYaml }}
+            {{- . | toYaml | nindent 12 }}
           {{- end }}
           securityContext:
             {{- $config.securityContext | default $default.securityContext | toYaml | nindent 12 }}

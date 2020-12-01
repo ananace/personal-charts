@@ -95,7 +95,7 @@ spec:
                   key: redis-password
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
-            {{ . | toYaml }}
+            {{- . | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
