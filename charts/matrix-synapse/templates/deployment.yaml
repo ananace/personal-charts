@@ -159,7 +159,7 @@ spec:
         - name: media
         {{- $mediaworker := false }}
         {{- range $worker, $config := .Values.workers }}
-          {{- if eq $worker "media-repository" }}
+          {{- if eq $worker "media_repository" }}
             {{- $mediaworker = true }}
           {{- end }}
         {{- end }}
