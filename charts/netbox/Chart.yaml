@@ -1,10 +1,10 @@
 ---
 apiVersion: v1
-appVersion: "2.9.10"
+appVersion: "2.9.11"
 description: |
   An IP address management (IPAM) and data center infrastructure management (DCIM) tool.
 
   Important; LDAP will require reconfiguring when upgrading to chart version 2.0.0
 icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/project-static/img/netbox.ico
 name: netbox
-version: 2.0.0
+version: 2.0.1
