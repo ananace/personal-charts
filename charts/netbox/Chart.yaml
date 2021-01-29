@@ -8,4 +8,4 @@ description: |
   https://github.com/netbox-community/netbox-docker/releases/tag/1.0.0 for more info.
 icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/project-static/img/netbox.ico
 name: netbox
-version: 3.0.0
+version: 3.0.1

@@ -29,7 +29,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-worker
           command:
-            - python3
+            - /opt/netbox/venv/bin/python3
             - /opt/netbox/netbox/manage.py
             - rqworker
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
