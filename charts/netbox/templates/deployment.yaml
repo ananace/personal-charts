@@ -70,57 +70,25 @@ spec:
                 name: {{ include "netbox.fullname" . }}
             - secretRef:
                 name: {{ include "netbox.fullname" . }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: netbox-static-files
-              mountPath: /opt/netbox/netbox/static
-            {{- if .Values.useUnixSocket }}
-            - name: netbox-config-files
-              mountPath: /etc/netbox/gunicorn_config.py
-              subPath: gunicorn_config.py
-              readOnly: true
-            - name: netbox-socket
-              mountPath: /tmp/netbox
-            {{- end }}
-            - name: data
-              mountPath: /etc/netbox/media
-            {{- with .Values.extraVolumeMounts }}
-            {{ toYaml . | nindent 12 }}
-            {{- end }}
-        - name: nginx
-          image: "nginx:alpine"
-          imagePullPolicy: Always
-          command:
-            - nginx
-            - -c
-            - /etc/netbox-nginx/nginx.conf
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
-            - name: status
-              containerPort: 8081
-              protocol: TCP
           livenessProbe:
             httpGet:
-              port: status
-              path: /stub_status
+              port: http
+              path: /
           readinessProbe:
             httpGet:
               port: http
               path: /
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
-            - name: netbox-config-files
-              mountPath: /etc/netbox-nginx/nginx.conf
-              subPath: nginx.conf
-              readOnly: true
-            - name: netbox-static-files
-              mountPath: /opt/netbox/netbox/static
-              readOnly: true
-            {{- if .Values.useUnixSocket }}
-            - name: netbox-socket
-              mountPath: /tmp/netbox
+            - name: data
+              mountPath: /etc/netbox/media
+            {{- with .Values.extraVolumeMounts }}
+            {{ toYaml . | nindent 12 }}
             {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -130,12 +98,6 @@ spec:
         - name: netbox-config-files
           configMap:
             name: {{ .Chart.Name }}-config-files
-        - name: netbox-static-files
-          emptyDir: {}
-        {{- if .Values.useUnixSocket }}
-        - name: netbox-socket
-          emptyDir: {}
-        {{- end }}
         - name: data
       {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:

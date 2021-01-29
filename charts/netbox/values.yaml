@@ -69,8 +69,6 @@ redis:
 # existingDjangoSecret: netbox-django-secret
 # existingDjangoSecretKey: secret_key
 
-useUnixSocket: false
-
 extraEnv: {}
   # EMAIL_SERVER: localhost
   # EMAIL_PORT: 25
