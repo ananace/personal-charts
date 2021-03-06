@@ -76,12 +76,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           name: signing-key-generate
           resources:
-            requests:
-              memory: 25Mi
-              cpu: 100m
-            limits:
-              memory: 25Mi
-              cpu: 100m
+            {{- toYaml .Values.signingkey.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /scripts
               name: scripts
@@ -102,12 +97,7 @@ spec:
           image: bitnami/kubectl
           name: signing-key-upload
           resources:
-            requests:
-              memory: 100Mi
-              cpu: 100m
-            limits:
-              memory: 100Mi
-              cpu: 100m
+            {{- toYaml .Values.signingkey.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /scripts
               name: scripts

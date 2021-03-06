@@ -36,6 +36,16 @@ signingkey:
   # existingSecret:
   # existingSecretKey: signing.key
 
+  ## Resources to apply to the signing key generation job
+  ##
+  resources: {}
+  #  limits:
+  #    cpu: 100m
+  #    memory: 250Mi
+  #  requests:
+  #    cpu: 100m
+  #    memory: 250Mi
+
 ## The Matrix domain name, this is what will be used for the domain part in
 ## your MXIDs.
 ##
