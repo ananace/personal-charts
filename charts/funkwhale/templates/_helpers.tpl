@@ -11,7 +11,7 @@ postgres://{{ .Values.database.user}}:{{ .Values.database.password }}@{{ .Values
 {{- end -}}
 
 {{- define "funkwhale.redisUrl" -}}
-redis://:{{ .Values.redis.password }}@{{ template "funkwhale.fullname" . }}-redis-master:{{ .Values.redis.redisPort }}/0
+redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:{{ .Values.redis.port }}/0
 {{- end -}}
 
 {{/*
