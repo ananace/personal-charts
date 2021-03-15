@@ -66,7 +66,7 @@ spec:
               name: frontend
             - name: data
               mountPath: /srv/funkwhale/data
-{{- with .Values.extraVolumeMounts }}
+{{- with .Values.api.extraVolumeMounts }}
             {{ toYaml . | nindent 12 }}
 {{- end }}
           resources:
