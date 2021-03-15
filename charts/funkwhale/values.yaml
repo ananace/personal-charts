@@ -57,7 +57,7 @@ redis:
       enabled: false
   password: funkwhale
   redisPort: 6379
-  host: {{ template "funkwhale.fullname" . }}-redis-master
+  # host: {{ template "funkwhale.fullname" . }}-redis-master
 
 djangoSecret: ''
 
