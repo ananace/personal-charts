@@ -47,6 +47,13 @@ database:
   database: funkwhale
 
 redis:
+  password: funkwhale
+  redisPort: 6379
+  host: {{ template "funkwhale.fullname" . }}-redis-master
+  # If you already have a Redis service you'd like to use, set
+  # this to false and adjust the host to use your existing service.
+  internal:
+    enabled: true
   cluster:
     enabled: false
   master:
@@ -55,9 +62,6 @@ redis:
   slave:
     persistence:
       enabled: false
-  password: funkwhale
-  redisPort: 6379
-  host: {{ template "funkwhale.fullname" . }}-redis-master
 
 djangoSecret: ''
 
