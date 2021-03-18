@@ -2,10 +2,10 @@
 apiVersion: v2
 name: matrix-media-repo
 description: Matrix media repository with multi-domain in mind.
-appVersion: 1.2.4
+appVersion: 1.2.5
 
 type: application
-version: 1.0.2
+version: 1.0.3
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
