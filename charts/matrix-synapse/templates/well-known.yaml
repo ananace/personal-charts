@@ -64,6 +64,9 @@ spec:
             - mountPath: /etc/lighttpd/lighttpd.conf
               name: files
               subPath: lighttpd.conf
+            - mountPath: {{ .Values.wellknown.htdocsPath }}/client.json
+              name: files
+              subPath: client.json
             - mountPath: {{ .Values.wellknown.htdocsPath }}/server.json
               name: files
               subPath: server.json

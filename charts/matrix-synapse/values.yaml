@@ -456,8 +456,14 @@ wellknown:
 
   ## The host and port combo to serve on .well-known/matrix/server.
   ##
-  # host: matrix.example.com
-  # port: 443
+  server: {}
+  #  m.server: matrix.example.com:443
+
+  ## Data to serve on .well-known/matrix/client.
+  ##
+  client: {}
+  #  m.homeserver:
+  #    base_url: https://matrix.example.com
 
   ## A custom htdocs path, useful when running another image.
   ##
