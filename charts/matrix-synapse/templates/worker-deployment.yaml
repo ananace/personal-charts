@@ -63,7 +63,7 @@ spec:
                     -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
                        > /synapse/config/conf.d/secrets.yaml
 
-              exec python -B -m synapse.app.{{ $config.generic | ternary "generic_worker" $worker }} \
+              exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $worker }} \
                           -c /synapse/config/homeserver.yaml \
                           -c /synapse/config/conf.d/ \
                           -c /synapse/config/{{ $name }}.worker

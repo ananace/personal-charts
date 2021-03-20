@@ -21,7 +21,7 @@ data:
     {{- $name := $worker | replace "_" "-" }}
 
   {{ $name }}.worker: |
-    worker_app: "synapse.app.{{ $config.generic | ternary "generic_worker" $worker }}"
+    worker_app: "synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $worker }}"
 {{- if $config.name -}}
 {{-   if (ne $config.replicaCount 1) -}}
 {{-     fail "Replica count must be 1 if a worker has a unique name." -}}
