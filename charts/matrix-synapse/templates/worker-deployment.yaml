@@ -87,7 +87,7 @@ spec:
           {{- end }}
           securityContext:
             {{- $config.securityContext | default $default.securityContext | toYaml | nindent 12 }}
-          image: "{{ $.Values.image.repository }}:{{ $.Chart.AppVersion }}"
+          image: "{{ $.Values.image.repository }}:{{ include "matrix-synapse.imageTag" $ }}"
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           ports:
             - name: metrics

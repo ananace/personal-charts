@@ -59,7 +59,7 @@ Create chart name and version as used by the chart label.
 Get the correct image tag name
 */}}
 {{- define "matrix-synapse.imageTag" -}}
-{{- .Values.image.tag | default (printf "%s" .Chart.AppVersion) -}}
+{{- .Values.image.tag | default (printf "v%s" .Chart.AppVersion) -}}
 {{- end -}}
 
 {{/*

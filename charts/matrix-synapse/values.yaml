@@ -2,7 +2,7 @@
 ## Docker image configuration, used for Synapse and workers.
 ##
 image:
-  repository: ananace/matrix-synapse
+  repository: matrixdotorg/synapse
   ## Tag to override with, will default to the application version.
   ##
   # tag: ''
