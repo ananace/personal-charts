@@ -31,9 +31,14 @@ signingkey:
   job:
     enabled: true
 
-    image:
+    generateImage:
+      repository: matrixdotorg/synapse
+      #tag: latest
+      pullPolicy: IfNotPresent
+
+    publishImage:
       repository: bitnami/kubectl
-      # tag: ''
+      # tag: latest
       pullPolicy: IfNotPresent
 
   ## Specify an existing signing key secret, will need to be created in advance.

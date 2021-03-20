@@ -69,9 +69,9 @@ spec:
             - -c
             - |
               echo "Generating signing key..."
-              /usr/local/bin/generate_signing_key.py -o /synapse/keys/signing.key
-          image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+              generate_signing_key.py -o /synapse/keys/signing.key
+          image: "{{ .Values.signingkey.job.generateImage.repository }}:{{ default .Values.signingkey.job.generateImage.tag "latest" }}"
+          imagePullPolicy: {{ .Values.signingkey.job.generateImage.pullPolicy }}
           name: signing-key-generate
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
@@ -88,8 +88,8 @@ spec:
           env:
             - name: SECRET_NAME
               value: {{ $secretName }}
-          image: "{{ .Values.signingkey.job.image.repository }}:{{ default .Values.signingkey.job.image.tag "latest" }}"
-          imagePullPolicy: {{ .Values.signingkey.job.image.pullPolicy }}
+          image: "{{ .Values.signingkey.job.publishImage.repository }}:{{ default .Values.signingkey.job.publishImage.tag "latest" }}"
+          imagePullPolicy: {{ .Values.signingkey.job.publishImage.pullPolicy }}
           name: signing-key-upload
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
