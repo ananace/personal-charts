@@ -166,7 +166,7 @@ synapse:
 
   ## Additional volumes to mount into Synapse
   ##
-  extraVolumes: {}
+  extraVolumes: []
   #  - name: spamcheck
   #    flexVolume:
   #      driver: ananace/git-live
@@ -174,7 +174,7 @@ synapse:
   #        repo: https://github.com/company/synapse-module
   #        interval: 1d
   #      readOnly: true
-  extraVolumeMounts: {}
+  extraVolumeMounts: []
   #  - name: spamcheck
   #    mountPath: /usr/local/lib/python3.7/site-packages/company
 
@@ -271,8 +271,8 @@ workers:
     ## Additional volumes to add to the worker.
     ## Useful for the media repo, or for adding Python modules.
     ##
-    volumes: {}
-    volumeMounts: {}
+    volumes: []
+    volumeMounts: []
 
     ## Security context information to set to the worker.
     ##
