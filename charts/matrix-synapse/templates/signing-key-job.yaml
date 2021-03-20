@@ -68,8 +68,6 @@ spec:
             - sh
             - -c
             - |
-              echo "Copying key upload script..."
-              cp /key-upload /scripts/
               echo "Generating signing key..."
               /usr/local/bin/generate_signing_key.py -o /synapse/keys/signing.key
           image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
@@ -78,8 +76,6 @@ spec:
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /scripts
-              name: scripts
             - mountPath: /synapse/keys
               name: matrix-synapse-keys
         - command:
@@ -88,13 +84,12 @@ spec:
             - |
               printf "Checking rights to update secret... "
               kubectl auth can-i update secret/${SECRET_NAME}
-              echo "Waiting for key upload script"
-              while ! [ -f /scripts/key-upload ]; do sleep 1; done
-              /scripts/key-upload
+              /scripts/signing-key.sh
           env:
             - name: SECRET_NAME
               value: {{ $secretName }}
-          image: bitnami/kubectl
+          image: "{{ .Values.signingkey.job.image.repository }}:{{ default .Values.signingkey.job.image.tag "latest" }}"
+          imagePullPolicy: {{ .Values.signingkey.job.image.pullPolicy }}
           name: signing-key-upload
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
@@ -109,7 +104,12 @@ spec:
       serviceAccount: {{ $name }}
       volumes:
         - name: scripts
-          emptyDir: {}
+          configMap:
+            name: {{ include "matrix-synapse.fullname" . }}-scripts
+            defaultMode: 0755
         - name: matrix-synapse-keys
           emptyDir: {}
+  parallelism: 1
+  completions: 1
+  backoffLimit: 1
 {{- end }}

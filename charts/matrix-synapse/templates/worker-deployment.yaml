@@ -20,7 +20,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/worker-configuration.yaml") $ | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") $ | sha256sum }}
+        checksum/worker-config: {{ include (print $.Template.BasePath "/worker-configuration.yaml") $ | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") $ | sha256sum }}
       {{- with ($config.annotations | default $default.annotations) }}
         {{ . | toYaml | nindent 8 }}
@@ -62,7 +63,10 @@ spec:
                     -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
                        > /synapse/config/conf.d/secrets.yaml
 
-              /matrix-synapse synapse.app.{{ $worker }} -c /synapse/config/{{ $name }}.worker
+              exec python -B -m synapse.app.{{ $config.generic | ternary "generic_worker" $worker }} \
+                          -c /synapse/config/homeserver.yaml \
+                          -c /synapse/config/conf.d/ \
+                          -c /synapse/config/{{ $name }}.worker
           env:
           {{- if $.Values.postgresql.enabled }}
             - name: POSTGRES_PASSWORD
