@@ -485,6 +485,9 @@ wellknown:
 postgresql:
   enabled: true
 
+  # XXX Change me!
+  postgresqlPassword: synapse
+
   postgresqlUsername: synapse
   postgresqlDatabase: synapse
 
@@ -511,8 +514,10 @@ externalPostgresql:
 redis:
   enabled: true
 
-  # usePassword: false
-  # password: synapse
+  # XXX Change me!
+  usePassword: true
+  password: synapse
+
   cluster:
     enabled: false
   master:
