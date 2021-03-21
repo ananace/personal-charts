@@ -47,13 +47,14 @@ database:
   database: funkwhale
 
 redis:
-  password: funkwhale
-  redisPort: 6379
-  host: {{ template "funkwhale.fullname" . }}-redis-master
   # If you already have a Redis service you'd like to use, set
   # this to false and adjust the host to use your existing service.
-  internal:
-    enabled: true
+  enabled: true
+
+  host: {{ template "funkwhale.fullname" . }}-redis-master
+  redisPort: 6379
+  password: funkwhale
+
   cluster:
     enabled: false
   master:
