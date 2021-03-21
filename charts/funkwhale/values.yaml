@@ -51,7 +51,7 @@ redis:
   # this to false and adjust the host to use your existing service.
   enabled: true
 
-  host: {{ template "funkwhale.fullname" . }}-redis-master
+  host: ''
   redisPort: 6379
   password: funkwhale
 
