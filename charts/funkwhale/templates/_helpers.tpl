@@ -10,6 +10,10 @@ Expand the name of the chart.
 postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.database }}
 {{- end -}}
 
+{{- define "funkwhale.redisUrl" -}}
+redis://:{{ .Values.redis.password }}@{{ .Values.redis.host | default (printf "%s-%s" (include "funkwhale.fullname" .) "redis-master") }}:{{ .Values.redis.redisPort }}/0
+{{- end -}}
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).

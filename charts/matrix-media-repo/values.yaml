@@ -43,6 +43,9 @@ config:
 # featureSupport:
 #   MSC2448:
 #     enabled: true
+# sentry:
+#   enabled: true
+#   dsn: "https://examplekey@ingest.sentry.io/0"
 
 ## For setting extra parameters on the repo block, separated to avoid breaking
 ## the defaults when merging multiple configurations.
