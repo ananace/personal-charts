@@ -51,13 +51,6 @@ redis:
   # this to false and adjust the host to use your existing service.
   enabled: true
 
-  # If you wan to run Redis on a Raspbery Pi or another ARM-based
-  # system, use the official Docker image instead of the Bitnami one
-  # as the Bitnami images are only available as amd64.
-  # image:
-  #   repository: redis
-  #   tag: 6.0.12
-
   host: ''
   redisPort: 6379
   password: funkwhale
