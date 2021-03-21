@@ -7,11 +7,11 @@ Expand the name of the chart.
 {{- end -}}
 
 {{- define "funkwhale.dbUrl" -}}
-postgres://{{ .Values.database.user}}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.database }}
+postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.database }}
 {{- end -}}
 
 {{- define "funkwhale.redisUrl" -}}
-redis://:{{ .Values.redis.password }}@{{ .Values.redis.host | default (printf "%s-%s" (include "funkwhale.fullname" .) "redis-master") }}:{{ .Values.redis.redisPort }}/0
+redis://:{{ default uuidv4 .Values.redis.password }}@{{ .Values.redis.host | default (printf "%s-%s" (include "funkwhale.fullname" .) "redis-master") }}:{{ .Values.redis.redisPort }}/0
 {{- end -}}
 
 {{/*
