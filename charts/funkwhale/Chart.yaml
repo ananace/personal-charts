@@ -5,3 +5,8 @@ description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
 name: funkwhale
 version: 0.3.7
+
+dependencies:
+- name: redis
+  version: ~10.6.10
+  repository: https://charts.bitnami.com/bitnami
