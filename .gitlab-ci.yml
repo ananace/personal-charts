@@ -19,7 +19,7 @@ pages:
   before_script:
     - grep 'repository:' charts/*/Chart.yaml charts/*/requirements.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
     - helm repo update
-    - ls charts/ -1 | xargs -rn1 helm dependency build --skip-refresh
+    - ls -d1 charts/* | xargs -rn1 helm dependency build --skip-refresh
   script:
     - mkdir -p public
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
