@@ -17,6 +17,7 @@ pages:
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   script:
+    - (cd charts; ls -0 | xargs -0rn1 helm dependency build)
     - mkdir -p public
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
     - (cd public; helm package ../charts/*)
