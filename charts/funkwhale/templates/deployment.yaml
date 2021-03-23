@@ -53,8 +53,16 @@ spec:
                 - stat
                 - /run/funkwhale/funkwhale.sock
             failureThreshold: {{ .Values.api.readinessProbe.failureThreshold | default 3 }}
-            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds | default 10 }}
+            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds | default 5 }}
             initialDelaySeconds:  {{ .Values.api.readinessProbe.initialDelaySeconds | default 5 }}
+          startupProbe:
+            exec:
+              command:
+                - stat
+                - /run/funkwhale/funkwhale.sock
+            failureThreshold: {{ .Values.api.startupProbe.failureThreshold | default 3 }}
+            periodSeconds: {{ .Values.api.startupProbe.periodSeconds | default 20 }}
+            initialDelaySeconds:  {{ .Values.api.startupProbe.initialDelaySeconds | default 5 }}
           envFrom:
           - configMapRef:
               name: {{ include "funkwhale.fullname" . }}
@@ -101,14 +109,20 @@ spec:
               path: /
               port: http
             failureThreshold: {{ .Values.front.livenessProbe.failureThreshold | default 3 }}
-            periodSeconds: {{ .Values.front.livenessProbe.periodSeconds | default 10 }}
-            initialDelaySeconds:  {{ .Values.front.livenessProbe.initialDelaySeconds | default 5 }}
+            periodSeconds: {{ .Values.front.livenessProbe.periodSeconds | default 20 }}
+            initialDelaySeconds:  {{ .Values.front.livenessProbe.initialDelaySeconds | default 15 }}
           readinessProbe:
             tcpSocket:
               port: http
             failureThreshold: {{ .Values.front.readinessProbe.failureThreshold | default 3 }}
-            periodSeconds: {{ .Values.front.readinessProbe.periodSeconds | default 10 }}
+            periodSeconds: {{ .Values.front.readinessProbe.periodSeconds | default 5 }}
             initialDelaySeconds:  {{ .Values.front.readinessProbe.initialDelaySeconds | default 5 }}
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: {{ .Values.front.startupProbe.failureThreshold | default 3 }}
+            periodSeconds: {{ .Values.front.startupProbe.periodSeconds | default 20 }}
+            initialDelaySeconds:  {{ .Values.front.startupProbe.initialDelaySeconds | default 5 }}
           volumeMounts:
             - mountPath: /run/funkwhale
               name: funkwhale-sock

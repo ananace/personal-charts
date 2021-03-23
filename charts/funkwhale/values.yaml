@@ -128,6 +128,7 @@ api:
 
   affinity: {}
   readinessProbe: {}
+  startupProbe: {}
 
 front:
   image:
@@ -161,6 +162,7 @@ front:
   affinity: {}
   readinessProbe: {}
   livenessProbe: {}
+  startupProbe: {}
 
 celery:
   beat:
