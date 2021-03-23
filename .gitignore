@@ -1,0 +1,3 @@
+# Helm resources
+charts/*/charts/*.tgz
+charts/*/Chart.lock
