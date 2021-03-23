@@ -2,7 +2,7 @@
 ## Docker image configuration, used for Synapse and workers.
 ##
 image:
-  repository: ananace/matrix-synapse
+  repository: matrixdotorg/synapse
   ## Tag to override with, will default to the application version.
   ##
   # tag: ''
@@ -30,6 +30,16 @@ signingkey:
   ##
   job:
     enabled: true
+
+    generateImage:
+      repository: matrixdotorg/synapse
+      #tag: latest
+      pullPolicy: IfNotPresent
+
+    publishImage:
+      repository: bitnami/kubectl
+      # tag: latest
+      pullPolicy: IfNotPresent
 
   ## Specify an existing signing key secret, will need to be created in advance.
   ##
@@ -149,14 +159,14 @@ synapse:
   ## Additional environment variables to apply to the main Synapse pod
   ##
   extraEnv: {}
-  #  - name: USE_JEMALLOC
-  #    value: "1"
+  #  - name: LD_PRELOAD
+  #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
   #  - name: SYNAPSE_CACHE_FACTOR
   #    value: "2"
 
   ## Additional volumes to mount into Synapse
   ##
-  extraVolumes: {}
+  extraVolumes: []
   #  - name: spamcheck
   #    flexVolume:
   #      driver: ananace/git-live
@@ -164,7 +174,7 @@ synapse:
   #        repo: https://github.com/company/synapse-module
   #        interval: 1d
   #      readOnly: true
-  extraVolumeMounts: {}
+  extraVolumeMounts: []
   #  - name: spamcheck
   #    mountPath: /usr/local/lib/python3.7/site-packages/company
 
@@ -236,6 +246,13 @@ workers:
     ##
     replicaCount: 1
 
+    ## A specific name for this worker, can't be set globally.
+    ## Note that this can only be set when replicaCount is 1
+    #name: 
+    
+    ## Additional configuration to set for the worker, can't be set globally.
+    #extraConfig: {}
+
     ## Annotations to apply to the worker.
     ##
     annotations: {}
@@ -246,16 +263,16 @@ workers:
     ## Additional environment variables to add to the worker.
     ##
     extraEnv: {}
-    #  - name: USE_JEMALLOC
-    #    value: "1"
+    #  - name: LD_PRELOAD
+    #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
     #  - name: SYNAPSE_CACHE_FACTOR
     #    value: "1.0"
 
     ## Additional volumes to add to the worker.
     ## Useful for the media repo, or for adding Python modules.
     ##
-    volumes: {}
-    volumeMounts: {}
+    volumes: []
+    volumeMounts: []
 
     ## Security context information to set to the worker.
     ##
@@ -303,6 +320,7 @@ workers:
   ##
   generic_worker:
     enabled: false
+    generic: true
     listeners: [client, federation]
     csPaths:
     # - "/_matrix/client/(v2_alpha|r0)/sync"
@@ -350,9 +368,34 @@ workers:
       - "/_matrix/federation/v1/event_auth/"
       - "/_matrix/federation/v1/exchange_third_party_invite/"
       - "/_matrix/federation/v1/user/devices/"
+      - "/_matrix/federation/v1/send/"
       - "/_matrix/federation/v1/get_groups_publicised"
       - "/_matrix/key/v2/query"
-      - "/_matrix/federation/v1/send/"
+
+  ## To separate the generic worker into specific concerns - for example federation transaction receiving;
+  ## NB; This worker should have incoming traffic routed based on source IP, which is
+  ##     left as an exercise to the reader.
+  ## https://github.com/matrix-org/synapse/blob/develop/docs/workers.md#load-balancing
+  #federation_reader:
+  #  enabled: true
+  #  generic: true
+  #  listeners: [federation]
+  #  paths:
+  #     - "/_matrix/federation/v1/send/"
+
+  ## Or /sync handling.
+  ## NB; Care should be taken to route users to the same instance when scaling this worker,
+  ##     this is left as an exercise to the reader.
+  ## https://github.com/matrix-org/synapse/blob/develop/docs/workers.md#load-balancing
+  #synchrotron:
+  #  enabled: true
+  #  generic: true
+  #  listeners: [client]
+  #  csPaths:
+  #    - "/_matrix/client/(v2_alpha|r0)/sync"
+  #    - "/_matrix/client/(api/v1|v2_alpha|r0)/events"
+  #    - "/_matrix/client/(api/v1|r0)/initialSync"
+  #    - "/_matrix/client/(api/v1|r0)/rooms/[^/]+/initialSync"
 
   ## This worker deals with pushing notifications.
   ## NB; Only one instance of this worker can be run at a time, refer to the
@@ -418,8 +461,14 @@ wellknown:
 
   ## The host and port combo to serve on .well-known/matrix/server.
   ##
-  # host: matrix.example.com
-  # port: 443
+  server: {}
+  #  m.server: matrix.example.com:443
+
+  ## Data to serve on .well-known/matrix/client.
+  ##
+  client: {}
+  #  m.homeserver:
+  #    base_url: https://matrix.example.com
 
   ## A custom htdocs path, useful when running another image.
   ##
@@ -485,13 +534,17 @@ wellknown:
 postgresql:
   enabled: true
 
+  # XXX Change me!
+  postgresqlPassword: synapse
+
   postgresqlUsername: synapse
   postgresqlDatabase: synapse
 
   postgresqlInitdbArgs: "--lc-collate=C --lc-ctype=C"
 
   persistence:
-    size: 16G
+    # storageClass: "-"
+    size: 16Gi
 
 ## An externally configured Postgres server to use for Synapse's database, note
 ## that the database needs to have both COLLATE and CTYPE set to "C".
@@ -511,8 +564,10 @@ externalPostgresql:
 redis:
   enabled: true
 
-  # usePassword: false
-  # password: synapse
+  # XXX Change me!
+  usePassword: true
+  password: synapse
+
   cluster:
     enabled: false
   master:
