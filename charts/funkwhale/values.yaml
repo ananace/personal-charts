@@ -127,6 +127,8 @@ api:
   tolerations: []
 
   affinity: {}
+  readinessProbe: {}
+  startupProbe: {}
 
 front:
   image:
@@ -158,6 +160,9 @@ front:
   tolerations: []
 
   affinity: {}
+  readinessProbe: {}
+  livenessProbe: {}
+  startupProbe: {}
 
 celery:
   beat:
