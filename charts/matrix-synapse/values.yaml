@@ -159,8 +159,8 @@ synapse:
   ## Additional environment variables to apply to the main Synapse pod
   ##
   extraEnv: {}
-  #  - name: USE_JEMALLOC
-  #    value: "1"
+  #  - name: LD_PRELOAD
+  #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
   #  - name: SYNAPSE_CACHE_FACTOR
   #    value: "2"
 
@@ -263,8 +263,8 @@ workers:
     ## Additional environment variables to add to the worker.
     ##
     extraEnv: {}
-    #  - name: USE_JEMALLOC
-    #    value: "1"
+    #  - name: LD_PRELOAD
+    #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
     #  - name: SYNAPSE_CACHE_FACTOR
     #    value: "1.0"
 

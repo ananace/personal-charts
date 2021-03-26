@@ -7,11 +7,7 @@ Expand the name of the chart.
 {{- end -}}
 
 {{- define "funkwhale.dbUrl" -}}
-postgres://{{ .Values.database.user}}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.database }}
-{{- end -}}
-
-{{- define "funkwhale.redisUrl" -}}
-redis://:{{ .Values.redis.password }}@{{ .Values.redis.host | default (printf "%s-%s" (include "funkwhale.fullname" .) "redis-master") }}:{{ .Values.redis.redisPort }}/0
+postgres://{{ .Values.database.user }}:{{ .Values.database.password }}@{{ .Values.database.host }}:{{ .Values.database.port }}/{{ .Values.database.database }}
 {{- end -}}
 
 {{/*
@@ -44,4 +40,16 @@ Create the correct image tag name
 */}}
 {{- define "funkwhale.imageTag" -}}
 {{- .Values.image.tag | default .Chart.AppVersion -}}
+{{- end -}}
+
+{{- define "funkwhale.redisUrl" -}}
+{{- if and .Values.redis.enabled .Values.redis.host -}}
+{{ fail "Setting both redis.enabled and redis.host will deploy an internal Redis service and attempt to use an external one - please set only one of the two!" }}
+{{- else if .Values.redis.enabled -}}
+redis://:{{ .Values.redis.password }}@{{ template "funkwhale.fullname" . }}-redis-master:{{ .Values.redis.redisPort }}/0
+{{- else if .Values.redis.host -}}
+redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:{{ .Values.redis.redisPort }}/0
+{{- else -}}
+{{ fail "Either redis.enabled or redis.host are required!" }}
+{{- end -}}
 {{- end -}}
