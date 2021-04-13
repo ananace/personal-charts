@@ -555,7 +555,7 @@ externalPostgresql:
   username: synapse
   # password: synapse
   database: synapse
-  # sslMode: require
+  # sslmode: prefer
 
 ## This configuration is for the internal Redis that's deployed for use with
 ## workers/sharding, for an external Redis server you want to set enabled to

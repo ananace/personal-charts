@@ -187,6 +187,17 @@ Set postgresql database
 {{- end -}}
 
 {{/*
+Set postgresql sslmode
+*/}}
+{{- define "matrix-synapse.postgresql.sslmode" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- default "prefer" .Values.postgresql.sslmode }}
+{{- else -}}
+{{- default "prefer" .Values.externalPostgresql.sslmode }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set redis host
 */}}
 {{- define "matrix-synapse.redis.host" -}}
