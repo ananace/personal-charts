@@ -127,8 +127,23 @@ api:
   tolerations: []
 
   affinity: {}
-  readinessProbe: {}
-  startupProbe: {}
+  readinessProbe:
+    exec:
+      command:
+        - stat
+        - /run/funkwhale/funkwhale.sock
+
+  livenessProbe:
+    exec:
+      command:
+        - stat
+        - /run/funkwhale/funkwhale.sock
+      
+  startupProbe:
+    exec:
+      command:
+        - stat
+        - /run/funkwhale/funkwhale.sock
 
 front:
   image:
@@ -156,13 +171,22 @@ front:
     #   memory: 128Mi
 
   nodeSelector: {}
-
   tolerations: []
-
   affinity: {}
-  readinessProbe: {}
-  livenessProbe: {}
-  startupProbe: {}
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  startupProbe:
+    tcpSocket:
+      port: http
 
 celery:
   beat:
