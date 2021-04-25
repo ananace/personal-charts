@@ -18,6 +18,9 @@ spec:
       audio.funkwhale/component: celery-beat
   template:
     metadata:
+      annotations:
+        checksum/configmap: {{ include (print .Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print .Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "funkwhale.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
