@@ -170,7 +170,7 @@ spec:
           emptyDir: {}
         {{- end }}
       {{- end }}
-      {{- with $config.volumes }}
+      {{- with $config.volumes | default $default.volumes }}
         {{ . | toYaml | nindent 8 }}
       {{- end }}
 {{- end }}
