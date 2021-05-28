@@ -17,7 +17,7 @@ pages:
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   before_script:
-    - grep 'repository:' charts/*/Chart.yaml charts/*/requirements.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
+    - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
     - helm repo update
     - ls -d1 charts/* | xargs -rn1 helm dependency build --skip-refresh
   script:
