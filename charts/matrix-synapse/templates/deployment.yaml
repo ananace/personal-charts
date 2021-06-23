@@ -95,7 +95,7 @@ spec:
                   key: redis-password
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
-            {{ . | toYaml }}
+            {{- . | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -159,7 +159,7 @@ spec:
         - name: media
         {{- $mediaworker := false }}
         {{- range $worker, $config := .Values.workers }}
-          {{- if eq $worker "media-repository" }}
+          {{- if eq $worker "media_repository" }}
             {{- $mediaworker = true }}
           {{- end }}
         {{- end }}

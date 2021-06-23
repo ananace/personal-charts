@@ -33,10 +33,7 @@ spec:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
     spec:
-    {{- with $.Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+      {{- include "matrix-synapse.imagePullSecrets" $ | nindent 6 }}
       securityContext:
         {{- $config.podSecurityContext | default $default.podSecurityContext | toYaml | nindent 8 }}
     {{- if and $needsVolumePermissions (eq $name "media-repository") }}
@@ -47,7 +44,7 @@ spec:
           imagePullPolicy: {{ $.Values.volumePermissions.pullPolicy }}
           securityContext:
             runAsUser: 0
-          resources: {{ $.Values.volumePermissions.resources | toYaml | nindent 10 }}
+          resources: {{ $.Values.volumePermissions.resources | toYaml | nindent 12 }}
           volumeMounts:
             - name: media
               mountPath: /synapse/data
@@ -83,7 +80,7 @@ spec:
                   key: redis-password
           {{- end }}
           {{- with $config.extraEnv | default $default.extraEnv }}
-            {{ . | toYaml }}
+            {{- . | toYaml | nindent 12 }}
           {{- end }}
           securityContext:
             {{- $config.securityContext | default $default.securityContext | toYaml | nindent 12 }}

@@ -158,7 +158,7 @@ synapse:
 
   ## Additional environment variables to apply to the main Synapse pod
   ##
-  extraEnv: {}
+  extraEnv: []
   #  - name: LD_PRELOAD
   #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
   #  - name: SYNAPSE_CACHE_FACTOR
@@ -262,7 +262,7 @@ workers:
 
     ## Additional environment variables to add to the worker.
     ##
-    extraEnv: {}
+    extraEnv: []
     #  - name: LD_PRELOAD
     #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
     #  - name: SYNAPSE_CACHE_FACTOR
@@ -713,3 +713,7 @@ ingress:
   #    hosts:
   #      - example.com
   #      - matrix.example.com
+
+  ## Set the name of the IngressClass cluster resource (optional)
+  ## https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec
+  #className: can-be-anything
