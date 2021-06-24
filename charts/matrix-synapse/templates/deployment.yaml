@@ -160,7 +160,7 @@ spec:
         {{- $mediaworker := false }}
         {{- range $worker, $config := .Values.workers }}
           {{- if eq $worker "media_repository" }}
-            {{- $mediaworker = true }}
+            {{- $mediaworker = ($config.enabled | default false) }}
           {{- end }}
         {{- end }}
         {{- if and .Values.persistence.enabled (not $mediaworker) }}
