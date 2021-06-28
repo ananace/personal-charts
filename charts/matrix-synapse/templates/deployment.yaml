@@ -111,14 +111,14 @@ spec:
             - name: metrics
               containerPort: 9090
               protocol: TCP
+          {{- with .Values.synapse.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /health
-              port: http
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.synapse.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /health
-              port: http
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: config
               mountPath: /synapse/config

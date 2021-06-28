@@ -218,6 +218,20 @@ synapse:
   #    cpu: 1000m
   #    memory: 2500Mi
 
+  ## Liveness probe configuration to use
+  ##
+  livenessProbe: 
+    httpGet:
+      path: /health
+      port: http
+
+  ## Readiness probe configuration to use
+  ##
+  readinessProbe: 
+    httpGet:
+      path: /health
+      port: http
+
   ## Node selectors to set for the main Synapse pod.
   ##
   nodeSelector: {}
@@ -300,6 +314,20 @@ workers:
     #   requests:
     #     cpu: 100m
     #     memory: 128Mi
+    
+    ## Liveness probe configuration to use
+    ##
+    livenessProbe: 
+      httpGet:
+        path: /health
+        port: listener
+
+    ## Readiness probe configuration to use
+    ##
+    readinessProbe: 
+      httpGet:
+        path: /health
+        port: listener
 
     ## Node selector configuration to set on the worker.
     ##

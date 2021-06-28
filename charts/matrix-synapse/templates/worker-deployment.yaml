@@ -94,14 +94,14 @@ spec:
             - name: listener
               containerPort: 8083
               protocol: TCP
+            {{- if (or $config.livenessProbe $default.livenessProbe) }}
           livenessProbe:
-            httpGet:
-              path: /health
-              port: listener
+              {{- $config.livenessProbe | default $default.livenessProbe | toYaml | nindent 12 }}
+            {{- end }}
+            {{- if (or $config.readinessProbe $default.readinessProbe) }}
           readinessProbe:
-            httpGet:
-              path: /health
-              port: listener
+              {{- $config.readinessProbe | default $default.readinessProbe | toYaml | nindent 12 }}
+            {{- end }}
           {{- end }}
           resources:
             {{- $config.resources | default $default.resources | toYaml | nindent 12 }}
