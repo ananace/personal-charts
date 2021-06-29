@@ -39,10 +39,15 @@ spec:
     {{- if and $needsVolumePermissions (eq $name "media-repository") }}
       initContainers:
         - name: volume-permissions
-          command: ["chown", "-R", "666:666", "/synapse/data"]
-          image: "{{ $.Values.volumePermissions.repository }}:{{ $.Values.volumePermissions.tag }}"
-          imagePullPolicy: {{ $.Values.volumePermissions.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              chown {{ $.Values.volumePermissions.uid }}:{{ $.Values.volumePermissions.gid }} -R /synapse/data
+          image: "{{ $.Values.volumePermissions.image.repository }}:{{ $.Values.volumePermissions.image.tag }}"
+          imagePullPolicy: {{ $.Values.volumePermissions.image.pullPolicy }}
           securityContext:
+            runAsNonRoot: false
             runAsUser: 0
           resources: {{ $.Values.volumePermissions.resources | toYaml | nindent 12 }}
           volumeMounts:
