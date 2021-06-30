@@ -220,14 +220,14 @@ synapse:
 
   ## Liveness probe configuration to use
   ##
-  livenessProbe: 
+  livenessProbe:
     httpGet:
       path: /health
       port: http
 
   ## Readiness probe configuration to use
   ##
-  readinessProbe: 
+  readinessProbe:
     httpGet:
       path: /health
       port: http
@@ -262,8 +262,8 @@ workers:
 
     ## A specific name for this worker, can't be set globally.
     ## Note that this can only be set when replicaCount is 1
-    #name: 
-    
+    #name:
+
     ## Additional configuration to set for the worker, can't be set globally.
     #extraConfig: {}
 
@@ -287,6 +287,12 @@ workers:
     ##
     volumes: []
     volumeMounts: []
+
+    ## Extra commands to run when starting Synapse
+    ##
+    extraCommands: []
+    # - 'apt-get update -yqq && apt-get install patch -yqq'
+    # - 'patch -d/usr/local/lib/python3.7/site-packages/synapse -p2 < /synapse/patches/something.patch'
 
     ## Security context information to set to the worker.
     ##
@@ -314,17 +320,17 @@ workers:
     #   requests:
     #     cpu: 100m
     #     memory: 128Mi
-    
+
     ## Liveness probe configuration to use
     ##
-    livenessProbe: 
+    livenessProbe:
       httpGet:
         path: /health
         port: listener
 
     ## Readiness probe configuration to use
     ##
-    readinessProbe: 
+    readinessProbe:
       httpGet:
         path: /health
         port: listener

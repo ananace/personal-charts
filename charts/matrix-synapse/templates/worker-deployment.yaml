@@ -39,10 +39,15 @@ spec:
     {{- if and $needsVolumePermissions (eq $name "media-repository") }}
       initContainers:
         - name: volume-permissions
-          command: ["chown", "-R", "666:666", "/synapse/data"]
-          image: "{{ $.Values.volumePermissions.repository }}:{{ $.Values.volumePermissions.tag }}"
-          imagePullPolicy: {{ $.Values.volumePermissions.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              chown {{ $.Values.volumePermissions.uid }}:{{ $.Values.volumePermissions.gid }} -R /synapse/data
+          image: "{{ $.Values.volumePermissions.image.repository }}:{{ $.Values.volumePermissions.image.tag }}"
+          imagePullPolicy: {{ $.Values.volumePermissions.image.pullPolicy }}
           securityContext:
+            runAsNonRoot: false
             runAsUser: 0
           resources: {{ $.Values.volumePermissions.resources | toYaml | nindent 12 }}
           volumeMounts:
@@ -59,6 +64,15 @@ spec:
                 sed -e "s/@@POSTGRES_PASSWORD@@/${POSTGRES_PASSWORD:-}/" \
                     -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
                        > /synapse/config/conf.d/secrets.yaml
+
+              {{- if (or $config.extraCommands $default.extraCommands) }}
+
+              {{- with $config.extraCommands | default $default.extraCommands }}
+              {{ range . }}
+              {{ . }}
+              {{- end }}
+              {{- end }}
+              {{- end }}
 
               exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $worker }} \
                           -c /synapse/config/homeserver.yaml \
