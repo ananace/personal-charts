@@ -7,10 +7,10 @@ description: |
   Important; With chart version 3.0.0 the old nginx+gunicorn setup is no more, refer to
   https://github.com/netbox-community/netbox-docker/releases/tag/1.0.0 for more info.
 icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/project-static/img/netbox.ico
-appVersion: 2.11.6
+appVersion: 2.11.7
 
 type: application
-version: 3.0.9
+version: 3.0.10
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
