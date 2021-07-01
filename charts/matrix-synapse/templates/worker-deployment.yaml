@@ -13,6 +13,10 @@ metadata:
     app.kubernetes.io/component: {{ $name }}
 spec:
   replicas: {{ $config.replicaCount | default $default.replicaCount }}
+  {{- with ($config.strategy | default $default.strategy) }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" $ | nindent 6 }}
