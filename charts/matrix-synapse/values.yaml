@@ -145,6 +145,15 @@ extraSecrets: {}
 ## Configuration to apply to the main Synapse pod.
 ##
 synapse:
+  ## Only really applicable when the deployment has an RWO PV attached (e.g. when media repository
+  ## is enabled for the main Synapse pod)
+  ## Since replicas = 1, an update can get "stuck", as the previous pod remains attached to the
+  ## PV, and the "incoming" pod can never start. Changing the strategy to "Recreate" will
+  ## terminate the single previous pod, so that the new, incoming pod can attach to the PV
+  ##
+  strategy:
+    type: RollingUpdate
+
   ## Annotations to apply to the main Synapse pod.
   ##
   annotations: {}
@@ -259,6 +268,14 @@ workers:
     ## handling. Refer to the information URL above.
     ##
     replicaCount: 1
+
+    ## Update strategy - only really applicable for deployments with RWO PVs attached (e.g. media repository)
+    ## If replicas = 1, an update can get "stuck", as the previous pod remains attached to the
+    ## PV, and the "incoming" pod can never start. Changing the strategy to "Recreate" will
+    ## terminate the single previous pod, so that the new, incoming pod can attach to the PV
+    ##
+    strategy:
+      type: RollingUpdate
 
     ## A specific name for this worker, can't be set globally.
     ## Note that this can only be set when replicaCount is 1
