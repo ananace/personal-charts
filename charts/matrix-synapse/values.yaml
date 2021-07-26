@@ -597,6 +597,21 @@ postgresql:
     # storageClass: "-"
     size: 16Gi
 
+  ## Extra arguments for the database connection
+  ## ref: https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md#synapse-config
+  ##
+  extraArgs: {}
+  #  # seconds of inactivity after which TCP should send a keepalive message to the server
+  #  keepalives_idle: 10
+  #
+  #  # the number of seconds after which a TCP keepalive message that is not
+  #  # acknowledged by the server should be retransmitted
+  #  keepalives_interval: 10
+  #
+  #  # the number of TCP keepalives that can be lost before the client's connection
+  #  # to the server is considered dead
+  #  keepalives_count: 3
+
 ## An externally configured Postgres server to use for Synapse's database, note
 ## that the database needs to have both COLLATE and CTYPE set to "C".
 ##
@@ -607,6 +622,21 @@ externalPostgresql:
   # password: synapse
   database: synapse
   # sslmode: prefer
+
+  ## Extra arguments for the database connection
+  ## ref: https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md#synapse-config
+  ##
+  extraArgs: {}
+  #  # seconds of inactivity after which TCP should send a keepalive message to the server
+  #  keepalives_idle: 10
+  #
+  #  # the number of seconds after which a TCP keepalive message that is not
+  #  # acknowledged by the server should be retransmitted
+  #  keepalives_interval: 10
+  #
+  #  # the number of TCP keepalives that can be lost before the client's connection
+  #  # to the server is considered dead
+  #  keepalives_count: 3
 
 ## This configuration is for the internal Redis that's deployed for use with
 ## workers/sharding, for an external Redis server you want to set enabled to
