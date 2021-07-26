@@ -197,6 +197,25 @@ Set postgresql sslmode
 {{- end -}}
 {{- end -}}
 
+
+{{/*
+Set postgresql extra args
+Refer to https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+for a list of options that can be passed.
+*/}}
+{{- define "matrix-synapse.postgresql.extraArgs" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- with .Values.postgresql.extraArgs }}
+  {{- . | toYaml }}
+{{- end }}
+{{- else -}}
+{{- with .Values.externalPostgresql.extraArgs }}
+  {{- . | toYaml }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+
 {{/*
 Set redis host
 */}}

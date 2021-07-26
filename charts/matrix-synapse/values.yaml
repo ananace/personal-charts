@@ -597,6 +597,11 @@ postgresql:
     # storageClass: "-"
     size: 16Gi
 
+  ## Extra arguments for the database connection
+  ## ref: https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md#synapse-config
+  ##
+  extraArgs: {}
+
 ## An externally configured Postgres server to use for Synapse's database, note
 ## that the database needs to have both COLLATE and CTYPE set to "C".
 ##
@@ -607,6 +612,11 @@ externalPostgresql:
   # password: synapse
   database: synapse
   # sslmode: prefer
+
+  ## Extra arguments for the database connection
+  ## ref: https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md#synapse-config
+  ##
+  extraArgs: {}
 
 ## This configuration is for the internal Redis that's deployed for use with
 ## workers/sharding, for an external Redis server you want to set enabled to
