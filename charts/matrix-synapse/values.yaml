@@ -510,6 +510,10 @@ wellknown:
   enabled: false
   replicaCount: 1
 
+  # Lighttpd does not bind on IPv6 by default, although this is required in
+  # Ipv6-only clusters.
+  useIpv6: false
+
   ## The host and port combo to serve on .well-known/matrix/server.
   ##
   server: {}
