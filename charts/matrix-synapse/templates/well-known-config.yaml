@@ -11,6 +11,9 @@ metadata:
 data:
   lighttpd.conf: |
     server.port = 8080
+    {{ if .Values.wellknown.useIpv6}}
+    server.use-ipv6 = "enable"
+    {{ end }}
     server.modules = (
       "mod_rewrite",
       "mod_status",
