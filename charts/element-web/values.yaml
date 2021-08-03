@@ -6,7 +6,7 @@ replicaCount: 1
 ## Image configuration
 ##
 image:
-  repository: vectorim/riot-web
+  repository: vectorim/element-web
   pullPolicy: IfNotPresent
   # tag: ""
 
