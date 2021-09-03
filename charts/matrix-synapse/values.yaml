@@ -747,6 +747,14 @@ ingress:
   ## inserted before the /_matrix catch-all path.
   ##
   paths: []
+  #  # K8s 1.19+
+  #  - path: /_matrix/media
+  #    pathType: Prefix
+  #    backend:
+  #      service:
+  #        name: matrix-media-repo
+  #        port: 8000
+  #  # K8s <1.19
   #  - path: /_matrix/media
   #    backend:
   #      serviceName: matrix-media-repo
@@ -756,6 +764,14 @@ ingress:
   ## inserted before the /_matrix and /_synapse catch-all paths.
   ##
   csPaths: []
+  #  # K8s 1.19+
+  #  - path: /_matrix/media
+  #    pathType: Prefix
+  #    backend:
+  #      service:
+  #        name: matrix-media-repo
+  #        port: 8000
+  #  # K8s <1.19
   #  - path: /_matrix/media
   #    backend:
   #      serviceName: matrix-media-repo
