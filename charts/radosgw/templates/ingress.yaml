@@ -30,16 +30,16 @@ spec:
       http:
         paths:
           - path: /
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix
-{{- end -}}
+{{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
                 port: http
-{{- else -}}
+{{- else }}
               serviceName: {{ $fullName }}
               servicePort: http
-{{- end -}}
+{{- end }}
 {{- end }}
