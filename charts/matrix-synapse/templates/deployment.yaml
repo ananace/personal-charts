@@ -86,7 +86,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix-synapse.postgresql.fullname" . }}
+                  name: {{ .Values.postgresql.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
                   key: postgresql-password
           {{- end }}
 {{- $redisPass := include "matrix-synapse.redis.password" . }}
@@ -94,7 +94,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix-synapse.redis.fullname" . }}
+                  name: {{ .Values.redis.existingSecret | default (include "matrix-synapse.redis.fullname" .) }}
                   key: redis-password
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
