@@ -59,6 +59,9 @@ spec:
               {{- range $config.csPaths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: ImplementationSpecific
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -70,6 +73,9 @@ spec:
 {{- end -}}
                 {{- else }}
           - path: {{ . | quote }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: ImplementationSpecific
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -86,6 +92,9 @@ spec:
               {{- range $config.paths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: ImplementationSpecific
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -97,6 +106,9 @@ spec:
 {{- end -}}
                 {{- else }}
           - path: {{ . | quote }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: ImplementationSpecific
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -125,6 +137,9 @@ spec:
 
         {{- if or (has . $csHosts) (has . $s2sHosts) }}
           - path: /_matrix
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: Prefix
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -138,6 +153,9 @@ spec:
 
         {{- if and (has . $csHosts) $.Values.ingress.includeUnderscoreSynapse }}
           - path: /_synapse
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: Prefix
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -152,6 +170,9 @@ spec:
         {{- if has . $wkHosts }}
         {{-   if $.Values.wellknown.enabled }}
           - path: /.well-known/matrix/client
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: Exact
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -162,6 +183,9 @@ spec:
               servicePort: 80
 {{- end -}}
           - path: /.well-known/matrix/server
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: Exact
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion -}}
               service:
@@ -173,6 +197,9 @@ spec:
 {{- end -}}
         {{-   else }}
           - path: /.well-known/matrix/client
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+            pathType: Exact
+{{- end -}}
             backend:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion -}}
               service:
