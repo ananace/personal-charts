@@ -183,7 +183,7 @@ spec:
               servicePort: 80
 {{- end }}
           - path: /.well-known/matrix/server
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Exact
 {{- end }}
             backend:
