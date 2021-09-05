@@ -66,7 +66,8 @@ spec:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -80,7 +81,8 @@ spec:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -99,7 +101,8 @@ spec:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -113,7 +116,8 @@ spec:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -144,7 +148,8 @@ spec:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
@@ -160,7 +165,8 @@ spec:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
@@ -177,7 +183,8 @@ spec:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $wkName }}
-                port: 80
+                port:
+                  number: 80
 {{- else -}}
               serviceName: {{ $wkName }}
               servicePort: 80
@@ -190,7 +197,8 @@ spec:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $wkName }}
-                port: 80
+                port:
+                  number: 80
 {{- else }}
               serviceName: {{ $wkName }}
               servicePort: 80
@@ -204,7 +212,8 @@ spec:
 {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
