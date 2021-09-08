@@ -59,11 +59,11 @@ spec:
               {{- range $config.csPaths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
                 port:
@@ -74,11 +74,11 @@ spec:
 {{- end }}
                 {{- else }}
           - path: {{ . | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
                 port:
@@ -94,11 +94,11 @@ spec:
               {{- range $config.paths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
                 port:
@@ -109,11 +109,11 @@ spec:
 {{- end }}
                 {{- else }}
           - path: {{ . | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
                 port:
