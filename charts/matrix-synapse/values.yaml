@@ -780,7 +780,8 @@ ingress:
   #    backend:
   #      service:
   #        name: matrix-media-repo
-  #        port: 8000
+  #        port:
+  #          number: 8000
   #  # K8s <1.19
   #  - path: /_matrix/media
   #    backend:

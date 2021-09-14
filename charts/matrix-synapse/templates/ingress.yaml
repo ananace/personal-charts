@@ -1,9 +1,9 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "matrix-synapse.fullname" . -}}
 {{- $wkName := include "matrix-synapse.externalname" (dict "global" . "external" "wellknown-lighttpd") -}}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
 apiVersion: networking.k8s.io/v1
-{{- else -}}
+{{- else }}
 apiVersion: networking.k8s.io/v1beta1
 {{- end }}
 kind: Ingress
@@ -59,28 +59,30 @@ spec:
               {{- range $config.csPaths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
 {{- end }}
                 {{- else }}
           - path: {{ . | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -92,28 +94,30 @@ spec:
               {{- range $config.paths }}
                 {{- if $.Values.ingress.traefikPaths }}
           - path: {{ printf "/{path:%s}" (trimPrefix "/" .) | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
 {{- end }}
                 {{- else }}
           - path: {{ . | quote }}
-{{ if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: ImplementationSpecific
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $service }}
-                port: 8083
+                port:
+                  number: 8083
 {{- else }}
               serviceName: {{ $service }}
               servicePort: 8083
@@ -137,14 +141,15 @@ spec:
 
         {{- if or (has . $csHosts) (has . $s2sHosts) }}
           - path: /_matrix
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
@@ -153,14 +158,15 @@ spec:
 
         {{- if and (has . $csHosts) $.Values.ingress.includeUnderscoreSynapse }}
           - path: /_synapse
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Prefix
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
@@ -170,41 +176,44 @@ spec:
         {{- if has . $wkHosts }}
         {{-   if $.Values.wellknown.enabled }}
           - path: /.well-known/matrix/client
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Exact
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $wkName }}
-                port: 80
-{{- else -}}
+                port:
+                  number: 80
+{{- else }}
               serviceName: {{ $wkName }}
               servicePort: 80
 {{- end }}
           - path: /.well-known/matrix/server
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Exact
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $wkName }}
-                port: 80
+                port:
+                  number: 80
 {{- else }}
               serviceName: {{ $wkName }}
               servicePort: 80
 {{- end }}
         {{-   else }}
           - path: /.well-known/matrix/client
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: Exact
 {{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
                 name: {{ $fullName }}
-                port: 8008
+                port:
+                  number: 8008
 {{- else }}
               serviceName: {{ $fullName }}
               servicePort: 8008
