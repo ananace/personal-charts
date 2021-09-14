@@ -592,6 +592,11 @@ postgresql:
   # XXX Change me!
   postgresqlPassword: synapse
 
+  ## Or use existing secret with "postgresql-password" key
+  ## instead of static password
+  ##
+  # existingSecret: postgresql-secret
+
   postgresqlUsername: synapse
   postgresqlDatabase: synapse
 
@@ -629,9 +634,14 @@ externalPostgresql:
 redis:
   enabled: true
 
-  # XXX Change me!
   usePassword: true
+  # XXX Change me!
   password: synapse
+
+  ## Or use existing secret with "redis-password" key
+  ## instead of static password
+  ##
+  # existingSecret: redis-secret
 
   cluster:
     enabled: false

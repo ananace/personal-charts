@@ -1,9 +1,9 @@
 {{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
-{{- if (and .Values.postgresql.enabled (not .Values.postgresql.postgresqlPassword)) -}}
-{{-  fail "You must specify a static postgres password if using the included postgres chart" -}}
+{{- if (and .Values.postgresql.enabled (and (not .Values.postgresql.postgresqlPassword) (not .Values.postgresql.existingSecret))) -}}
+{{-  fail "You must specify a static postgres password or existing secret if using the included postgres chart" -}}
 {{- end -}}
-{{- if (and .Values.redis.enabled (and .Values.redis.usePassword (not .Values.redis.password))) -}}
-{{-  fail "You must specify a static redis password if using the included redis chart" -}}
+{{- if (and .Values.redis.enabled (and .Values.redis.usePassword (and (not .Values.redis.password) (not .Values.redis.existingSecret)))) -}}
+{{-  fail "You must specify a static redis password or existing secret if using the included redis chart" -}}
 {{- end -}}
 ---
 # Server: {{ required "A valid serverName is required" .Values.serverName }}
@@ -86,7 +86,7 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix-synapse.postgresql.fullname" . }}
+                  name: {{ .Values.postgresql.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
                   key: postgresql-password
           {{- end }}
 {{- $redisPass := include "matrix-synapse.redis.password" . }}
@@ -94,7 +94,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "matrix-synapse.redis.fullname" . }}
+                  name: {{ .Values.redis.existingSecret | default (include "matrix-synapse.redis.fullname" .) }}
                   key: redis-password
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
