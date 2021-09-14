@@ -18,6 +18,10 @@ postgres://{{ .Values.postgresql.postgresqlUsername }}:{{ .Values.postgresql.pos
 {{- end -}}
 {{- end -}}
 
+{{- if .Values.database.user -}}
+{{ fail "You are using the old database config key - please migrate to the new postgresql config key" }}
+{{- end -}}
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
