@@ -1,7 +1,8 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "matrix-media-repo.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $v1Ingress := .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+{{- if $v1Ingress -}}
 apiVersion: networking.k8s.io/v1
 {{- else -}}
 apiVersion: networking.k8s.io/v1beta1
@@ -27,25 +28,23 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+  {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
           {{- range .paths }}
           - path: {{ . }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
-            pathType: ImplementationSpecific
-{{- end }}
             backend:
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+       {{- if $v1Ingress }}
               service:
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
-{{- else }}
+            pathType: ImplementationSpecific
+      {{- else }}
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
-{{- end }}
-          {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
+{{- end }}
