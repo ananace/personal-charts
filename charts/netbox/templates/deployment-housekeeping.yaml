@@ -1,0 +1,72 @@
+{{- if or .Values.housekeeping.enabled (semverCompare ">3.0.0" (include "netbox.imageTag" .)) -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "netbox.fullname" . }}-housekeeping
+  labels:
+    app.kubernetes.io/name: {{ include "netbox.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "netbox.chart" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "netbox.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      component: housekeeping
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      labels:
+        app.kubernetes.io/name: {{ include "netbox.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        component: housekeeping
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-housekeeping
+          command:
+            - /opt/netbox/housekeeping.sh
+          image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "netbox.redis.fullname" . }}
+                  key: redis-password
+          {{- if .Values.postgresql.enabled }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgresql.existingSecret }}
+                  name: {{ .Values.postgresql.existingSecret }}
+                  key: {{ .Values.postgresql.existingSecretKey }}
+                {{- else }}
+                  name: {{ include "netbox.postgresql.fullname" . }}
+                  key: postgresql-password
+                {{- end }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "netbox.fullname" . }}
+            - secretRef:
+                name: {{ include "netbox.fullname" . }}
+          resources:
+            {{- toYaml .Values.housekeeping.resources | nindent 12 }}
+      {{- with .Values.housekeeping.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.housekeeping.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.housekeeping.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end -}}

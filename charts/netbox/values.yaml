@@ -138,3 +138,22 @@ worker:
 
   affinity: {}
 
+housekeeping:
+  ## Netbox 3.0.0 and upwards need housekeeping to be ran, if you're not using
+  ## a versioned tag then you may need to set this parameter
+  # enabled: true
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
