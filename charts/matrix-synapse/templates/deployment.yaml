@@ -81,16 +81,14 @@ spec:
                           -c /synapse/config/homeserver.yaml \
                           -c /synapse/config/conf.d/
           env:
-{{- $postgresPass := include "matrix-synapse.postgresql.password" . }}
-          {{- if and .Values.postgresql.enabled (not $postgresPass) }}
+          {{- if .Values.postgresql.enabled }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.postgresql.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
                   key: postgresql-password
           {{- end }}
-{{- $redisPass := include "matrix-synapse.redis.password" . }}
-          {{- if and .Values.redis.enabled (default .Values.redis.usePassword true) (not $redisPass) }}
+          {{- if and .Values.redis.enabled (default .Values.redis.usePassword true) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
