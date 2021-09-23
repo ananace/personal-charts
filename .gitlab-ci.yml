@@ -32,7 +32,9 @@ pages:
     - master@ananace/charts
 
 push:
-  image: curlimages/curl:latest
+  image:
+    name: codenest/helm
+    entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   before_script:
     - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
