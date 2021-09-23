@@ -11,26 +11,25 @@ lint:charts:
   script:
     - helm lint charts/*
 
-pages:
-  image:
-    name: codenest/helm
-    entrypoint: ["/bin/sh", "-c"]
-  stage: deploy
-  before_script:
-    - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
-    - helm repo update
-    - ls -d1 charts/* | xargs -rn1 helm dependency build --skip-refresh
-  script:
-    - mkdir -p public
-    - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
-    - (cd public; helm package ../charts/*)
-    - helm repo index public --url ${CI_PAGES_URL}
-  artifacts:
-    paths:
-      - public
-  only:
-    - master@ananace/charts
-  when: never
+# pages:
+#   image:
+#     name: codenest/helm
+#     entrypoint: ["/bin/sh", "-c"]
+#   stage: deploy
+#   before_script:
+#     - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
+#     - helm repo update
+#     - ls -d1 charts/* | xargs -rn1 helm dependency build --skip-refresh
+#   script:
+#     - mkdir -p public
+#     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
+#     - (cd public; helm package ../charts/*)
+#     - helm repo index public --url ${CI_PAGES_URL}
+#   artifacts:
+#     paths:
+#       - public
+#   only:
+#     - master@ananace/charts
 
 push:
   image:
