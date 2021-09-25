@@ -52,7 +52,7 @@ postgresql:
     port: 5432
 
   persistence:
-    enabled: false
+    enabled: true
     # storageClass: ""
     # size: 8Gi
 
