@@ -31,39 +31,41 @@ ingress:
   #      - chart-example.local
 
 postgresql:
-  # If you already have a Postgresql service you'd like to use, set
-  # this to false and adjust the host to use your existing service.
+  ## If you already have a Postgresql service you'd like to use, set
+  ## this to false and adjust the host to use your existing service.
   enabled: true
-  
-  ## Database host
-  host: ""
+
+  ## External Postgresql hostname or IP
+  # host: postgresql.example.com
 
   ## Database user
-  postgresqlUsername: postgres
+  postgresqlUsername: funkwhale
 
   ## Database password
   postgresqlPassword: funkwhale
-  
+
   ## Database password
   postgresqlDatabase: funkwhale
-  
+
   ## Database port
   service:
     port: 5432
 
+  ## Database storage configuration
   persistence:
     enabled: true
     # storageClass: ""
     # size: 8Gi
 
 redis:
-  # If you already have a Redis service you'd like to use, set
-  # this to false and adjust the host to use your existing service.
+  ## If you already have a Redis service you'd like to use, set
+  ## this to false and adjust the host to use your existing service.
   enabled: true
 
-  host: ''
+  ## External Redis hostname or IP
+  # host: redis.example.com
   redisPort: 6379
-  password: 'funkwhale'
+  password: funkwhale
 
   cluster:
     enabled: false
@@ -74,8 +76,10 @@ redis:
     persistence:
       enabled: false
 
+## Django secret to use for encoding cookies/macaroons
 djangoSecret: ''
 
+## Additional environment variables to set
 extraEnv: {}
   # LDAP_ENABLED: "True"
   # LDAP_ROOT_DN: dc=example,dc=com
@@ -84,23 +88,26 @@ extraEnv: {}
   # LDAP_START_TLS: "True"
   # MEDIA_ROOT: /srv/funkwhale/data/media
 
+## Additional secret environment variables to set
 extraSecret: {}
   # EMAIL_CONFIG: smtp://
   # DEFAULT_FROM_EMAIL: funkwhale@example.com
 
+## PVC-based data storage configuration
 persistence:
   enabled: false
   # existingClaim: netbox-data
   # storageClass: "-"
 
-  # Note; Using ReadWriteOnce for persistence will require the addition of
-  # a required affinity for the celery worker, as well as the use of only a
-  # single api replica.
-  #
-  # An example is provided for the worker affinity
+  ## Note; Using ReadWriteOnce for persistence will require the addition of
+  ## a required affinity for the celery worker, as well as the use of only a
+  ## single api replica.
+  ##
+  ## An example is provided for the worker affinity
   accessMode: ReadWriteMany
   size: 1Gi
 
+## S3-based data storage configuration
 s3:
   enabled: false
   proxy: true
@@ -112,13 +119,16 @@ s3:
   # location: /funkwhale
   # url: http://s3.example.com
 
+## API server configuration
 api:
-  # Additional mounts to add to the API container
+  ## Additional mounts to add to the API container
+  ## If using an external media mount it needs to be attached to both API and Front
   extraVolumeMounts: []
     # - name: extra-music-data
     #   mountPath: /srv/funkwhale/data/music
     #   readOnly: true
 
+  ## Additional volumes to add to the API container
   extraVolumes: []
     # - name: extra-music-data
     #   persistentVolumeClaim:
@@ -137,36 +147,37 @@ api:
   tolerations: []
 
   affinity: {}
+
   readinessProbe:
-    exec:
-      command:
-        - stat
-        - /run/funkwhale/funkwhale.sock
+    httpGet:
+      path: /
+      port: api
+      scheme: HTTP
 
   livenessProbe:
-    exec:
-      command:
-        - stat
-        - /run/funkwhale/funkwhale.sock
-      
-  startupProbe:
-    exec:
-      command:
-        - stat
-        - /run/funkwhale/funkwhale.sock
+    httpGet:
+      path: /
+      port: api
+      scheme: HTTP
 
+  startupProbe:
+    tcpSocket:
+      port: api
+
+## Web frontend and proxy
 front:
   image:
     repository: nginx
     tag: stable
     pullPolicy: IfNotPresent
 
-  # Additional mounts to add to the frontend container
+  ## Additional mounts to add to the frontend container
   extraVolumeMounts: []
     # - name: extra-music-data
     #   mountPath: /srv/funkwhale/data/music
     #   readOnly: true
 
+  ## Additional volumes to add to the frontend container
   extraVolumes: []
     # - name: extra-music-data
     #   persistentVolumeClaim:
@@ -188,11 +199,13 @@ front:
     httpGet:
       path: /
       port: http
+      scheme: HTTP
 
   livenessProbe:
     httpGet:
       path: /
       port: http
+      scheme: HTTP
 
   startupProbe:
     tcpSocket:

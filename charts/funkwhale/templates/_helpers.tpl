@@ -7,8 +7,10 @@ Expand the name of the chart.
 {{- end -}}
 
 {{- define "funkwhale.dbUrl" -}}
-{{- if and .Values.postgresql.enabled .Values.postgresql.host -}}
-{{ fail "Setting both postgresql.enabled and postgresql.host will deploy an internal Postgres service and attempt to use an external one - please set only one of the two!" }}
+{{- if .Values.database -}}
+{{ fail "You are using the old database config key - please update your values to the new postgresql config key" }}
+{{- else if and .Values.postgresql.enabled .Values.postgresql.host -}}
+{{ fail "Both postgresql.enabled and postgresql.host have been specified - you may want to set postgresql.enabled=false if you want to use an external database" }}
 {{- else if .Values.postgresql.enabled -}}
 postgres://{{ .Values.postgresql.postgresqlUsername }}:{{ .Values.postgresql.postgresqlPassword }}@{{ template "funkwhale.fullname" . }}-postgresql:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.postgresqlDatabase }}
 {{- else if .Values.postgresql.host -}}
@@ -16,10 +18,6 @@ postgres://{{ .Values.postgresql.postgresqlUsername }}:{{ .Values.postgresql.pos
 {{- else -}}
 {{ fail "Either postgresql.enabled or postgresql.host are required!" }}
 {{- end -}}
-{{- end -}}
-
-{{- if .Values.database.user -}}
-{{ fail "You are using the old database config key - please migrate to the new postgresql config key" }}
 {{- end -}}
 
 {{/*

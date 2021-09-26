@@ -5,10 +5,10 @@ metadata:
   name: {{ include "funkwhale.fullname" . }}-worker
   labels:
     app.kubernetes.io/name: {{ include "funkwhale.name" . }}
-    helm.sh/chart: {{ include "funkwhale.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     audio.funkwhale/component: celery-worker
+    helm.sh/chart: {{ include "funkwhale.chart" . }}
 spec:
   replicas: {{ .Values.celery.worker.replicaCount }}
   selector:
