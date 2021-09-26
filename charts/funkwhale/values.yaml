@@ -30,21 +30,31 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-database:
+postgresql:
+  # If you already have a Postgresql service you'd like to use, set
+  # this to false and adjust the host to use your existing service.
+  enabled: true
+  
   ## Database host
-  host:
-
-  ## Database port
-  port: 5432
+  host: ""
 
   ## Database user
-  user: funkwhale
+  postgresqlUsername: postgres
 
   ## Database password
-  password:
+  postgresqlPassword: funkwhale
+  
+  ## Database password
+  postgresqlDatabase: funkwhale
+  
+  ## Database port
+  service:
+    port: 5432
 
-  ## Database name
-  database: funkwhale
+  persistence:
+    enabled: true
+    # storageClass: ""
+    # size: 8Gi
 
 redis:
   # If you already have a Redis service you'd like to use, set
@@ -240,4 +250,3 @@ celery:
       #       operator: In
       #       values:
       #       - app
-
