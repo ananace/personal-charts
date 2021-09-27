@@ -27,6 +27,8 @@ pages:
         curl --user gitlab-ci-token:$CI_JOB_TOKEN "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable/charts/$(basename $0)" -Iso /dev/null -w "%{http_code}" | grep 200 ||
         curl --request POST --user gitlab-ci-token:$CI_JOB_TOKEN --form "chart=@$0" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/api/${CHANNEL}/charts"
       '
+    - echo "Allowing some time for changes to percolate..."
+    - sleep 10
     - mkdir -p public
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
     - curl --user gitlab-ci-token:$CI_JOB_TOKEN "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/${CHANNEL}/index.yaml" -o public/index.yaml
