@@ -57,6 +57,18 @@ postgresql:
     # storageClass: ""
     # size: 8Gi
 
+  pgHbaConfiguration: |
+    local all all trust
+    host all all localhost trust
+    host all all 0.0.0.0/0 md5
+    host all all ::/0 md5
+  initdbScripts:
+    enable_extensions.sh: |
+      #!/bin/sh
+
+      echo 'create extension unaccent;' | psql -U postgres $POSTGRESQL_DATABASE
+      echo 'create extension citext;' | psql -U postgres $POSTGRESQL_DATABASE
+
 redis:
   ## If you already have a Redis service you'd like to use, set
   ## this to false and adjust the host to use your existing service.
