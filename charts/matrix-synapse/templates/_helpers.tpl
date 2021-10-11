@@ -170,7 +170,7 @@ Set postgresql password
 {{- define "matrix-synapse.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- default "" .Values.postgresql.postgresqlPassword }}
-{{- else -}}
+{{- else if not (and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretPasswordKey) -}}
 {{ required "A valid externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
@@ -255,7 +255,7 @@ Set redis password
 {{- define "matrix-synapse.redis.password" -}}
 {{- if .Values.redis.enabled -}}
 {{ .Values.redis.password }}
-{{- else -}}
+{{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}

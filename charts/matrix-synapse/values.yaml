@@ -619,6 +619,13 @@ externalPostgresql:
   port: 5432
   username: synapse
   # password: synapse
+
+  ## The name of an existing secret with postgresql credentials
+  #existingSecret: postgres-secrets
+
+  ## Password key to be retrieved from existing secret
+  #existingSecretPasswordKey: postgres-password
+
   database: synapse
   # sslmode: prefer
 
@@ -660,6 +667,12 @@ externalRedis:
   # host: redis
   port: 6379
   # password: synapse
+
+  ## The name of an existing secret with redis credentials
+  #existingSecret: redis-secrets
+
+  ## Password key to be retrieved from existing secret
+  #existingSecretPasswordKey: redis-password
 
 ## Persistence configuration for the media repository function.
 ## This PVC will be mounted in either Synapse or a media_repo worker.

@@ -81,19 +81,29 @@ spec:
                           -c /synapse/config/homeserver.yaml \
                           -c /synapse/config/conf.d/
           env:
-          {{- if .Values.postgresql.enabled }}
+          {{- if or .Values.postgresql.enabled .Values.externalPostgresql.existingSecret }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.postgresql.enabled }}
                   name: {{ .Values.postgresql.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
                   key: postgresql-password
+                  {{- else }}
+                  name: {{ .Values.externalPostgresql.existingSecret }}
+                  key: {{ .Values.externalPostgresql.existingSecretPasswordKey }}
+                  {{- end }}
           {{- end }}
-          {{- if and .Values.redis.enabled (default .Values.redis.usePassword true) }}
+          {{- if or (and .Values.redis.enabled (default .Values.redis.usePassword true)) .Values.externalRedis.existingSecret }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
+                  {{- if .Values.redis.enabled }}
                   name: {{ .Values.redis.existingSecret | default (include "matrix-synapse.redis.fullname" .) }}
                   key: redis-password
+                  {{- else }}
+                  name: {{ .Values.externalRedis.existingSecret }}
+                  key: {{ .Values.externalRedis.existingSecretPasswordKey }}
+                  {{- end -}}
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
             {{- . | toYaml | nindent 12 }}
