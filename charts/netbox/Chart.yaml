@@ -4,22 +4,22 @@ name: netbox
 description: |
   An IP address management (IPAM) and data center infrastructure management (DCIM) tool.
 
-  Important; With chart version 3.0.0 the old nginx+gunicorn setup is no more, refer to
-  https://github.com/netbox-community/netbox-docker/releases/tag/1.0.0 for more info.
+  Important; With chart version 4.0.0 there are major upgrades to the packaged Redis and Postgres,
+  as well as a major version bump of Netbox that introduces housekeeping. Take care when upgrading.
 icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/project-static/img/netbox.ico
-appVersion: 2.11.12
+appVersion: 3.0.7
 
 type: application
-version: 3.0.12
+version: 4.0.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
 
 dependencies:
   - name: postgresql
-    version: ~8.9.4
+    version: '> 8, < 11'
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: redis
-    version: ~10.6.12
+    version: ~15
     repository: https://charts.bitnami.com/bitnami

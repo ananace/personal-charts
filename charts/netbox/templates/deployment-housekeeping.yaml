@@ -1,4 +1,4 @@
-{{- if or .Values.housekeeping.enabled (semverCompare ">3.0.0" (include "netbox.imageTag" .)) -}}
+{{- if .Values.housekeeping.enabled -}}
 ---
 apiVersion: apps/v1
 kind: Deployment

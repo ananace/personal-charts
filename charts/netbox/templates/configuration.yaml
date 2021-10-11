@@ -15,7 +15,7 @@ data:
   DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
 
   REDIS_HOST: {{ include "netbox.redisHost" . }}
-  REDIS_PORT: {{ .Values.redis.redisPort | quote }}
+  REDIS_PORT: {{ .Values.redis.master.service.port | default 6379 | quote }}
   REDIS_SSL: "false"
 
 {{- if .Values.superuser.name }}

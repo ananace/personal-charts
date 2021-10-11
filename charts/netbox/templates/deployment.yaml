@@ -39,13 +39,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          {{- if .Values.redis.usePassword }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "netbox.redis.fullname" . }}
                   key: redis-password
-          {{- end }}
           {{- if .Values.existingDjangoSecret }}
             - name: SECRET_KEY
               valueFrom:
@@ -74,22 +72,26 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            httpGet:
-              port: http
-              path: /
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            httpGet:
-              port: http
-              path: /
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          readinessProbe:
+            {{ toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /etc/netbox/media
-            {{- with .Values.extraVolumeMounts }}
+          {{- with .Values.extraVolumeMounts }}
             {{ toYaml . | nindent 12 }}
-            {{- end }}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -105,9 +107,9 @@ spec:
       {{- else }}
           emptyDir: {}
       {{- end }}
-{{- if .Values.extraVolumes }}
-{{ toYaml .Values.extraVolumes | indent 8 }}
-{{- end }}
+      {{- if .Values.extraVolumes }}
+        {{ toYaml .Values.extraVolumes | nindent 8 }}
+      {{- end }}
     {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}

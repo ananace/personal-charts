@@ -52,16 +52,16 @@ postgresql:
   # existingSecretKey: postgresql-password
 
 redis:
-  cluster:
-    enabled: false
+  architecture: standalone
+  auth:
+    enabled: true
+    # password: netbox
+
   master:
     persistence:
       enabled: false
-  slave:
-    persistence:
-      enabled: false
-  # password: netbox
-  redisPort: 6379
+    service:
+      port: 6379
 
 # NB; Not specifying a key or existing secret will cause it to regenerate on
 # every upgrade
@@ -139,9 +139,9 @@ worker:
   affinity: {}
 
 housekeeping:
-  ## Netbox 3.0.0 and upwards need housekeeping to be ran, if you're not using
-  ## a versioned tag then you may need to set this parameter
-  # enabled: true
+  ## Netbox 3.0.0 and upwards need a housekeeping pod, if you're not using
+  ## 3.0 then you may need to set this parameter
+  enabled: true
 
   resources: {}
     # limits:
