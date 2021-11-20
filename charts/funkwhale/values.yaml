@@ -30,6 +30,10 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+  ## Set the name of the IngressClass cluster resource (optional)
+  ## https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec
+  #className: can-be-anything
+
 postgresql:
   ## If you already have a Postgresql service you'd like to use, set
   ## this to false and adjust the host to use your existing service.
