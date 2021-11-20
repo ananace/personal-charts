@@ -29,7 +29,7 @@ data:
     worker_name: {{ $config.name }}
 {{- end }}
 
-    worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:8008
+    worker_main_http_uri: http://{{ include "matrix-synapse.fullname" $ }}:{{ $.Values.service.port }}
     worker_replication_host: {{ include "matrix-synapse.replicationname" $ | quote }}
     worker_replication_http_port: 9093
 
