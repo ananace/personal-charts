@@ -8,7 +8,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: {{ .Values.serviceport | default 8008 }}
+    - port: {{ .Values.service.port | default 8008 }}
       targetPort: {{ .Values.service.targetPort | default "http" }}
       protocol: TCP
       name: http
