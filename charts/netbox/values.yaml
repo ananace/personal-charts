@@ -39,7 +39,7 @@ ingress:
 
   ## Set the name of the IngressClass cluster resource (optional)
   ## https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec
-  #className: can-be-anything
+  # className: can-be-anything
 
 postgresql:
   enabled: true
