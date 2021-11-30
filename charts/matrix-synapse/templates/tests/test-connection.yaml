@@ -12,5 +12,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "matrix-synapse.fullname" . }}:8008/_matrix/client/versions']
+      args:  ['{{ include "matrix-synapse.fullname" . }}:{{ $.Values.service.port }}/_matrix/client/versions']
   restartPolicy: Never

@@ -139,11 +139,11 @@ spec:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: 8008
+                  number: {{ $.Values.service.port }}
             pathType: Prefix
           {{- else }}
               serviceName: {{ $fullName }}
-              servicePort: 8008
+              servicePort: {{ $.Values.service.port }}
           {{- end }}
         {{- end }}
 
@@ -154,11 +154,11 @@ spec:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: 8008
+                  number: {{ $.Values.service.port }}
             pathType: Prefix
           {{- else }}
               serviceName: {{ $fullName }}
-              servicePort: 8008
+              servicePort: {{ $.Values.service.port }}
           {{- end }}
         {{- end }}
 
@@ -195,11 +195,11 @@ spec:
               service:
                 name: {{ $fullName }}
                 port:
-                  number: 8008
+                  number: {{ $.Values.service.port }}
             pathType: Exact
             {{- else }}
               serviceName: {{ $fullName }}
-              servicePort: 8008
+              servicePort: {{ $.Values.service.port }}
             {{- end }}
           {{- end }}
         {{- end }}
