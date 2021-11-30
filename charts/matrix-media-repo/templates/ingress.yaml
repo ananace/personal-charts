@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "matrix-media-repo.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
-{{- $v1Ingress := .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" -}}
+{{- $v1Ingress := .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
 {{- if $v1Ingress -}}
 apiVersion: networking.k8s.io/v1
 {{- else -}}
@@ -17,6 +17,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+{{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+{{- end }}
   {{- if .Values.ingress.tls }}
   tls:
     {{- range .Values.ingress.tls }}
