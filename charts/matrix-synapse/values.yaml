@@ -22,6 +22,16 @@ image:
 ##
 # fullnameOverride: ""
 
+
+## The Matrix domain name, this is what will be used for the domain part in
+## your MXIDs.
+##
+# serverName: 'example.com'
+
+## The public Matrix server name, this will be used for any public URLs
+## in config as well as for client API links in the ingress.
+# publicServerName: 'matrix.example.com'
+
 ## The source of the signing key used by Synapse in federation.
 ##
 signingkey:
@@ -55,15 +65,6 @@ signingkey:
   #  requests:
   #    cpu: 100m
   #    memory: 250Mi
-
-## The Matrix domain name, this is what will be used for the domain part in
-## your MXIDs.
-##
-# serverName: 'example.com'
-
-## The public Matrix server name, this will be used for any public URLs
-## in config as well as for client API links in the ingress.
-# publicServerName: 'matrix.example.com'
 
 ## Matrix configuration values that affect other parts of the chart, for any
 ## value not handled by this block, you will want to instead set it in
