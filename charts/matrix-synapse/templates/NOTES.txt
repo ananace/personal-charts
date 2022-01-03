@@ -29,9 +29,10 @@ Matrix client - and register an account - as soon as final setup is done.
 You can also create an admin user with the following command;
 {{- else }}
 You can create a user in your new Synapse install by running the following
-command;
+command; (replacing USERNAME and PASSWORD)
 {{- end }}
 
-    kubectl exec --namespace {{ .Release.Namespace }} {{ template "matrix-synapse.fullname" . }} -- register_new_matrix_user -c /synapse/config/homeserver.yaml -c /synapse/config/conf.d/secrets.yaml -u USERNAME -p PASSWORD --admin http://localhost:8008
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "matrix-synapse" .  }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=synapse" -o jsonpath="{.items[0].metadata.name}")
+    kubectl exec --namespace {{ .Release.Namespace }} $POD_NAME -- register_new_matrix_user -c /synapse/config/homeserver.yaml -c /synapse/config/conf.d/secrets.yaml -u USERNAME -p PASSWORD --admin http://localhost:8008
 
 You can also specify --no-admin to create a non-admin user.

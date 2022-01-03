@@ -28,4 +28,4 @@ https://docs.funkwhale.audio/changelog.html#increased-quality-of-jpeg-thumbnails
 
 To get a shell in the master pod, run the following commands;
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "funkwhale.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  kubectl exec --namespace {{ .Release.Namespace }} -c funkwhale -it $POD_NAME bash
+  kubectl exec --namespace {{ .Release.Namespace }} -c funkwhale -it $POD_NAME -- bash
