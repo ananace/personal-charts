@@ -32,7 +32,7 @@ You can create a user in your new Synapse install by running the following
 command; (replacing USERNAME and PASSWORD)
 {{- end }}
 
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "matrix-synapse" .  }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=synapse" -o jsonpath="{.items[0].metadata.name}")
+    export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=synapse" -o jsonpath="{.items[0].metadata.name}")
     kubectl exec --namespace {{ .Release.Namespace }} $POD_NAME -- register_new_matrix_user -c /synapse/config/homeserver.yaml -c /synapse/config/conf.d/secrets.yaml -u USERNAME -p PASSWORD --admin http://localhost:8008
 
 You can also specify --no-admin to create a non-admin user.
