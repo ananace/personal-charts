@@ -11,6 +11,7 @@ metadata:
 data:
   FUNKWHALE_HOSTNAME: {{ .Values.ingress.host }}
   FUNKWHALE_PROTOCOL: {{ .Values.ingress.protocol }}
+  FUNKWHALE_SPA_HTML_ROOT: http://localhost/front/
   REVERSE_PROXY_TYPE: nginx
   MEDIA_ROOT: /srv/funkwhale/data/media
   STATIC_ROOT: /srv/funkwhale/data/static

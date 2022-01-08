@@ -28,9 +28,36 @@ data:
 
       root /frontend;
 
-      add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
       add_header Referrer-Policy "strict-origin-when-cross-origin";
+      add_header X-Frame-Options "SAMEORIGIN" always;
 
+      # compression settings
+      gzip on;
+      gzip_comp_level    5;
+      gzip_min_length    256;
+      gzip_proxied       any;
+      gzip_vary          on;
+
+      gzip_types
+          application/javascript
+          application/vnd.geo+json
+          application/vnd.ms-fontobject
+          application/x-font-ttf
+          application/x-web-app-manifest+json
+          font/opentype
+          image/bmp
+          image/svg+xml
+          image/x-icon
+          text/cache-manifest
+          text/css
+          text/plain
+          text/vcard
+          text/vnd.rim.location.xloc
+          text/vtt
+          text/x-component
+          text/x-cross-domain-policy;
+      # end of compression settings
 
       location / {
           include /etc/nginx/funkwhale_proxy.conf;
@@ -40,7 +67,7 @@ data:
       }
 
       location /front/ {
-          add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+          add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
           add_header Service-Worker-Allowed "/";
           add_header X-Frame-Options "ALLOW";
@@ -51,10 +78,10 @@ data:
       }
 
       location /front/embed.html {
-          add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:";
+          add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; media-src 'self' data:; worker-src 'self'";
           add_header Referrer-Policy "strict-origin-when-cross-origin";
 
-          add_header X-Frame-Options "ALLOW";
+          add_header X-Frame-Options "" always;
           alias /frontend/embed.html;
           expires 30d;
           add_header Pragma public;
@@ -84,6 +111,7 @@ data:
     {{- if .Values.s3.enabled }}
       location ~ /_protected/media/(.+) {
           internal;
+          # Needed to ensure DSub auth isn't forwarded to S3/Minio, see #932
           proxy_set_header Authorization "";
           proxy_pass $1;
       }
@@ -103,7 +131,7 @@ data:
           # has been checked on API side
           # Set this to the same value as your MUSIC_DIRECTORY_PATH setting
           internal;
-          alias   ${MUSIC_DIRECTORY_PATH};
+          alias   ${MUSIC_DIRECTORY_SERVE_PATH};
       }
 
       location /staticfiles/ {

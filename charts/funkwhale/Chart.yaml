@@ -4,7 +4,7 @@ appVersion: "1.2.1"
 description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
 name: funkwhale
-version: 0.4.4
+version: 0.4.5
 
 dependencies:
 - name: redis
