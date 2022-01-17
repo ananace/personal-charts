@@ -89,6 +89,11 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /etc/netbox/media
+          {{- if .Values.extraConfiguration }}
+            - name: netbox-extra-config
+              mountPath: /etc/netbox/config/extra.py
+              subPath: extra.py
+          {{- end  }}
           {{- with .Values.extraVolumeMounts }}
             {{ toYaml . | nindent 12 }}
           {{- end }}
@@ -100,6 +105,11 @@ spec:
         - name: netbox-config-files
           configMap:
             name: {{ .Chart.Name }}-config-files
+      {{- if .Values.extraConfiguration }}
+        - name: netbox-extra-config
+          configMap:
+            name: {{ .Chart.Name }}-extra
+      {{- end }}
         - name: data
       {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:

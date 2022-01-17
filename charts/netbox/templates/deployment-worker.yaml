@@ -59,10 +59,22 @@ spec:
                 name: {{ include "netbox.fullname" . }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
-      {{- with .Values.worker.nodeSelector }}
+          {{- if .Values.extraConfiguration }}
+          volumeMounts:
+            - name: netbox-extra-config
+              mountPath: /etc/netbox/config/extra.py
+              subPath: extra.py
+          {{- end  }}
+    {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+    {{- end }}
+    {{- if .Values.extraConfiguration }}
+      volumes:
+        - name: netbox-extra-config
+          configMap:
+            name: {{ .Chart.Name }}-extra
+    {{- end }}
     {{- with .Values.worker.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}

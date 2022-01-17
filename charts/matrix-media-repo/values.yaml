@@ -100,6 +100,44 @@ externalPostgresql:
   database: matrix_media_repo
   # sslMode: require
 
+redis:
+  enabled: false
+
+  usePassword: true
+  # XXX Change me!
+  password: media-repo
+
+  ## Or use existing secret with "redis-password" key
+  ## instead of static password
+  ##
+  # existingSecret: redis-secret
+
+  cluster:
+    enabled: false
+  master:
+    persistence:
+      ## Note that Synapse only uses redis as a synchronization utility, so no
+      ## data will ever need to be persisted.
+      ##
+      enabled: false
+    statefulset:
+      updateStrategy: RollingUpdate
+
+## An externally configured Redis server to use for workers/sharding.
+##
+externalRedis:
+  # host: redis
+  port: 6379
+  # user: media-repo
+  # password: media-repo
+  # database: 0
+
+  ## The name of an existing secret with redis credentials
+  #existingSecret: redis-secrets
+
+  ## Password key to be retrieved from existing secret
+  #existingSecretPasswordKey: redis-password
+
 ## Configures an application-specific service account.
 ##
 serviceAccount:

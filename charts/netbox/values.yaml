@@ -88,6 +88,9 @@ extraSecrets: {}
   # EMAIL_PASSWORD: netbox
   # NAPALM_PASSWORD: ''
 
+# Ends up stored as extra.py in the netbox configuration
+extraConfiguration: ''
+
 superuser:
   name: ''
   email: ''
