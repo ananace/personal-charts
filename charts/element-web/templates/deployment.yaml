@@ -16,6 +16,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print .Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/config-nginx: {{ include (print .Template.BasePath "/configuration-nginx.yaml") . | sha256sum }}
     {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
     {{- end }}
@@ -53,6 +54,8 @@ spec:
             - mountPath: /app/config.json
               name: config
               subPath: config.json
+            - mountPath: /etc/nginx/conf.d
+              name: config-nginx
           {{- with .Values.extraVolumeMounts }}
           {{- . | toYaml | nindent 12 }}
           {{- end }}
@@ -60,6 +63,9 @@ spec:
         - name: config
           configMap:
             name: {{ include "element-web.fullname" . }}
+        - name: config-nginx
+          configMap:
+            name: {{ printf "%s-nginx" (include "element-web.fullname" .) | trunc 63 | trimSuffix "-" }}
       {{- with .Values.extraVolumes }}
       {{- . | toYaml | nindent 8 }}
       {{- end }}

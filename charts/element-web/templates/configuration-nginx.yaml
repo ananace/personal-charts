@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-nginx" (include "element-web.fullname" .) | trunc 63 | trimSuffix "-" }}
+  labels:
+    {{- include "element-web.labels" . | nindent 4 }}
+data:
+  default.conf: |
+    server {
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;
+
+        root   /usr/share/nginx/html;
+        index  index.html;
+
+{{ .Values.nginxConfig | indent 8 }}
+
+        # Set no-cache for the index.html only so that browsers always check for a new copy of Element Web.
+        location = /index.html {
+            add_header Cache-Control "no-cache";
+        }
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+    }
