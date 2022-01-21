@@ -654,8 +654,7 @@ redis:
   ##
   # existingSecret: redis-secret
 
-  cluster:
-    enabled: false
+  architecture: standalone
   master:
     persistence:
       ## Note that Synapse only uses redis as a synchronization utility, so no
