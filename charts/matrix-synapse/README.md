@@ -5,6 +5,8 @@ Matrix Synapse
 
 For questions/help on the chart, feel free to drop in at [#matrix-on-kubernetes:fiksel.info](https://matrix.to/#/#matrix-on-kubernetes:fiksel.info).
 
+__Attention:__ _The upgrade to 1.51.0 requires manual action, please read the upgrade instructions [below](#upgrading)._
+
 ## Prerequisites
 
 - Kubernetes 1.15+
@@ -62,3 +64,19 @@ Additionally, when using well-known federation, your Synapse cert only needs to 
 
 More advanced setups can be made using `ingress.hosts`, `ingress.csHosts`, and `ingress.wkHosts` for server-server, client-server, and well-known endpoints respectively.  
 Alternatively, you can use your own ingress setup, or switch the main service to `LoadBalancer` and add a TLS listener.
+
+## Upgrading
+
+### To v1.51.0
+The redis subchart was upgraded in this release which changed immutable values of the StatefulSet. So, to perform this upgrade, perform the following steps. Make sure to adapt the names and arguments to your situation.
+
+```
+# Delete the old StatefulSet but leave the Pod alive
+kubectl delete statefulset --cascade=orphan matrix-synapse-redis-master
+
+# Upgrade the chart and create a new StatfulSet for redis
+helm upgrade matrix-synapse matrix-synapse
+
+# Delete the old Pod so the new StatefulSet can take over
+kubectl delete pod matrix-synapse-redis-master-0   
+```
