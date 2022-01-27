@@ -37,6 +37,12 @@ image:
 signingkey:
   ## Enable a Kubernetes job to generate and store a signing key if one does not
   ## exist.
+  ## If you have already run a Matrix server at some point on your domain then
+  ## you will want to keep the old signing key, either by using the `existingSecret`
+  ## configuration, or by including the old key under `extraConfig.old_signing_keys`
+  ##
+  ## If you lose your signing key then any federation traffic from your instance
+  ## might not be trusted any more by the wider network.
   ##
   job:
     enabled: true
@@ -53,7 +59,7 @@ signingkey:
 
   ## Specify an existing signing key secret, will need to be created in advance.
   ##
-  # existingSecret:
+  # existingSecret: secret-name
   # existingSecretKey: signing.key
 
   ## Resources to apply to the signing key generation job
@@ -127,6 +133,8 @@ config:
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 extraConfig: {}
+#  old_signing_keys:
+#    "ed25519:id": { key: "base64string", expired_ts: 123456789123 } 
 #  use_presence: false
 #  enable_search: false
 #  federation_domain_whitelist:
