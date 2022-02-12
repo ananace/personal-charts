@@ -3,6 +3,8 @@ Helm Charts
 
 Kubernetes applications packaged into helm charts
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/ananace-charts)](https://artifacthub.io/packages/search?repo=ananace-charts)
+
 Current applications
 --------------------
 
@@ -18,3 +20,4 @@ Using
 
 `$ helm repo add ananace-charts https://ananace.gitlab.io/charts`
 
+Or follow the instructions on [Artifact Hub](https://artifacthub.io/packages/search?repo=ananace-charts)
