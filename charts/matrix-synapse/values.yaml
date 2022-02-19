@@ -653,14 +653,14 @@ externalPostgresql:
 redis:
   enabled: true
 
-  usePassword: true
-  # XXX Change me!
-  password: synapse
+  auth:
+    # XXX Change me!
+    password: synapse
 
-  ## Or use existing secret with "redis-password" key
-  ## instead of static password
-  ##
-  # existingSecret: redis-secret
+    ## Or use existing secret with "redis-password" key
+    ## instead of static password
+    ##
+    # existingSecret: redis-secret
 
   architecture: standalone
   master:
