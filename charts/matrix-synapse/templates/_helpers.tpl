@@ -253,8 +253,10 @@ Set redis port
 Set redis password
 */}}
 {{- define "matrix-synapse.redis.password" -}}
-{{- if .Values.redis.enabled -}}
+{{- if .Values.redis.password -}}
 {{ .Values.redis.password }}
+{{- else if .Values.redis.auth.password -}}
+{{ .Values.redis.auth.password }}
 {{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
 {{- end -}}

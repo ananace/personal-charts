@@ -6,7 +6,7 @@ icon: https://matrix.org/images/matrix-logo.svg
 appVersion: 1.52.0
 
 type: application
-version: 2.1.26
+version: 2.1.27
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
