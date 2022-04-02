@@ -74,7 +74,7 @@ spec:
               else
                 generate_signing_key -o /synapse/keys/signing.key
               fi
-          image: "{{ .Values.signingkey.job.generateImage.repository }}:{{ default .Values.signingkey.job.generateImage.tag "latest" }}"
+          image: "{{ .Values.signingkey.job.generateImage.repository }}:{{ .Values.signingkey.job.generateImage.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.signingkey.job.generateImage.pullPolicy }}
           name: signing-key-generate
           resources:
@@ -92,7 +92,7 @@ spec:
           env:
             - name: SECRET_NAME
               value: {{ $secretName }}
-          image: "{{ .Values.signingkey.job.publishImage.repository }}:{{ default .Values.signingkey.job.publishImage.tag "latest" }}"
+          image: "{{ .Values.signingkey.job.publishImage.repository }}:{{ .Values.signingkey.job.publishImage.tag | default "latest" }}"
           imagePullPolicy: {{ .Values.signingkey.job.publishImage.pullPolicy }}
           name: signing-key-upload
           resources:
