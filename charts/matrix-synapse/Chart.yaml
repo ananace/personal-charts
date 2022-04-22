@@ -3,7 +3,7 @@ apiVersion: v2
 name: matrix-synapse
 description: Matrix reference homeserver
 icon: https://matrix.org/images/matrix-logo.svg
-appVersion: 1.57.0
+appVersion: 1.57.1
 
 type: application
 version: 2.1.34
