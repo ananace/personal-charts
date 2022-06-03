@@ -654,6 +654,7 @@ redis:
   enabled: true
 
   auth:
+    enabled: true
     # XXX Change me!
     password: synapse
 
@@ -669,6 +670,8 @@ redis:
       ## data will ever need to be persisted.
       ##
       enabled: false
+    service:
+      port: 6379
     statefulset:
       updateStrategy: RollingUpdate
 

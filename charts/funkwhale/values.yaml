@@ -80,14 +80,17 @@ redis:
 
   ## External Redis hostname or IP
   # host: redis.example.com
-  redisPort: 6379
-  password: funkwhale
 
-  cluster:
-    enabled: false
+  auth:
+    enabled: true
+    password: funkwhale
+
+  architecture: standalone
   master:
     persistence:
       enabled: false
+    service:
+      port: 6379
   slave:
     persistence:
       enabled: false

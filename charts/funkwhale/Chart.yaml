@@ -4,14 +4,14 @@ appVersion: "1.2.3"
 description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
 name: funkwhale
-version: 0.4.7
+version: 0.5.0
 
 dependencies:
 - name: redis
-  version: ~10.6.10
+  version: ^15.7.0
   repository: https://charts.bitnami.com/bitnami
   condition: redis.enabled
 - name: postgresql
-  version: ~10.9.4
+  version: ^10.9.4
   repository: https://charts.bitnami.com/bitnami
   condition: postgresql.enabled

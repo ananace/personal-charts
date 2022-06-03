@@ -74,7 +74,8 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-media-repo.postgresql.fullname" -}}
-{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
+{{- $name := .Values.postgresql.nameOverride | default "postgresql" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -104,11 +105,7 @@ Set postgres port
 */}}
 {{- define "matrix-media-repo.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- if .Values.postgresql.service -}}
-{{- default 5432 .Values.postgresql.service.port }}
-{{- else -}}
-5432
-{{- end -}}
+{{- .Values.postgresql.service.port | default 5432 }}
 {{- else -}}
 {{- required "A valid externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
@@ -119,7 +116,7 @@ Set postgresql username
 */}}
 {{- define "matrix-media-repo.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "postgres" .Values.postgresql.postgresqlUsername }}
+{{- .Values.postgresql.postgresqlUsername | default "postgres" }}
 {{- else -}}
 {{ required "A valid externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
@@ -130,7 +127,7 @@ Set postgresql password
 */}}
 {{- define "matrix-media-repo.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "" .Values.postgresql.postgresqlPassword }}
+{{- .Values.postgresql.postgresqlPassword | default "" }}
 {{- else -}}
 {{ required "A valid externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
@@ -141,7 +138,7 @@ Set postgresql database
 */}}
 {{- define "matrix-media-repo.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "synapse" .Values.postgresql.postgresqlDatabase }}
+{{- .Values.postgresql.postgresqlDatabase | default "synapse" }}
 {{- else -}}
 {{ required "A valid externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
@@ -153,7 +150,8 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "matrix-media-repo.redis.fullname" -}}
-{{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
+{{- $name := .Values.redis.nameOverride | default "redis" -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -161,7 +159,7 @@ Set redis host
 */}}
 {{- define "matrix-media-repo.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-{{- template "matrix-media-repo.redis.fullname" . -}}-master
+{{- printf "%s-%s" (include "matrix-media-repo.redis.fullname" .) "master" | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
 {{ required "A valid externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
@@ -172,7 +170,11 @@ Set redis secret
 */}}
 {{- define "matrix-media-repo.redis.secret" -}}
 {{- if .Values.redis.enabled -}}
+{{- if .Values.redis.auth.existingSecret -}}
+{{ .Values.redis.auth.existingSecret }}
+{{- else -}}
 {{- template "matrix-media-repo.redis.fullname" . -}}
+{{- end -}}
 {{- else -}}
 {{- template "matrix-media-repo.fullname" . -}}
 {{- end -}}
@@ -183,20 +185,9 @@ Set redis port
 */}}
 {{- define "matrix-media-repo.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-{{- default 6379 .Values.redis.redisPort }}
+{{- .Values.redis.master.service.port | default 6379 }}
 {{- else -}}
 {{ required "A valid externalRedis.port is required" .Values.externalRedis.port }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set redis password
-*/}}
-{{- define "matrix-media-repo.redis.user" -}}
-{{- if .Values.redis.enabled -}}
-{{ .Values.redis.user }}
-{{- else if .Values.externalRedis.user -}}
-{{ .Values.externalRedis.user }}
 {{- end -}}
 {{- end -}}
 

@@ -72,6 +72,9 @@ spec:
               name: secrets
             - mountPath: /media
               name: data
+          {{- with .Values.extraVolumeMounts }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
       volumes:
         - name: empty-combined
           emptyDir: {}
@@ -87,6 +90,9 @@ spec:
             claimName: {{ .Values.persistence.existingClaim | default (include "matrix-media-repo.fullname" .) }}
       {{- else }}
           emptyDir: {}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- . | toYaml | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

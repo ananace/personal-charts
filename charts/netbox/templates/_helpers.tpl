@@ -6,10 +6,6 @@ Expand the name of the chart.
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "netbox.redisHost" -}}
-{{ template "netbox.fullname" . }}-redis-master
-{{- end -}}
-
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
@@ -46,7 +42,7 @@ Get the correct image tag name
 Get the installed postgresql fullname
 */}}
 {{- define "netbox.postgresql.fullname" -}}
-{{- $name := default "postgresql" .Values.postgresql.nameOverride -}}
+{{- $name := .Values.postgresql.nameOverride | default "postgresql" -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -54,6 +50,10 @@ Get the installed postgresql fullname
 Get the installed redis fullname
 */}}
 {{- define "netbox.redis.fullname" -}}
-{{- $name := default "redis" .Values.redis.nameOverride -}}
+{{- $name := .Values.redis.nameOverride | default "redis" -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "netbox.redisHost" -}}
+{{- printf "%s-%s" (include "netbox.redis.fullname" .) "master" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

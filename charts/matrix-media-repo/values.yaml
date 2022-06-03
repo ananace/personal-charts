@@ -54,6 +54,10 @@ config:
 extraRepo: {}
 #  useForwardedHost: false
 
+extraVolumes: []
+
+extraVolumeMounts: []
+
 ## Per-domain configuration.
 ## Ref: https://github.com/turt2live/matrix-media-repo/blob/master/docs/config.md
 ##
@@ -103,23 +107,20 @@ externalPostgresql:
 redis:
   enabled: false
 
-  usePassword: true
-  # XXX Change me!
-  password: media-repo
+  auth:
+    enabled: true
+    # XXX Change me!
+    password: media-repo
 
-  ## Or use existing secret with "redis-password" key
-  ## instead of static password
-  ##
-  # existingSecret: redis-secret
-
-  cluster:
-    enabled: false
+  architecture: standalone
   master:
     persistence:
       ## Note that Synapse only uses redis as a synchronization utility, so no
       ## data will ever need to be persisted.
       ##
       enabled: false
+    service:
+      port: 6379
     statefulset:
       updateStrategy: RollingUpdate
 
@@ -128,7 +129,6 @@ redis:
 externalRedis:
   # host: redis
   port: 6379
-  # user: media-repo
   # password: media-repo
   # database: 0
 
