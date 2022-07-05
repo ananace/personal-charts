@@ -4,20 +4,20 @@ image:
   repository: registry.gitlab.com/mb-saces/synatainer
   pullPolicy: IfNotPresent
   ## Overrides the image tag, for running a different version than the charts.
-  # tag: latest
+  # tag:
 
 ## Connection details for the Synapse database
 postgresql:
   host:
-  database:
-  username:
+  # database: synapse
+  # username: synapse
   password:
 
 ## Connection details for the Synapse instance
 synapse:
   ## The URL to the Synapse instance, can either be a cluster-internal or external URL
-  ## E.g. http://matrix-synapse.matrix.svc:8008 or https://matrix.example.com
-  url:
+  ## E.g. http://matrix-synapse.other-matrix-namespace.svc:8008 or https://matrix.example.com
+  # url: http://matrix-synapse:8008
   token:
 
 ## Extra environment variables for configuring synatainer

@@ -1,9 +1,3 @@
-{{- if (not (and .Values.postgresql.host .Values.postgresql.password)) -}}
-{{   fail "You need to specify postgres connection details" }}
-{{- end -}}
-{{- if (not (and .Values.synapse.token)) -}}
-{{   fail "You need to specify synapse connection details" }}
-{{- end -}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -12,7 +6,7 @@ metadata:
   labels:
     {{- include "synatainer.labels" . | nindent 4 }}
 data:
-  DB_HOST: {{ .Values.postgresql.host | quote }}
+  DB_HOST: {{ required "You need to specify a postgres host" .Values.postgresql.host | quote }}
   DB_NAME: {{ .Values.postgresql.database | default "synapse" | quote }}
   DB_USER: {{ .Values.postgresql.username | default "synapse" | quote }}
   SYNAPSE_HOST: {{ .Values.synapse.url | default "http://matrix-synapse:8008" | quote }}
