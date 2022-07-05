@@ -14,6 +14,7 @@ Current applications
 - [Matrix Synapse](charts/matrix-synapse)
 - [Netbox](charts/netbox)
 - [CEPH RadosGW](charts/radosgw)
+- [Synatainer](charts/synatainer)
 
 Using
 -----
