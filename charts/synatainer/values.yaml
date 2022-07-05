@@ -1,0 +1,70 @@
+---
+## Container image configuration
+image:
+  repository: registry.gitlab.com/mb-saces/synatainer
+  pullPolicy: IfNotPresent
+  ## Overrides the image tag, for running a different version than the charts.
+  # tag: latest
+
+## Connection details for the Synapse database
+postgresql:
+  host:
+  database:
+  username:
+  password:
+
+## Connection details for the Synapse instance
+synapse:
+  ## The URL to the Synapse instance, can either be a cluster-internal or external URL
+  ## E.g. http://matrix-synapse.matrix.svc:8008 or https://matrix.example.com
+  url:
+  token:
+
+## Extra environment variables for configuring synatainer
+## See https://gitlab.com/mb-saces/synatainer/-/blob/develop/README.adoc
+extraEnv: {}
+  # MAILTO: notifications@example.com
+  # MAILFROM: synatainer@example.com
+  # SMTPHOST: smtp.example.com
+
+  # MEDIA_MAX_AGE: 90
+  # HISTORY_MAX_AGE: 180
+  # STATE_AUTOCOMPRESSOR_CHUNKS_TO_COMPRESS: 100
+  # STATE_AUTOCOMPRESSOR_CHUNK_SIZE: 500
+  # ROOM_KEEP_LIST: all
+  # HISTORY_ROOM_LIST: all
+  # HISTORY_KEEP_LIST:
+
+## If you need to set additional secret environment variables
+extraSecrets: {}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

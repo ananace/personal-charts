@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: synatainer
+description: Synapse Maintenance Container
+home: https://gitlab.com/mb-saces/synatainer
+type: application
+
+version: 1.0.0
+appVersion: "0.4.0"
+
+maintainers:
+  - name: Alexander Olofsson
+    email: ace@haxalot.com

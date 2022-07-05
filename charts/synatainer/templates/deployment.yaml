@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "synatainer.fullname" . }}
+  labels:
+    {{- include "synatainer.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "synatainer.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "synatainer.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "synatainer.fullname" . }}
+            - secretRef:
+                name: {{ include "synatainer.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
