@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "peertube.fullname" . }}
+  labels:
+    {{- include "peertube.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "peertube.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "peertube.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "peertube.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ include "peertube.imageTag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /data/config/
+              exec node dist/server
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+            - name: rtmp
+              containerPort: 1935
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NODE_CONFIG_DIR
+              value: "/app/config:/app/support/docker/production/config:/config:/data/config"
+            - name: PEERTUBE_LOCAL_CONFIG
+              value: /data/config
+{{- if (or .Values.postgresql.enabled .Values.externalPostgresql.existingSecret) }}
+            - name: PEERTUBE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.postgresql.enabled }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+                  name: {{ .Values.postgresql.auth.existingSecret | default (include "peertube.postgresql.fullname" .) }}
+                {{- else }}
+                  key: {{ .Values.externalPostgresql.existingSecretKey | default "postgres-password" }}
+                  name: {{ .Values.externalPostgresql.existingSecret }}
+                {{- end }}
+{{- end }}
+{{- if (or .Values.redis.enabled .Values.externalRedis.existingSecret) }}
+            - name: PEERTUBE_REDIS_AUTH
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.redis.enabled }}
+                  key: redis-password
+                  name: {{ .Values.redis.auth.existingSecret | default (include "peertube.redis.fullname" .) }}
+                {{- else }}
+                  key: {{ .Values.externalRedis.existingSecretKey | default "redis-peassword" }}
+                  name: {{ .Values.externalRedis.existingSecret }}
+                {{- end }}
+{{- end }}
+{{- if .Values.config.mail.externalSecret }}
+            - name: PEERTUBE_SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.config.mail.externalSecretKey | default "smtp-password" }}
+                  name: {{ .Values.config.mail.externalSecret }}
+{{- end }}
+{{- with .Values.extraEnv }}
+            {{- . | toYaml | nindent 12 }}
+{{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "peertube.fullname" . }}
+          volumeMounts:
+            - mountPath: /home/peertube
+              name: empty
+              subPath: home
+            - mountPath: /tmp
+              name: empty
+              subPath: tmp
+            - mountPath: /data
+              name: data
+            - mountPath: /config/production.yaml
+              subPath: production.yaml
+              name: configmap
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ include "peertube.fullname" . }}
+        - name: empty
+          emptyDir: {}
+        - name: data
+      {{- if (or .Values.config.persistence.enabled .Values.config.persistence.existingClaim) }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.config.persistence.existingClaim | default (include "peertube.fullname" .) }}
+      {{- else }}
+          emptyDir: {}
+      {{- end }}
