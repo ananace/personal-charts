@@ -12,9 +12,14 @@ data:
       port: 9000
 
     webserver:
-      hostname: {{ .Values.config.serverName }}
+      hostname: {{ required "You need to specify a server name" .Values.config.serverName | quote }}
       port: 443
       https: true
+
+    webadmin:
+      configuration:
+        edition:
+          allowed: {{ .Values.config.webadminConfig }}
 
     admin:
       email: {{ required "You need to specify an admin email" .Values.config.admin.email | quote }}

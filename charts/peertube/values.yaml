@@ -12,12 +12,19 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# strategy:
+#   type: RollingUpdate
+
 ## Main Peertube configuration
 ##
 config:
   ## Public server name, will be used to configure both Peertube and the Ingress
   ## resource if enabled.
-  serverName: peertube.example.com
+  serverName:
+
+  ## Should in-application configuration be possible, enabling this will
+  ## use an init-container to create a config folder in your persistent storage.
+  webadminConfig: true
 
   admin:
     email:
@@ -59,7 +66,7 @@ config:
       # prefix:
       # base_url:
 
-  ## Main persistent store, will be used for uploads, processing, plugins, etc.
+  ## Main persistent storage, will be used for uploads, processing, plugins, etc
   persistence:
     enabled: true
 
@@ -91,6 +98,7 @@ extraSecret: {}
   # PEERTUBE_INSTANCE_TERMS: "These are some very secret terms-of-service"
 
 ## Self-deployed PostgreSQL database
+## See: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 ##
 postgresql:
   enabled: true
@@ -100,7 +108,7 @@ postgresql:
     username: peertube
 
     # existingSecret:
-    secretKeys: {}
+    # secretKeys:
     #   userPasswordKey: password
 
   persistence:
@@ -121,6 +129,7 @@ externalPostgresql:
   # existingSecretKey: postgres-password
 
 ## Self-deployed Redis database
+## See: https://github.com/bitnami/charts/tree/master/bitnami/redis
 ##
 redis:
   enabled: true
@@ -130,10 +139,8 @@ redis:
     enabled: true
     # password: peertube
 
-    ## Or use existing secret with "redis-password" key
-    ## instead of static password
-    ##
     # existingSecret: redis-secret
+    # existingSecretPasswordKey: redis-password
 
   master:
     persistence:

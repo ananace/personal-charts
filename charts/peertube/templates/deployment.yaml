@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +22,16 @@ spec:
       {{- end }}
       labels:
         {{- include "peertube.selectorLabels" . | nindent 8 }}
+    strategy:
+    {{- if .Values.strategy }}
+      {{- toYaml .Values.strategy | nindent 10 }}
+    {{- else }}
+      {{- if has "ReadWriteOnce" (.Values.config.persistence.accessModes | default (list "ReadWriteOnce")) }}
+      type: Recreate
+      {{- else }}
+      type: RollingUpdate
+      {{- end }}
+    {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -29,18 +40,27 @@ spec:
       serviceAccountName: {{ include "peertube.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.config.webadminConfig }}
+      initContainers:
+        - name: config-ensure
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          command:
+            - mkdir
+            - -p
+            - /data/config/
+          volumeMounts:
+            - mountPath: /data
+              name: data
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ include "peertube.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              mkdir -p /data/config/
-              exec node dist/server
           ports:
             - name: http
               containerPort: 9000
@@ -78,10 +98,10 @@ spec:
               valueFrom:
                 secretKeyRef:
                 {{- if .Values.redis.enabled }}
-                  key: redis-password
+                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "redis-password" }}
                   name: {{ .Values.redis.auth.existingSecret | default (include "peertube.redis.fullname" .) }}
                 {{- else }}
-                  key: {{ .Values.externalRedis.existingSecretKey | default "redis-peassword" }}
+                  key: {{ .Values.externalRedis.existingSecretKey | default "redis-password" }}
                   name: {{ .Values.externalRedis.existingSecret }}
                 {{- end }}
 {{- end }}
