@@ -12,6 +12,16 @@ spec:
   selector:
     matchLabels:
       {{- include "peertube.selectorLabels" . | nindent 6 }}
+  strategy:
+  {{- if .Values.strategy }}
+    {{- toYaml .Values.strategy | nindent 10 }}
+  {{- else }}
+    {{- if has "ReadWriteOnce" (.Values.config.persistence.accessModes | default (list "ReadWriteOnce")) }}
+    type: Recreate
+    {{- else }}
+    type: RollingUpdate
+    {{- end }}
+  {{- end }}
   template:
     metadata:
       annotations:
@@ -22,16 +32,6 @@ spec:
       {{- end }}
       labels:
         {{- include "peertube.selectorLabels" . | nindent 8 }}
-    strategy:
-    {{- if .Values.strategy }}
-      {{- toYaml .Values.strategy | nindent 10 }}
-    {{- else }}
-      {{- if has "ReadWriteOnce" (.Values.config.persistence.accessModes | default (list "ReadWriteOnce")) }}
-      type: Recreate
-      {{- else }}
-      type: RollingUpdate
-      {{- end }}
-    {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -86,7 +86,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                 {{- if .Values.postgresql.enabled }}
-                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+                  key: {{ (.Values.postgresql.auth.secretKeys | default dict).userPasswordKey | default "password" }}
                   name: {{ .Values.postgresql.auth.existingSecret | default (include "peertube.postgresql.fullname" .) }}
                 {{- else }}
                   key: {{ .Values.externalPostgresql.existingSecretKey | default "postgres-password" }}
