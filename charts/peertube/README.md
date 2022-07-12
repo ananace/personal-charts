@@ -17,6 +17,10 @@ For a simple install with an authentication-less SMPT server this could look lik
 
     helm install peertube ananace-charts/peertube --set config.serverName=videos.example.com,config.admin.email=admin@example.com,config.mail.hostname=smtp.example.com
 
+If your storage class supports RWX (ReadWriteMany) storage, it's strongly recommended to use it for peertube, to avoid downtime on upgrades.
+
+    helm install ... --set config.persistence.accessModes[0]=ReadWriteMany
+
 ### Live-streaming / RTMP
 
 For the live-streaming functionality to work, you will need to make sure your ingress forwards TCP connections on the RTMP port. (1935 by default)
