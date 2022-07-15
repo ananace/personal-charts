@@ -13,6 +13,7 @@ Current applications
 - [Matrix Media Repo](charts/matrix-media-repo)
 - [Matrix Synapse](charts/matrix-synapse)
 - [Netbox](charts/netbox)
+- [Peertube](charts/peertube)
 - [CEPH RadosGW](charts/radosgw)
 - [Synatainer](charts/synatainer)
 

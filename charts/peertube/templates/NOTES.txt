@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled }}
 1. Visit the application at the following URL
-{{- range .paths }}
+{{- range .Values.ingress.paths }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $.Values.config.serverName }}{{ .path }}
 {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
