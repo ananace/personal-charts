@@ -122,14 +122,18 @@ spec:
             - name: listener
               containerPort: 8083
               protocol: TCP
-            {{- if (or $config.livenessProbe $default.livenessProbe) }}
-          livenessProbe:
-              {{- $config.livenessProbe | default $default.livenessProbe | toYaml | nindent 12 }}
-            {{- end }}
             {{- if (or $config.readinessProbe $default.readinessProbe) }}
           readinessProbe:
               {{- $config.readinessProbe | default $default.readinessProbe | toYaml | nindent 12 }}
             {{- end }}
+          {{- end }}
+          {{- if (or $config.livenessProbe $default.livenessProbe) }}
+          livenessProbe:
+              {{- $config.livenessProbe | default $default.livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if (or $config.startupProbe $default.startupProbe) }}
+          startupProbe:
+              {{- $config.startupProbe | default $default.startupProbe | toYaml | nindent 12 }}
           {{- end }}
           resources:
             {{- $config.resources | default $default.resources | toYaml | nindent 12 }}

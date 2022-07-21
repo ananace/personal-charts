@@ -352,14 +352,23 @@ workers:
     livenessProbe:
       httpGet:
         path: /health
-        port: listener
+        port: metrics
 
     ## Readiness probe configuration to use
     ##
     readinessProbe:
       httpGet:
         path: /health
-        port: listener
+        port: metrics
+
+    ## Readiness probe configuration to use
+    ## Defaults to allowing workers 60 seconds to start up
+    ##
+    startupProbe:
+      failureThreshold: 6
+      httpGet:
+        path: /health
+        port: metrics
 
     ## Node selector configuration to set on the worker.
     ##
