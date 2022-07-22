@@ -36,7 +36,7 @@ data:
     worker_listeners:
       - port: 9090
         tls: false
-        bind_addresses: ['0.0.0.0']
+        bind_addresses: ['::']
         type: http
 
         resources:
