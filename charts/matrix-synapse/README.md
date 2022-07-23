@@ -10,11 +10,11 @@ __Attention:__ _The upgrade to 1.51.0 requires manual action, please read the up
 
 ## Prerequisites
 
-- Kubernetes 1.15+
+- Kubernetes 1.20+
 - Helm 3.0+
 - Ingress installed in the cluster
 
-**NB**; Matrix requires the use of valid certificates.
+**NB**; Matrix requires the use of valid SSL certificates for federation.
 
 ## Installing
 
@@ -65,6 +65,13 @@ Additionally, when using well-known federation, your Synapse cert only needs to 
 
 More advanced setups can be made using `ingress.hosts`, `ingress.csHosts`, and `ingress.wkHosts` for server-server, client-server, and well-known endpoints respectively.  
 Alternatively, you can use your own ingress setup, or switch the main service to `LoadBalancer` and add a TLS listener.
+
+### Application services / extra config files
+
+Synapse is configured to read all configuration files found under `/synapse/config/conf.d/` - which is mounted as an emptyDir to allow for read-only root.
+
+You can mount your additional configuration values under here if you want to have configuration that doesn't map well to the `extraConfig`/`extraSecrets` values.
+Note that due to how the mounts are set up, you will have to `subPath`-mount individual files into the folder in order for them to be loaded.
 
 ## Upgrading
 
