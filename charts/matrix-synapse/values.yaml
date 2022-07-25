@@ -482,7 +482,7 @@ workers:
   #  generic: true
   #  listeners: [federation]
   #  paths:
-  #     - "/_matrix/federation/v1/send/.*"
+  #     - "/_matrix/federation/v1/send/"
 
   ## Or /sync handling.
   ## NB; Care should be taken to route users to the same instance when scaling this worker,
@@ -493,10 +493,10 @@ workers:
   #  generic: true
   #  listeners: [client]
   #  csPaths:
-  #    - "/_matrix/client/(v2_alpha|r0|v3)/sync"
-  #    - "/_matrix/client/(api/v1|v2_alpha|r0|v3)/events"
-  #    - "/_matrix/client/(api/v1|r0|v3)/initialSync"
-  #    - "/_matrix/client/(api/v1|r0|v3)/rooms/[^/]+/initialSync"
+  #    - "/_matrix/client/(v2_alpha|r0|v3)/sync$"
+  #    - "/_matrix/client/(api/v1|v2_alpha|r0|v3)/events$"
+  #    - "/_matrix/client/(api/v1|r0|v3)/initialSync$"
+  #    - "/_matrix/client/(api/v1|r0|v3)/rooms/[^/]+/initialSync$"
 
   ## Specialized - non-generic workers below;
 
@@ -527,12 +527,12 @@ workers:
     listeners: [media]
     csPaths:
       - "/_matrix/media/.*"
-      - "/_synapse/admin/v1/purge_media_cache"
-      - "/_synapse/admin/v1/room/.*/media.*"
-      - "/_synapse/admin/v1/user/.*/media.*"
-      - "/_synapse/admin/v1/media/.*"
-      - "/_synapse/admin/v1/quarantine_media/.*"
-      - "/_synapse/admin/v1/users/.*/media"
+      - "/_synapse/admin/v1/purge_media_cache$"
+      - "/_synapse/admin/v1/room/.*/media"
+      - "/_synapse/admin/v1/user/.*/media"
+      - "/_synapse/admin/v1/media/"
+      - "/_synapse/admin/v1/quarantine_media/"
+      - "/_synapse/admin/v1/users/.*/media$"
     paths:
       - "/_matrix/media/.*"
 
@@ -542,7 +542,7 @@ workers:
     enabled: false
     listeners: [client]
     csPaths:
-      - "/_matrix/client/(api/v1|r0|v3|unstable)/user_directory/search"
+      - "/_matrix/client/(api/v1|r0|v3|unstable)/user_directory/search$"
 
   ## This worker handles key uploads, and may also stub out presence if that is
   ## disabled. If you set extraConfig.use_presence=false then you may want to
