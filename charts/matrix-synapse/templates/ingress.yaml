@@ -164,39 +164,27 @@ spec:
 
         {{- if has . $wkHosts }}
           {{- if $.Values.wellknown.enabled }}
-          - path: /.well-known/matrix/client
+          - path: /.well-known/matrix
             backend:
             {{- if $v1Ingress }}
               service:
                 name: {{ $wkName }}
                 port:
                   number: 80
-            pathType: Exact
-            {{- else }}
-              serviceName: {{ $wkName }}
-              servicePort: 80
-            {{- end }}
-          - path: /.well-known/matrix/server
-            backend:
-            {{- if $v1Ingress }}
-              service:
-                name: {{ $wkName }}
-                port:
-                  number: 80
-            pathType: Exact
+            pathType: Prefix
             {{- else }}
               serviceName: {{ $wkName }}
               servicePort: 80
             {{- end }}
           {{-   else }}
-          - path: /.well-known/matrix/client
+          - path: /.well-known/matrix
             backend:
             {{- if $v1Ingress }}
               service:
                 name: {{ $fullName }}
                 port:
                   number: {{ $.Values.service.port }}
-            pathType: Exact
+            pathType: Prefix
             {{- else }}
               serviceName: {{ $fullName }}
               servicePort: {{ $.Values.service.port }}

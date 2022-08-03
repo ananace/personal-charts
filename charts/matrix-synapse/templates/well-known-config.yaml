@@ -27,8 +27,11 @@ data:
     server.document-root = {{ .Values.wellknown.htdocsPath | quote }}
     server.pid-file      = "/run/lighttpd.pid"
     url.rewrite-once     = (
-      "^/\.well-known/matrix/client" => "/client.json",
-      "^/\.well-known/matrix/server" => "/server.json"
+{{- $keys := concat (list "client" "server") (keys .Values.wellknown.extraData) }}
+{{- range $key := initial $keys }}
+      "^/\.well-known/matrix/{{ $key }}" => "/{{ $key }}.json",
+{{- end }}
+      "^/\.well-known/matrix/{{ last $keys }}" => "/{{ last $keys }}.json"
     )
     status.status-url    = "/server-status"
     extforward.forwarder = ( "all" => "trust")
@@ -52,4 +55,12 @@ data:
 {{-   else }}
 {{ dict "m.homeserver" (dict "base_url" (printf "https://%s/" (.Values.publicServerName | default .Values.serverName))) | toJson | indent 4 }}
 {{-   end }}
+{{-   range $key, $value := .Values.wellknown.extraData }}
+  {{ $key }}.json: |-
+{{-     if $value | kindIs "string" -}}
+    {{ $value | nindent 4 }}
+{{-     else -}}
+    {{ $value | toJson | nindent 4 }}
+{{-     end -}}
+{{-   end -}}
 {{- end -}}

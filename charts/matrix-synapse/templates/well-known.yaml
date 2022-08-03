@@ -64,12 +64,12 @@ spec:
             - mountPath: /etc/lighttpd/lighttpd.conf
               name: files
               subPath: lighttpd.conf
-            - mountPath: {{ .Values.wellknown.htdocsPath }}/client.json
+{{- $keys := concat (list "client" "server") (keys .Values.wellknown.extraData) }}
+{{- range $key := $keys }}
+            - mountPath: {{ $.Values.wellknown.htdocsPath }}/{{ $key }}.json
               name: files
-              subPath: client.json
-            - mountPath: {{ .Values.wellknown.htdocsPath }}/server.json
-              name: files
-              subPath: server.json
+              subPath: {{ $key }}.json
+{{- end }}
             - mountPath: /run
               name: run
           resources:
