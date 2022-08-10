@@ -436,19 +436,29 @@ workers:
       - "/_matrix/client/(api/v1|r0|v3|unstable)/join/"
       - "/_matrix/client/(api/v1|r0|v3|unstable)/profile/"
       
-      ## Account data requests
-      - "/_matrix/client/(r0|v3|unstable)/.*/tags"
-      - "/_matrix/client/(r0|v3|unstable)/.*/account_data"
-      
-      ## Receipts requests
-      - "/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt"
-      - "/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers"
-      
-      ## Presence requests
-      - "/_matrix/client/(api/v1|r0|v3|unstable)/presence/"
-      
       ## User directory search requests
       - "/_matrix/client/(r0|v3|unstable)/user_directory/search"
+
+      ## Worker event streams
+      ## See https://matrix-org.github.io/synapse/latest/workers.html#stream-writers
+      ##
+      
+      ## The typing event stream
+      # - "/_matrix/client/(api/v1|r0|v3|unstable)/rooms/.*/typing"
+      
+      ## The to_device event stream
+      # - "/_matrix/client/(r0|v3|unstable)/sendToDevice/"
+
+      ## The account_data event stream
+      # - "/_matrix/client/(r0|v3|unstable)/.*/tags"
+      # - "/_matrix/client/(r0|v3|unstable)/.*/account_data"
+      
+      ## The receipts event stream
+      # - "/_matrix/client/(r0|v3|unstable)/rooms/.*/receipt"
+      # - "/_matrix/client/(r0|v3|unstable)/rooms/.*/read_markers"
+      
+      ## The presence event stream
+      # - "/_matrix/client/(api/v1|r0|v3|unstable)/presence/"
 
     paths:
       ## Federation requests
