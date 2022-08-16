@@ -49,3 +49,7 @@ Selector labels
 app.kubernetes.io/name: {{ include "synatainer.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{- define "synatainer.pgpassword" -}}
+{{- printf "%s:%s:%s:%s" (required "You need to specify a postgres host" .Values.postgresql.host) (.Values.postgresql.port | default 5432 | toString) (.Values.postgresql.database | default "synapse") (.Values.postgresql.username | default "synapse") (required "You need to specify a postgres password" .Values.postgresql.password) }}
+{{- end }}

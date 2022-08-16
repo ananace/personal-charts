@@ -6,9 +6,6 @@ metadata:
   labels:
     {{- include "synatainer.labels" . | nindent 4 }}
 data:
-  DB_HOST: {{ required "You need to specify a postgres host" .Values.postgresql.host | quote }}
-  DB_NAME: {{ .Values.postgresql.database | default "synapse" | quote }}
-  DB_USER: {{ .Values.postgresql.username | default "synapse" | quote }}
   SYNAPSE_HOST: {{ .Values.synapse.url | default "http://matrix-synapse:8008" | quote }}
 
 {{- range $key, $val := .Values.extraEnv }}

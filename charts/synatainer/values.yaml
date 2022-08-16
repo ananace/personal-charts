@@ -9,6 +9,7 @@ image:
 ## Connection details for the Synapse database
 postgresql:
   host:
+  # port: 5432
   # database: synapse
   # username: synapse
   password:
