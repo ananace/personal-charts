@@ -3,6 +3,7 @@
 {{- range $worker, $config := .Values.workers }}
 {{- if $config.enabled }}
 {{- $name := $worker | replace "_" "-" }}
+{{- $app := $config.app | default $worker }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -78,7 +79,7 @@ spec:
               {{- end }}
               {{- end }}
 
-              exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $worker }} \
+              exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $app }} \
                           -c /synapse/config/homeserver.yaml \
                           -c /synapse/config/conf.d/ \
                           -c /synapse/config/{{ $name }}.worker

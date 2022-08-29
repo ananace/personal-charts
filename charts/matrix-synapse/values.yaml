@@ -529,6 +529,13 @@ workers:
   federation_sender:
     enabled: false
 
+  ## Specialized workers can also be run as multiple separate instances,
+  ## make sure to read the relevant documentation.
+  ##
+  # federation_sender_other:
+  #   app: federation_sender
+  #   enabled: false
+
   ## This worker deals with serving and storing media.
   ## NB; Running multiple instances will conflict with background jobs.
   ##
