@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "synatainer.labels" . | nindent 4 }}
 spec:
+  replicas: 1
   selector:
     matchLabels:
       {{- include "synatainer.selectorLabels" . | nindent 6 }}
@@ -13,10 +14,10 @@ spec:
     type: Recreate
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -33,14 +34,17 @@ spec:
             - sh
             - -c
             - |
+              cp /tmp/mxtoken /conf/
               cp /tmp/pgpassword /conf/
               exec /entrypoint.sh
           name: {{ .Chart.Name }}
           envFrom:
             - configMapRef:
                 name: {{ include "synatainer.fullname" . }}
+          {{- if .Values.extraSecrets }}
             - secretRef:
                 name: {{ include "synatainer.fullname" . }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -50,9 +54,12 @@ spec:
           volumeMounts:
             - name: emptydir
               mountPath: /conf
-            - name: pgpassword
+            - name: tokens
               mountPath: /tmp/pgpassword
               subPath: pgpassword
+            - name: tokens
+              mountPath: /tmp/mxtoken
+              subPath: mxtoken
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -66,9 +73,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: pgpassword
+        - name: tokens
           secret:
-            secretName: {{ include "synatainer.fullname" . }}-pgpass
+            secretName: {{ include "synatainer.fullname" . }}-tokens
             defaultMode: 0600
         - name: emptydir
           emptyDir: {}

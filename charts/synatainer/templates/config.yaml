@@ -8,6 +8,11 @@ metadata:
 data:
   SYNAPSE_HOST: {{ .Values.synapse.url | default "http://matrix-synapse:8008" | quote }}
 
+  DB_HOST: {{ .Values.postgresql.host | quote }}
+  DB_PORT: {{ .Values.postgresql.port | default 5432 | quote }}
+  DB_NAME: {{ .Values.postgresql.database | default "synapse" | quote }}
+  DB_USER: {{ .Values.postgresql.username | default "synapse" | quote }}
+
 {{- range $key, $val := .Values.extraEnv }}
   {{ $key }}: {{ $val | toString | quote }}
 {{- end -}}
