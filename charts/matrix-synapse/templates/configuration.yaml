@@ -113,23 +113,23 @@ data:
     {{- $default := .Values.workers.default }}
     {{- range $worker, $config := .Values.workers }}
       {{- if $config.enabled }}
-        {{- if or (eq $worker "pusher") (eq $config.app "pusher") }}
+        {{- if or (eq $worker "pusher") (eq ($config.app | default "") "pusher") }}
 
     # For pusher worker
     start_pushers: false
-        {{- else if or (eq $worker "appservice") (eq $config.app "appservice") }}
+        {{- else if or (eq $worker "appservice") (eq ($config.app | default "") "appservice") }}
 
     # For appservice worker
     notify_appservices: false
-        {{- else if or (eq $worker "federation_sender") (eq $config.app "federation_sender") }}
+        {{- else if or (eq $worker "federation_sender") (eq ($config.app | default "") "federation_sender") }}
 
     # For federation_sender worker
     send_federation: false
-        {{- else if or (eq $worker "media_repository") (eq $config.app "media_repository") }}
+        {{- else if or (eq $worker "media_repository") (eq ($config.app | default "") "media_repository") }}
 
     # For media_repository worker
     enable_media_repo: false
-        {{- else if or (eq $worker "user_dir") (eq $config.app "user_dir") }}
+        {{- else if or (eq $worker "user_dir") (eq ($config.app | default "") "user_dir") }}
 
     # For user_dir worker
     update_user_directory: false
