@@ -2,7 +2,7 @@
 {{- if (and .Values.postgresql.enabled (and (not .Values.postgresql.postgresqlPassword) (not .Values.postgresql.existingSecret))) -}}
 {{-  fail "You must specify a static postgres password or existing secret if using the included postgres chart" -}}
 {{- end -}}
-{{- if (and .Values.redis.enabled (and .Values.redis.usePassword (and (not .Values.redis.auth.password) (not .Values.redis.existingSecret)))) -}}
+{{- if (and .Values.redis.enabled (and .Values.redis.usePassword (and (not .Values.redis.auth.password) (not .Values.redis.auth.existingSecret)))) -}}
 {{-  fail "You must specify a static redis password or existing secret if using the included redis chart" -}}
 {{- end -}}
 ---
@@ -98,7 +98,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.redis.enabled }}
-                  name: {{ .Values.redis.existingSecret | default (include "matrix-synapse.redis.fullname" .) }}
+                  name: {{ .Values.redis.auth.existingSecret | default (include "matrix-synapse.redis.fullname" .) }}
                   key: redis-password
                   {{- else }}
                   name: {{ .Values.externalRedis.existingSecret }}
