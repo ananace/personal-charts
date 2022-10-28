@@ -101,7 +101,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if $.Values.redis.enabled }}
-                  name: {{ $.Values.redis.existingSecret | default (include "matrix-synapse.redis.fullname" $) }}
+                  name: {{ $.Values.redis.auth.existingSecret | default (include "matrix-synapse.redis.fullname" $) }}
                   key: redis-password
                   {{- else }}
                   name: {{ $.Values.externalRedis.existingSecret }}
