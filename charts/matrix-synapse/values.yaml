@@ -46,6 +46,11 @@ signingkey:
   ##
   job:
     enabled: true
+    ## Annotations to apply to the signing-key-job.
+    ##
+    annotations: { }
+    #  argocd.argoproj.io/hook: PostSync
+    #  argocd.argoproj.io/hook-delete-policy: HookSucceeded
 
     generateImage:
       repository: matrixdotorg/synapse
