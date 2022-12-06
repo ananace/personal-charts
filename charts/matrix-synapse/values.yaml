@@ -46,6 +46,7 @@ signingkey:
   ##
   job:
     enabled: true
+
     ## Annotations to apply to the signing-key-job.
     ##
     annotations: { }

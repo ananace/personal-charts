@@ -55,10 +55,10 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
-  { { - with .Values.signingkey.job.annotations } }
+  {{- with .Values.signingkey.job.annotations }}
   annotations:
-    { { - toYaml . | nindent 4 } }
-  { { - end } }
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ttlSecondsAfterFinished: 0
   template:
