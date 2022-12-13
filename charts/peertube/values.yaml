@@ -26,6 +26,9 @@ config:
   ## use an init-container to create a config folder in your persistent storage.
   webadminConfig: true
 
+  ## Generate with somethingl like `openssl rand -hex 32` - will auto-generate if left blank
+  #secret:
+
   admin:
     email:
 

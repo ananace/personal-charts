@@ -60,6 +60,16 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          command:
+            - bash
+            - -c
+            - |
+              (
+                echo "Running migrations in background..."
+                find dist/scripts/migrations/ -iname '*.js' | xargs -rn1 node
+                echo "Background migrations have finished."
+              ) &
+              node dist/server
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ include "peertube.imageTag" . }}"
