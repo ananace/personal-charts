@@ -677,17 +677,17 @@ wellknown:
 postgresql:
   enabled: true
 
-  auth: {}
+  auth:
     # XXX Change me!
-    # password: synapse
+    password: synapse
 
-    ## Or use existing secret with "postgresql-password" key
+    ## Or use existing secret with "password" key
     ## instead of static password
     ##
     # existingSecret: postgresql-secret
 
-    # username: synapse
-    # database: synapse
+    username: synapse
+    database: synapse
 
   primary:
     initdb:

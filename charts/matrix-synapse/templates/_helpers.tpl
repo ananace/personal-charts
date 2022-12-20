@@ -150,7 +150,7 @@ Set postgresql username
 */}}
 {{- define "matrix-synapse.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{-  if (and (not .Values.postgresql.auth.username) (.Values.postgresql.postgresqlUsername)) -}}
+{{-  if .Values.postgresql.postgresqlUsername -}}
 {{-    fail "You need to switch to the new postgresql.auth values." -}}
 {{-  end -}}
 {{- .Values.postgresql.auth.username | default "postgres" }}
@@ -164,7 +164,7 @@ Set postgresql password
 */}}
 {{- define "matrix-synapse.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
-{{-  if (and (not .Values.postgresql.auth.password) (.Values.postgresql.postgresqlPassword)) -}}
+{{-  if .Values.postgresql.postgresqlPassword -}}
 {{-    fail "You need to switch to the new postgresql.auth values." -}}
 {{-  end -}}
 {{- .Values.postgresql.auth.password | default "synapse" }}
@@ -178,7 +178,7 @@ Set postgresql database
 */}}
 {{- define "matrix-synapse.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
-{{-  if (and (not .Values.postgresql.auth.database) (.Values.postgresql.postgresqlDatabase)) -}}
+{{-  if .Values.postgresql.postgresqlDatabase -}}
 {{-    fail "You need to switch to the new postgresql.auth values." -}}
 {{-  end -}}
 {{- .Values.postgresql.auth.database | default "synapse" }}
