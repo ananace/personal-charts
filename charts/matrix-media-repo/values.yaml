@@ -88,8 +88,9 @@ persistence:
 postgresql:
   enabled: true
 
-  postgresqlUsername: matrix_media_repo
-  postgresqlDatabase: matrix_media_repo
+  auth:
+    username: matrix_media_repo
+    database: matrix_media_repo
 
   persistence:
     size: 16G
