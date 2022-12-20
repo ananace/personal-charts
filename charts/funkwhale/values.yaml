@@ -42,36 +42,40 @@ postgresql:
   ## External Postgresql hostname or IP
   # host: postgresql.example.com
 
-  ## Database user
-  postgresqlUsername: funkwhale
+  auth:
+    ## Database user
+    username: funkwhale
 
-  ## Database password
-  postgresqlPassword: funkwhale
+    ## Database password
+    password: funkwhale
 
-  ## Database password
-  postgresqlDatabase: funkwhale
+    ## Database password
+    database: funkwhale
 
   ## Database port
   service:
     port: 5432
 
-  ## Database storage configuration
-  persistence:
-    enabled: true
-    # storageClass: ""
-    # size: 8Gi
+  primary:
+    ## Database storage configuration
+    persistence:
+      enabled: true
+      # storageClass: ""
+      # size: 8Gi
 
-  pgHbaConfiguration: |
-    local all all trust
-    host all all localhost trust
-    host all all 0.0.0.0/0 md5
-    host all all ::/0 md5
-  initdbScripts:
-    enable_extensions.sh: |
-      #!/bin/sh
+    pgHbaConfiguration: |
+      local all all trust
+      host all all localhost trust
+      host all all 0.0.0.0/0 md5
+      host all all ::/0 md5
 
-      echo 'create extension unaccent;' | psql -U postgres $POSTGRESQL_DATABASE
-      echo 'create extension citext;' | psql -U postgres $POSTGRESQL_DATABASE
+    initdb:
+      scripts:
+        enable_extensions.sh: |
+          #!/bin/sh
+
+          echo 'create extension unaccent;' | psql -U postgres $POSTGRESQL_DATABASE
+          echo 'create extension citext;' | psql -U postgres $POSTGRESQL_DATABASE
 
 redis:
   ## If you already have a Redis service you'd like to use, set
@@ -87,6 +91,7 @@ redis:
 
   architecture: standalone
   master:
+    kind: Deployment
     persistence:
       enabled: false
     service:
