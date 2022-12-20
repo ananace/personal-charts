@@ -150,7 +150,10 @@ Set postgresql username
 */}}
 {{- define "matrix-synapse.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- .Values.postgresql.postgresqlUsername | default "postgres" }}
+{{-  if (and (not .Values.postgresql.auth.username) (.Values.postgresql.postgresqlUsername)) -}}
+{{-    fail "You need to switch to the new postgresql.auth values." -}}
+{{-  end -}}
+{{- .Values.postgresql.auth.username | default "postgres" }}
 {{- else -}}
 {{ required "A valid externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
@@ -161,7 +164,10 @@ Set postgresql password
 */}}
 {{- define "matrix-synapse.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- .Values.postgresql.postgresqlPassword | default "" }}
+{{-  if (and (not .Values.postgresql.auth.password) (.Values.postgresql.postgresqlPassword)) -}}
+{{-    fail "You need to switch to the new postgresql.auth values." -}}
+{{-  end -}}
+{{- .Values.postgresql.auth.password | default "synapse" }}
 {{- else if not (and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretPasswordKey) -}}
 {{ required "A valid externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
@@ -172,7 +178,10 @@ Set postgresql database
 */}}
 {{- define "matrix-synapse.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- .Values.postgresql.postgresqlDatabase | default "synapse" }}
+{{-  if (and (not .Values.postgresql.auth.database) (.Values.postgresql.postgresqlDatabase)) -}}
+{{-    fail "You need to switch to the new postgresql.auth values." -}}
+{{-  end -}}
+{{- .Values.postgresql.auth.database | default "synapse" }}
 {{- else -}}
 {{ required "A valid externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}

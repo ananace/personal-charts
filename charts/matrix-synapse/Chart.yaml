@@ -6,17 +6,17 @@ icon: https://matrix.org/images/matrix-logo.svg
 appVersion: 1.74.0
 
 type: application
-version: 2.7.10
+version: 3.0.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
 
 dependencies:
   - name: postgresql
-    version: ^10.9.4
+    version: ^12.1.4
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: redis
-    version: ^16.1.0
+    version: ^17.3.17
     repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled

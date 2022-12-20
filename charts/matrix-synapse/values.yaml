@@ -677,22 +677,25 @@ wellknown:
 postgresql:
   enabled: true
 
-  # XXX Change me!
-  postgresqlPassword: synapse
+  auth:
+    # XXX Change me!
+    # password: synapse
 
-  ## Or use existing secret with "postgresql-password" key
-  ## instead of static password
-  ##
-  # existingSecret: postgresql-secret
+    ## Or use existing secret with "postgresql-password" key
+    ## instead of static password
+    ##
+    # existingSecret: postgresql-secret
 
-  postgresqlUsername: synapse
-  postgresqlDatabase: synapse
+    # username: synapse
+    # database: synapse
 
-  postgresqlInitdbArgs: "--lc-collate=C --lc-ctype=C"
+  primary:
+    initdb:
+      args: "--lc-collate=C --lc-ctype=C"
 
-  persistence:
-    # storageClass: "-"
-    size: 16Gi
+    persistence:
+      # storageClass: "-"
+      size: 16Gi
 
   ## Extra arguments for the database connection
   ## ref: https://github.com/matrix-org/synapse/blob/develop/docs/postgres.md#synapse-config
@@ -741,6 +744,7 @@ redis:
 
   architecture: standalone
   master:
+    kind: Deployment
     persistence:
       ## Note that Synapse only uses redis as a synchronization utility, so no
       ## data will ever need to be persisted.
@@ -748,8 +752,6 @@ redis:
       enabled: false
     service:
       port: 6379
-    statefulset:
-      updateStrategy: RollingUpdate
 
 ## An externally configured Redis server to use for workers/sharding.
 ##
