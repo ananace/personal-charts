@@ -4,13 +4,17 @@ stages:
   - deploy
 
 lint:charts:
-  image: alpine/helm
+  image:
+    name: alpine/helm
+    entrypoint: ["/bin/sh", "-c"]
   stage: test
   script:
     - helm lint charts/*
 
 pages:
-  image: alpine/helm
+  image:
+    name: alpine/helm
+    entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   before_script:
     - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
