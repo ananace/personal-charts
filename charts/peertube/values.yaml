@@ -151,6 +151,7 @@ redis:
     # existingSecretPasswordKey: redis-password
 
   master:
+    kind: Deployment
     persistence:
       enabled: true
 
