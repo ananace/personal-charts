@@ -1,5 +1,5 @@
 {{- $needsVolumePermissions := and .Values.volumePermissions.enabled (or .Values.persistence.enabled .Values.persistence.existingClaim) }}
-{{- if (and .Values.postgresql.enabled (and (not .Values.postgresql.postgresqlPassword) (not .Values.postgresql.existingSecret))) -}}
+{{- if (and .Values.postgresql.enabled (and (not .Values.postgresql.auth.password) (not .Values.postgresql.existingSecret))) -}}
 {{-  fail "You must specify a static postgres password or existing secret if using the included postgres chart" -}}
 {{- end -}}
 {{- if (and .Values.redis.enabled (and .Values.redis.usePassword (and (not .Values.redis.auth.password) (not .Values.redis.auth.existingSecret)))) -}}

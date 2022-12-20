@@ -677,7 +677,7 @@ wellknown:
 postgresql:
   enabled: true
 
-  auth:
+  auth: {}
     # XXX Change me!
     # password: synapse
 
