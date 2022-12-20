@@ -60,7 +60,7 @@ spec:
                   key: {{ .Values.postgresql.existingSecretKey }}
                 {{- else }}
                   name: {{ include "netbox.postgresql.fullname" . }}
-                  key: postgresql-password
+                  key: password
                 {{- end }}
           {{- end }}
           envFrom:

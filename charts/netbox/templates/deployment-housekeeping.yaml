@@ -44,10 +44,10 @@ spec:
                 secretKeyRef:
                 {{- if .Values.postgresql.existingSecret }}
                   name: {{ .Values.postgresql.existingSecret }}
-                  key: {{ .Values.postgresql.existingSecretKey }}
+                  key: password
                 {{- else }}
                   name: {{ include "netbox.postgresql.fullname" . }}
-                  key: postgresql-password
+                  key: password
                 {{- end }}
           {{- end }}
           envFrom:

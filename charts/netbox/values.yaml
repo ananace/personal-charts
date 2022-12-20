@@ -44,16 +44,17 @@ ingress:
 postgresql:
   enabled: true
 
-  postgresqlDatabase: netbox
-  postgresqlUsername: netbox
+  auth:
+    database: netbox
+    username: netbox
+    # password: postgres
+    ## When defined the `password` field is ignored
+    ## Refer to https://github.com/bitnami/charts/blob/d839514d4ea3072a816097493e74cf583d40e3cb/bitnami/postgresql/values.yaml#L143
+    # existingSecret: secret-name
 
   # The following variables are only used when internal PG is disabled
   # postgresqlHost: postgres
-  # postgresqlPassword: postgres
   # postgresqlPort: 5432
-  # When defined the `postgresqlPassword` field is ignored
-  # existingSecret: secret-name
-  # existingSecretKey: postgresql-password
 
 redis:
   architecture: standalone
@@ -62,6 +63,7 @@ redis:
     # password: netbox
 
   master:
+    kind: Deployment
     persistence:
       enabled: false
     service:

@@ -10,16 +10,16 @@ icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/proje
 appVersion: 3.4.1
 
 type: application
-version: 4.3.14
+version: 5.0.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
 
 dependencies:
   - name: postgresql
-    version: ^10.6.0
+    version: ^12.1.4
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: redis
-    version: ^15.7.0
+    version: ^17.3.17
     repository: https://charts.bitnami.com/bitnami
