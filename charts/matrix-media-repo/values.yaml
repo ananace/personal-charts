@@ -225,3 +225,11 @@ tolerations: []
 ## Affinities to set on the application.
 ##
 affinity: {}
+
+## Deployment annotations
+##
+annotations: {}
+
+## Deployment labels
+##
+labels: {}
