@@ -143,6 +143,8 @@ spec:
               mountPath: /synapse/keys
             - name: media
               mountPath: /synapse/data
+            - name: tmpdir
+              mountPath: /tmp
           {{- with .Values.synapse.extraVolumeMounts }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
@@ -166,6 +168,8 @@ spec:
               - key: {{ .Values.signingkey.existingSecretKey | default "signing.key" | quote }}
                 path: signing.key
         - name: tmpconf
+          emptyDir: {}
+        - name: tmpdir
           emptyDir: {}
         - name: media
         {{- $mediaworker := false }}
