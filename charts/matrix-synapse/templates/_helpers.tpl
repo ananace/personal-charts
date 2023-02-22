@@ -270,3 +270,14 @@ Set redis password
 {{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set redis database id
+*/}}
+{{- define "matrix-synapse.redis.dbid" -}}
+{{- if .Values.redis.dbid -}}
+{{ .Values.redis.dbid }}
+{{- else if .Values.externalRedis.dbid -}}
+{{ .Values.externalRedis.dbid }}
+{{- end -}}
+{{- end -}}

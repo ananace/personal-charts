@@ -732,6 +732,9 @@ externalPostgresql:
 redis:
   enabled: true
 
+  ## Database ID for non-default database
+  # dbid: 0
+
   auth:
     enabled: true
     # XXX Change me!
@@ -759,6 +762,9 @@ externalRedis:
   # host: redis
   port: 6379
   # password: synapse
+
+  ## Database ID for non-default database
+  # dbid: 0
 
   ## The name of an existing secret with redis credentials
   #existingSecret: redis-secrets
