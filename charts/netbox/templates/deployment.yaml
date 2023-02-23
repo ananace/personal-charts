@@ -48,7 +48,7 @@ spec:
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.existingDjagonSecret }}
+                  name: {{ .Values.existingDjangoSecret }}
                   key: {{ .Values.existingDjangoSecretKey }}
           {{- end }}
           {{- if .Values.postgresql.enabled }}
