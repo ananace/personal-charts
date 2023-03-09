@@ -1,4 +1,7 @@
 ** Note, this chart may take a while to finish setup, please be patient **
+{{- if .Values.signingkey.job.enabled }}
+** Also, remember to disable the signingkey job (signingkey.job.enabled=false) **
+{{- end }}
 {{- if not .Values.ingress.enabled }}
 
 Synapse has been installed without an ingress, you will need to manage
