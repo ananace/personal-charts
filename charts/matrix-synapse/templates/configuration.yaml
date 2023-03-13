@@ -51,7 +51,12 @@ data:
         x_forwarded: true
 
         resources:
-          - names: [client,federation]
+          - names: 
+              - client
+              - federation
+{{- with .Values.config.extraMainListenerTypes -}}
+              {{ . | toYaml | nindent 14 }}
+{{- end }}
             compress: false
 
       - port: 9090

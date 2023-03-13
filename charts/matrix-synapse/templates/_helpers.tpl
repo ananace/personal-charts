@@ -150,10 +150,7 @@ Set postgresql username
 */}}
 {{- define "matrix-synapse.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{-  if .Values.postgresql.postgresqlUsername -}}
-{{-    fail "You need to switch to the new postgresql.auth values." -}}
-{{-  end -}}
-{{- .Values.postgresql.auth.username | default "postgres" }}
+{{ required "A valid postgresql.auth.username is required" .Values.postgresql.auth.username }}
 {{- else -}}
 {{ required "A valid externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
@@ -164,10 +161,7 @@ Set postgresql password
 */}}
 {{- define "matrix-synapse.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
-{{-  if .Values.postgresql.postgresqlPassword -}}
-{{-    fail "You need to switch to the new postgresql.auth values." -}}
-{{-  end -}}
-{{- .Values.postgresql.auth.password | default "synapse" }}
+{{ required "A valid postgresql.auth.password is required" .Values.postgresql.auth.password }}
 {{- else if not (and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretPasswordKey) -}}
 {{ required "A valid externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
@@ -262,9 +256,9 @@ Set redis port
 Set redis password
 */}}
 {{- define "matrix-synapse.redis.password" -}}
-{{- if .Values.redis.password -}}
+{{- if (and .Values.redis.enabled .Values.redis.password) -}}
 {{ .Values.redis.password }}
-{{- else if .Values.redis.auth.password -}}
+{{- else if (and .Values.redis.enabled .Values.redis.auth.password) -}}
 {{ .Values.redis.auth.password }}
 {{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}

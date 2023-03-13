@@ -135,6 +135,11 @@ config:
   #    bind_addresses: ['::']
   #    type: manhole
 
+  ## Extra listener types to add onto the main listener.
+  ##
+  extraMainListenerTypes: []
+  #  - consent
+
 ## Specify arbitrary Synapse configuration here;
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
