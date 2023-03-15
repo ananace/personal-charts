@@ -133,8 +133,6 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /synapse/config
-            - name: scripts
-              mountPath: /opt/k8s-synapse
             - name: tmpconf
               mountPath: /synapse/config/conf.d
             - name: secrets
@@ -154,10 +152,6 @@ spec:
         - name: config
           configMap:
             name: {{ include "matrix-synapse.fullname" . }}
-        - name: scripts
-          configMap:
-            name: {{ include "matrix-synapse.fullname" . }}-scripts
-            defaultMode: 0755
         - name: secrets
           secret:
             secretName: {{ include "matrix-synapse.fullname" . }}
