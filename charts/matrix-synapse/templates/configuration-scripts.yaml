@@ -7,5 +7,6 @@ metadata:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
   annotations:
     helm.sh/hook: pre-install
+    helm.sh/resource-policy: keep
 data:
 {{ (.Files.Glob "scripts/*.sh").AsConfig | indent 2 }}
