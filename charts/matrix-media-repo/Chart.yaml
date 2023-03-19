@@ -5,7 +5,7 @@ description: Matrix media repository with multi-domain in mind.
 appVersion: 1.2.13
 
 type: application
-version: 2.0.1
+version: 2.0.2
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
