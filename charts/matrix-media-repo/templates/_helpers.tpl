@@ -105,7 +105,11 @@ Set postgres port
 */}}
 {{- define "matrix-media-repo.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
+{{-   if .Values.postgresql.service -}}
 {{- .Values.postgresql.service.port | default 5432 }}
+{{-   else -}}
+5432
+{{-   end -}}
 {{- else -}}
 {{- required "A valid externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
