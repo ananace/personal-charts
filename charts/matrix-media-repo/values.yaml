@@ -214,6 +214,15 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+## Configure a PodMonitor definition for the application.
+## Requires the Prometheus Operator
+##
+podmonitor:
+  enabled: false
+  ## Set the crawl interval (optional)
+  ## Otherwise uses the default setting set in prometheus
+  # interval: 30s
+
 ## Node selectors to use when deploying the application.
 ##
 nodeSelector: {}
