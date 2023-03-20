@@ -11,7 +11,7 @@ spec:
     matchNames:
     - {{ .Release.Namespace }}
   podMetricsEndpoints:
-  - {{- if .Values.serviceAccount.create }}interval: {{ Values.podmonitor.interval | default "30s"}}{{- end }}
+  - {{- if .Values.serviceAccount.create }}interval: {{ .Values.podmonitor.interval | default "30s"}}{{- end }}
     path: /metrics
     port: metrics
   selector:
