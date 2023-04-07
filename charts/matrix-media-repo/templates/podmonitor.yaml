@@ -13,7 +13,7 @@ spec:
   podMetricsEndpoints:
   - path: /metrics
     port: metrics
-    {{- if .Values.podmonitor.interval }}interval: {{ .Values.podmonitor.interval }}{{- end }}
+    {{ if .Values.podmonitor.interval }}interval: {{ .Values.podmonitor.interval }}{{ end }}
   selector:
     matchLabels:
       {{- include "matrix-media-repo.selectorLabels" . | nindent 6 }}
