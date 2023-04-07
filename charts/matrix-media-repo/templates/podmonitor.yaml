@@ -1,0 +1,20 @@
+{{- if .Values.podmonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "matrix-media-repo.fullname" . }}
+  labels:
+    {{- include "matrix-media-repo.labels" . | nindent 4 }}
+spec:
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  podMetricsEndpoints:
+  - path: /metrics
+    port: metrics
+    {{ if .Values.podmonitor.interval }}interval: {{ .Values.podmonitor.interval }}{{ end }}
+  selector:
+    matchLabels:
+      {{- include "matrix-media-repo.selectorLabels" . | nindent 6 }}
+{{- end }}
