@@ -6,7 +6,7 @@
 replicaCount: 1
 
 image:
-  repository: netboxcommunity/netbox
+  repository: quay.io/netboxcommunity/netbox
   # tag:
   pullPolicy: Always
 
