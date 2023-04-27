@@ -102,20 +102,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: netbox-config-files
-          configMap:
-            name: {{ .Chart.Name }}-config-files
-      {{- if .Values.extraConfiguration }}
-        - name: netbox-extra-config
-          configMap:
-            name: {{ .Chart.Name }}-extra
-      {{- end }}
         - name: data
       {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.existingClaim | default (include "netbox.fullname" .) }}
       {{- else }}
           emptyDir: {}
+      {{- end }}
+      {{- if .Values.extraConfiguration }}
+        - name: netbox-extra-config
+          configMap:
+            name: {{ .Chart.Name }}-extra
       {{- end }}
       {{- if .Values.extraVolumes }}
         {{ toYaml .Values.extraVolumes | nindent 8 }}
