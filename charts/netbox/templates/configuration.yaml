@@ -1,3 +1,6 @@
+{{- if and (not .Values.redis.enabled) (not .Values.redis.host) }}
+{{ fail "Redis host must be provided if built-in redis is disabled" }}
+{{- end }}
 {{- if .Values.extraConfiguration }}
 ---
 apiVersion: v1
@@ -10,7 +13,23 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "netbox.chart" . }}
 data:
-  extra.py: {{ .Values.extraConfiguration | toYaml | indent 2 }}
+  extra.py: |
+    {{- .Values.extraConfiguration | nindent 4 }}
+{{- end }}
+{{- if .Values.extraPlugins }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-plugins
+  labels:
+    app.kubernetes.io/name: {{ include "netbox.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "netbox.chart" . }}
+data:
+  plugins.py: |
+    {{- .Values.extraPlugins | nindent 4 }}
 {{- end }}
 ---
 apiVersion: v1
@@ -28,7 +47,7 @@ data:
   DB_HOST: {{ .Values.postgresql.postgresqlHost | default (include "netbox.postgresql.fullname" .) }}
   DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
 
-  REDIS_HOST: {{ include "netbox.redisHost" . }}
+  REDIS_HOST: {{ .Values.redis.host | default (include "netbox.redisHost" .) }}
   REDIS_PORT: {{ .Values.redis.master.service.port | default 6379 | quote }}
   REDIS_SSL: "false"
 

@@ -56,11 +56,17 @@ postgresql:
   # postgresqlHost: postgres
   # postgresqlPort: 5432
 
+# For standalone redis, set enabled=false and host to your redis server
 redis:
+  enabled: true
+  # host: example.com
+
   architecture: standalone
   auth:
     enabled: true
     # password: netbox
+    # existingSecret:
+    # existingSecretPasswordKey:
 
   master:
     kind: Deployment
@@ -81,17 +87,28 @@ extraEnv: {}
   # EMAIL_USERNAME: netbox
   # EMAIL_TIMEOUT: 5
   # EMAIL_FROM: netbox@example.com
-  # NAPALM_USERNAME: ''
-  # NAPALM_TIMEOUT: 10
   # MAX_PAGE_SIZE: 1000
   # WEBHOOKS_ENABLED: true
 
 extraSecrets: {}
   # EMAIL_PASSWORD: netbox
-  # NAPALM_PASSWORD: ''
 
-# Ends up stored as extra.py in the netbox configuration
+# Ends up stored as extra.py in the netbox configuration, must be valid Python
 extraConfiguration: ''
+
+# Will be stored in plugins.py in the netbox configuration, requires
+# using/building a netbox image containing the required plugins, must be valid
+# Python
+#
+# https://github.com/netbox-community/netbox-docker/wiki/Using-Netbox-Plugins
+extraPlugins: ''
+  # PLUGINS = ["netbox_bgp"]
+  #
+  # PLUGINS_CONFIG = {
+  #   "netbox_bgp": {
+  #     ADD YOUR SETTINGS HERE
+  #   }
+  # }
 
 superuser:
   name: ''
@@ -116,10 +133,6 @@ affinity: {}
 extraVolumes: []
 
 extraVolumeMounts: []
-  # - name: extra-music-data
-  #   mountPath: /srv/funkwhale/data/music
-  #   readOnly: true
-  #   existingClaim: volume-claim
 
 persistence:
   enabled: false
@@ -147,9 +160,8 @@ worker:
 
   affinity: {}
 
+# Handles the Netbox 3.0+ housekeeping pod
 housekeeping:
-  ## Netbox 3.0.0 and upwards need a housekeeping pod, if you're not using
-  ## 3.0 then you may need to set this parameter
   enabled: true
 
   resources: {}

@@ -33,11 +33,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          {{- if and (or .Values.redis.auth.existingSecret .Values.redis.enabled) (not .Values.redis.auth.password) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "netbox.redis.fullname" . }}
-                  key: redis-password
+                  name: {{ .Values.redis.auth.existingSecret | default (include "netbox.redis.fullname" .) }}
+                  key: {{ .Values.redis.auth.existingSecretPasswordKey | default "redis-password" }}
+          {{- end }}
           {{- if .Values.postgresql.enabled }}
             - name: DB_PASSWORD
               valueFrom:
@@ -57,21 +59,35 @@ spec:
                 name: {{ include "netbox.fullname" . }}
           resources:
             {{- toYaml .Values.housekeeping.resources | nindent 12 }}
-          {{- if .Values.extraConfiguration }}
+          {{- if or .Values.extraConfiguration .Values.extraPlugins }}
           volumeMounts:
+            {{- if .Values.extraConfiguration }}
             - name: netbox-extra-config
               mountPath: /etc/netbox/config/extra.py
               subPath: extra.py
-          {{- end  }}
+            {{- end }}
+            {{- if .Values.extraPlugins }}
+            - name: netbox-extra-plugins
+              mountPath: /etc/netbox/config/plugins.py
+              subPath: plugins.py
+            {{- end }}
+          {{- end }}
     {{- with .Values.housekeeping.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- if .Values.extraConfiguration }}
       volumes:
+    {{- if or .Values.extraConfiguration .Values.extraPlugins }}
+      {{- if .Values.extraConfiguration }}
         - name: netbox-extra-config
           configMap:
             name: {{ .Chart.Name }}-extra
+      {{- end }}
+      {{- if .Values.extraPlugins }}
+        - name: netbox-extra-plugins
+          configMap:
+            name: {{ .Chart.Name }}-plugins
+      {{- end }}
     {{- end }}
     {{- with .Values.housekeeping.affinity }}
       affinity:
