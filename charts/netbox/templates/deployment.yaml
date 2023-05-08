@@ -93,7 +93,14 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: /etc/netbox/media
+              mountPath: /opt/netbox/netbox/media
+              subPath: media
+            - name: data
+              mountPath: /opt/netbox/netbox/reports
+              subPath: reports
+            - name: data
+              mountPath: /opt/netbox/netbox/scripts
+              subPath: scripts
           {{- if .Values.extraConfiguration }}
             - name: netbox-extra-config
               mountPath: /etc/netbox/config/extra.py
