@@ -90,6 +90,12 @@ extraEnv: {}
   # MAX_PAGE_SIZE: 1000
   # WEBHOOKS_ENABLED: true
 
+extraEnvFrom: []
+  # - configMapRef:
+  #     name: custom-config
+  # - secretRef:
+  #     name: custom-secrets
+
 extraSecrets: {}
   # EMAIL_PASSWORD: netbox
 
@@ -133,6 +139,21 @@ affinity: {}
 extraVolumes: []
 
 extraVolumeMounts: []
+
+readinessProbe:
+  httpGet:
+    port: http
+    path: /
+
+livenessProbe:
+  httpGet:
+    port: http
+    path: /
+
+startupProbe:
+  tcpSocket:
+    port: http
+  failureThreshold: 12
 
 persistence:
   enabled: false

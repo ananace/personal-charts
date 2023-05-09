@@ -40,13 +40,13 @@ spec:
                   name: {{ .Values.redis.auth.existingSecret | default (include "netbox.redis.fullname" .) }}
                   key: {{ .Values.redis.auth.existingSecretPasswordKey | default "redis-password" }}
           {{- end }}
-          {{- if .Values.postgresql.enabled }}
+          {{- if (or .Values.postgresql.auth.existingSecret .Values.postgresql.enabled) }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                {{- if .Values.postgresql.existingSecret }}
-                  name: {{ .Values.postgresql.existingSecret }}
-                  key: password
+                {{- if .Values.postgresql.auth.existingSecret }}
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: {{ .Values.postgresql.auth.existingSecretKey | default "password" }}
                 {{- else }}
                   name: {{ include "netbox.postgresql.fullname" . }}
                   key: password
@@ -57,6 +57,9 @@ spec:
                 name: {{ include "netbox.fullname" . }}
             - secretRef:
                 name: {{ include "netbox.fullname" . }}
+          {{- with .Values.extraEnvFrom -}}
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.housekeeping.resources | nindent 12 }}
           {{- if or .Values.extraConfiguration .Values.extraPlugins }}
