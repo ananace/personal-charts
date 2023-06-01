@@ -28,8 +28,8 @@ spec:
     spec:
       containers:
         - name: celery-beat
-          image: "{{ .Values.image.repository }}:{{ include "funkwhale.imageTag" . }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "funkwhale.imageUri" (dict "Scope" .Values.celery.image "Values" .Values "Chart" .Chart) | quote }}
+          imagePullPolicy: {{ .Values.celery.image.pullPolicy | default .Values.image.pullPolicy }}
           command:
             - sh
             - -c

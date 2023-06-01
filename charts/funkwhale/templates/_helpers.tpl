@@ -56,8 +56,8 @@ Create chart name and version as used by the chart label.
 {{/*
 Create the correct image tag name
 */}}
-{{- define "funkwhale.imageTag" -}}
-{{- .Values.image.tag | default .Chart.AppVersion -}}
+{{- define "funkwhale.imageUri" -}}
+{{- printf "%s/%s:%s" (.Scope.registry | default .Values.image.registry | default "docker.io/funkwhale") (.Scope.image | default .Values.image.image) (.Scope.tag | default .Values.tag | default .Chart.AppVersion) -}}
 {{- end -}}
 
 {{- define "funkwhale.redis.host" -}}

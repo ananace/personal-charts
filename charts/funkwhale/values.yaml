@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 ---
 image:
-  repository: funkwhale/funkwhale
+  registry: docker.io/funkwhale
   # tag:
   pullPolicy: IfNotPresent
 
@@ -145,6 +145,12 @@ s3:
 
 ## API server configuration
 api:
+  image:
+    # registry:
+    image: api
+    # tag:
+    # pullPolicy:
+
   ## Additional mounts to add to the API container
   ## If using an external media mount it needs to be attached to both API and Front
   extraVolumeMounts: []
@@ -191,9 +197,10 @@ api:
 ## Web frontend and proxy
 front:
   image:
-    repository: nginx
-    tag: stable
-    pullPolicy: IfNotPresent
+    # registry:
+    image: front
+    # tag:
+    # pullPolicy:
 
   ## Additional mounts to add to the frontend container
   extraVolumeMounts: []
@@ -236,6 +243,12 @@ front:
       port: http
 
 celery:
+  image:
+    # registry:
+    image: api
+    # tag:
+    # pullPolicy:
+
   beat:
     resources:
       limits:
