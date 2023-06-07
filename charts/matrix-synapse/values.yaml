@@ -610,6 +610,7 @@ wellknown:
   ##
   service:
     type: ClusterIP
+    port: 80
 
   ## Extra data objects to serve under .well-known/matrix/<data>
   ## Dictionaries will be JSON converted, plain strings will be served as they are

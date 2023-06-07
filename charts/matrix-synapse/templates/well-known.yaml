@@ -11,7 +11,7 @@ metadata:
 spec:
   type: {{ .Values.wellknown.service.type | default "ClusterIP" }}
   ports:
-    - port: 80
+    - port: {{ .Values.wellknown.service.port | default 80 }}
       targetPort: http
       protocol: TCP
       name: http

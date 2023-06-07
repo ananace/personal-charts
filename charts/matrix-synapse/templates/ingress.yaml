@@ -170,11 +170,11 @@ spec:
               service:
                 name: {{ $wkName }}
                 port:
-                  number: 80
+                  number: {{ $.Values.wellknown.service.port | default 80 }}
             pathType: Prefix
             {{- else }}
               serviceName: {{ $wkName }}
-              servicePort: 80
+              servicePort: {{ $.Values.wellknown.service.port | default 80 }}
             {{- end }}
           {{-   else }}
           - path: /.well-known/matrix
