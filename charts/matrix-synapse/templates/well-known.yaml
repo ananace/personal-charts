@@ -9,7 +9,7 @@ metadata:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: well-known
 spec:
-  type: ClusterIP
+  type: {{ .Values.wellknown.service.type | default "ClusterIP" }}
   ports:
     - port: 80
       targetPort: http
