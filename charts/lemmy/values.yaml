@@ -1,0 +1,278 @@
+---
+image:
+  repository: dessalines/lemmy
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  #tag: latest
+
+## The domain of the Lemmy instance
+serverName: "localhost"
+
+smtp:
+  server: smtp.example.com
+  # username: lemmy
+  # password:
+  from: lemmy@example.com
+  tls: none
+
+admin:
+  username: lemmy
+  ## Will be generated on first install if left empty
+  # password:
+  email: lemmy@example.com
+
+config:
+  siteName: Lemmy on Kubernetes
+  ## Requires valid certificates, but is also required for federation support
+  tls: true
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+backend:
+  image:
+    _keep: true
+    # repository: dessalines/lemmy
+    # pullPolicy: IfNotPresent
+    # tag:
+
+  env:
+    # RUST_BACKTRACE: 1
+
+  envFrom:
+    # - secretRef:
+    #    name: my-extra-secrets
+
+  replicaCount: 1
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+frontend:
+  image:
+    repository: dessalines/lemmy-ui
+    #pullPolicy: IfNotPresent
+    #tag:
+
+  replicaCount: 1
+
+  env:
+    # LEMMY_UI_DEBUG: true
+
+  envFrom:
+    # - secretRef:
+    #    name: my-extra-secrets
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+pictrs:
+  replicaCount: 1
+
+  ## Generated on first install if left empty
+  # apiKey:
+
+  storage:
+    ## Storage method for media, can be filesystem or object_storage
+    method: filesystem
+
+    objectStorage:
+      ## For self-hosted S3
+      # endpoint: https://minio.example.com
+      usePathStyle: false
+
+      bucketName: lemmy-pictrs
+      # region:
+      # accessKey:
+      # secretKey:
+      # sessionToken:
+
+      # existingSecret: pictrs-secret
+      # existingSecretAccessKey: access-key
+      # existingSecretSecretKey: secret-key
+  
+  env:
+    PICTRS__MEDIA__VIDEO_CODEC: vp9
+    PICTRS__MEDIA__GIF__MAX_WIDTH: 256
+    PICTRS__MEDIA__GIF__MAX_HEIGHT: 256
+    PICTRS__MEDIA__GIF__MAX_AREA: 65536
+    PICTRS__MEDIA__GIF__MAX_FRAME_COUNT: 400
+
+  envFrom:
+    # - secretRef:
+    #    name: my-extra-secrets
+
+  image:
+    repository: asonix/pictrs
+    pullPolicy: IfNotPresent
+    tag: 0.4.0-beta.19
+
+  ## Used by both the sled database and also media itself if using the filesystem storage method
+  persistence:
+    enabled: true
+    accessMode: ReadWriteOnce
+    size: 16Gi
+    # existingClaim: 
+    # storageClass:
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+proxy:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: nginx
+    pullPolicy: Always
+    tag: 1-alpine
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+postgresql:
+  enabled: true
+  # host:
+
+  auth:
+    username: lemmy
+    database: lemmy
+    # password:
+
+  service:
+    port: 5432
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    # - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local

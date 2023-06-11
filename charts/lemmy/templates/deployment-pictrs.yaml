@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "lemmy.pictrsname" . }}
+  labels:
+    {{- include "lemmy.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pictrs
+spec:
+  replicas: {{ .Values.pictrs.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "lemmy.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: pictrs
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secret-pictrs.yaml") . | sha256sum }}
+      {{- with .Values.pictrs.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "lemmy.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: pictrs
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "lemmy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.pictrs.podSecurityContext | nindent 8 }}
+      containers:
+        - name: pictrs
+          securityContext:
+            {{- toYaml .Values.pictrs.securityContext | nindent 12 }}
+          image: "{{ .Values.pictrs.image.repository }}:{{ .Values.pictrs.image.tag }}"
+          imagePullPolicy: {{ .Values.pictrs.image.pullPolicy }}
+          env:
+            - name: PICTRS__API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lemmy.fullname" . }}
+                  key: pictrs_apikey
+          {{- with .Values.pictrs.env }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "lemmy.pictrsname" . }}
+          {{- with .Values.pictrs.envFrom }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/database
+              subPath: database
+            - name: data
+              mountPath: /mnt/media
+              subPath: media
+          resources:
+            {{- toYaml .Values.pictrs.resources | nindent 12 }}
+      volumes:
+        - name: data
+        {{- if .Values.pictrs.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pictrs.persistence.existingClaim | default (include "lemmy.pictrsname" $) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.pictrs.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pictrs.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.pictrs.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

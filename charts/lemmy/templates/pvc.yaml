@@ -1,0 +1,23 @@
+{{- if and .Values.pictrs.persistence.enabled (not .Values.pictrs.persistence.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "lemmy.pictrsname" . }}
+  labels:
+    {{- include "lemmy.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pictrs
+spec:
+  accessModes:
+    - {{ .Values.pictrs.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.pictrs.persistence.size | quote }}
+{{- if .Values.pictrs.persistence.storageClass }}
+{{- if (eq "-" .Values.pictrs.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.pictrs.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end -}}
+
