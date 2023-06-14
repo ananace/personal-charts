@@ -9,8 +9,13 @@ data:
   log.yaml: |
     version: 1
     formatters:
+      {{- if .Values.config.useStructuredLogging }}
+      structured:
+        class: synapse.logging.TerseJsonFormatter
+      {{- else }}
       precise:
-       format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s- %(message)s'
+        format: '%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(request)s- %(message)s'
+      {{- end }}
     filters:
       context:
         (): synapse.util.logcontext.LoggingContextFilter
@@ -18,12 +23,15 @@ data:
     handlers:
       console:
         class: logging.StreamHandler
-        formatter: precise
+        formatter: {{ if .Values.config.useStructuredLogging }}structured{{ else }}precise{{ end }}
         filters: [context]
         level: {{ .Values.config.logLevel | default "INFO" }}
     loggers:
         synapse:
-            level: {{ .Values.config.logLevel | default "INFO" }}
+          level: {{ .Values.config.logLevel | default "INFO" }}
+        {{- with .Values.extraLoggers -}}
+        {{ . | toYaml | nindent 8 }}
+        {{- end }}
     root:
         level: {{ .Values.config.logLevel | default "INFO" }}
         handlers: [console]

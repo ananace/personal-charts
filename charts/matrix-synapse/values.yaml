@@ -140,6 +140,11 @@ config:
   extraMainListenerTypes: []
   #  - consent
 
+  ## Logging
+  # use TerseJsonFormatter structured logging
+  # Ref: https://matrix-org.github.io/synapse/latest/structured_logging.html
+  useStructuredLogging: false
+
 ## Specify arbitrary Synapse configuration here;
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
@@ -153,6 +158,12 @@ extraConfig: {}
 #    - nyc.example.com
 #    - syd.example.com
 #  dynamic_thumbnails: true
+
+## Specify additional loggers configutation here;
+## Ref: https://matrix-org.github.io/synapse/latest/structured_logging.html
+extraLoggers: {}
+#  synapse.storage.SQL:
+#    level: WARNING
 
 ## Specify arbitrary - secret - Synapse configuration here;
 ## These values will be stored in secrets instead of configmaps
