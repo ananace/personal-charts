@@ -2,7 +2,7 @@
 apiVersion: v2
 name: sliding-sync-proxy
 description: An implementation of MSC3575
-appVersion: "0.99.2"
+appVersion: "0.99.3"
 
 type: application
 version: 0.1.1
