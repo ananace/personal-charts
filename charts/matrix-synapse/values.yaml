@@ -272,6 +272,14 @@ synapse:
       path: /health
       port: http
 
+  ## Startup probe configuration to use
+  ##
+  startupProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /health
+      port: http
+
   ## Node selectors to set for the main Synapse pod.
   ##
   nodeSelector: {}
