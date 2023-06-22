@@ -183,7 +183,11 @@ Set postgresql password
 {{-     .Values.postgresql.auth.password -}}
 {{-   else -}}
 {{-     $existing := lookup "v1" "Secret" .Release.Namespace (include "lemmy.postgresql.secret" .) -}}
-{{-     $existing.data.password | b64dec -}}
+{{-     if $existing -}}
+{{-       $existing.data.password | b64dec -}}
+{{-     else }}
+postgres
+{{-     end -}}
 {{-   end -}}
 {{- end -}}
 {{- end -}}

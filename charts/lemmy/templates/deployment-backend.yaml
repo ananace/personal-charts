@@ -40,11 +40,25 @@ spec:
             {{- toYaml .Values.backend.securityContext | nindent 12 }}
           image: "{{ .Values.backend.image.repository | default .Values.image.repository }}:{{ .Values.backend.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy | default .Values.image.pullPolicy }}
-          {{- with .Values.backend.env }}
+          {{- if or (not .Values.postgresql.auth.password) .Values.backend.env }}
           env:
-            {{- range $key, $value := . }}
+            {{- if not .Values.postgresql.auth.password }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+              {{- if .Values.postgresql.auth.existingSecret }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey | default "password" }}
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+              {{- else }}
+                  key: password
+                  name: {{ include "lemmy.postgresql.secret" . }}
+              {{- end }}
+            {{- end }}
+            {{- with .Values.backend.env }}
+              {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | toString | quote }}
+              {{- end }}
             {{- end }}
           {{- end }}
           {{- with .Values.backend.envFrom }}

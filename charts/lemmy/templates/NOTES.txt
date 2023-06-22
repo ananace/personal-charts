@@ -41,3 +41,7 @@ You can visit the service at the following URL;
 You can retrieve the default admin password with;
   kubectl get secrets --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "lemmy.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend" -o jsonpath="{.items[0].data.admin_password}" | base64 -d
 {{- end }}
+{{- if not (or .Values.postgresql.auth.existingSecret .Values.postgresql.auth.password) }}
+
+The postgres password might not be read correctly on first install, if Lemmy fails to start, an "upgrade" with the same values should resolve this.
+{{- end }}
