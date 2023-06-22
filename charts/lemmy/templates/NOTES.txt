@@ -1,7 +1,8 @@
-1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
+You can visit the service at the following URL;
   http{{ if $.Values.config.tls }}s{{ end }}://{{ .Values.serverName }}/
 {{- else if .Values.proxy.enabled }}
+1. Get the application URL by running these commands:
   {{- if contains "NodePort" .Values.proxy.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "lemmy.proxyname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -18,6 +19,7 @@
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
   {{- end }}
 {{- else }}
+1. Get the application URL by running these commands:
   {{- if contains "NodePort" .Values.ui.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "lemmy.uiname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -33,4 +35,9 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
   {{- end }}
+{{- end }}
+{{- if not .Values.admin.existingSecret }}
+
+You can retrieve the default admin password with;
+  kubectl get secrets --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "lemmy.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend" -o jsonpath="{.items[0].data.admin_password}" | base64 -d
 {{- end }}

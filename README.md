@@ -10,6 +10,7 @@ Current applications
 
 - [Element Web](charts/element-web)
 - [Funkwhale](charts/funkwhale)
+- [Lemmy](charts/lemmy)
 - [Matrix Media Repo](charts/matrix-media-repo)
 - [Matrix Synapse](charts/matrix-synapse)
 - [Netbox](charts/netbox)
