@@ -14,4 +14,6 @@ Note that this will require a working ingress in your cluster, if an ingress isn
 
 **Nota Bene**: The system **will** require valid TLS certificates and working routing on regular HTTP(s) ports in order for federation to work.
 
+The initial postgres migration also currently fails unless the Lemmy user in Postgres is a superuser.
+
 S3 storage is also supported for media, refer to the [values](values.yaml) under `.pictrs.storage` for the necessary configuration.
