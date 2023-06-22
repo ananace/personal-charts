@@ -21,6 +21,11 @@ admin:
   # password:
   email: lemmy@example.com
 
+  ## Password can also be provided using an existing secret, note that the value
+  ## is only updated on helm upgrades due to Lemmy's configuration system
+  # existingSecret: ""
+  existingSecretKey: password
+
 config:
   siteName: Lemmy on Kubernetes
   ## Requires valid certificates, but is also required for federation support
@@ -146,6 +151,11 @@ pictrs:
 
   ## Generated on first install if left empty
   # apiKey:
+
+  ## Can also be provided using an existing secret, note that the value is only
+  ## updated on helm upgrades due to Lemmy's configuration system
+  # existingSecret: ""
+  existingSecretKey: apikey
 
   storage:
     ## Storage method for media, can be filesystem or object_storage

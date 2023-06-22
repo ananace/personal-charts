@@ -36,6 +36,43 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Retreive secrets for Lemmy configuration
+*/}}
+{{- define "lemmy.adminpassword" -}}
+{{- if .Values.admin.existingSecret -}}
+{{-   $existingAdmin := lookup "v1" "Secret" .Release.Namespace .Values.admin.existingSecret -}}
+{{-   if not $existingAdmin -}}
+{{-     fail "Provided existing admin secret %s does not exist" -}}
+{{-   end -}}
+{{-   b64dec (get $existingAdmin.data (.Values.admin.existingSecretKey | default "password")) -}}
+{{- else -}}
+{{-   $existing := (lookup "v1" "Secret" .Release.Namespace (include "lemmy.fullname" .)) -}}
+{{-   if and $existing $existing.data.admin_password -}}
+{{-     b64dec $existing.data.admin_password }}
+{{-   else -}}
+{{-     randAlphaNum 32 }}
+{{-   end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "lemmy.pictrsapikey" -}}
+{{- if .Values.pictrs.existingSecret }}
+{{-   $existingPictrs := (lookup "v1" "Secret" .Release.Namespace .Values.pictrs.existingSecret) -}}
+{{-   if not $existingPictrs }}
+{{-     fail "Provided existing pictrs secret does not exist" }}
+{{-   end }}
+{{-   b64dec (get $existingPictrs.data (.Values.pictrs.existingSecretKey | default "apikey")) }}
+{{- else -}}
+{{-   $existing := (lookup "v1" "Secret" .Release.Namespace (include "lemmy.fullname" .)) -}}
+{{-   if and $existing $existing.data.pictrs_apikey -}}
+{{-     b64dec $existing.data.pictrs_apikey }}
+{{-   else -}}
+{{-     randAlphaNum 64 }}
+{{-   end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "lemmy.chart" -}}
@@ -135,10 +172,19 @@ Set postgresql username
 Set postgresql password
 */}}
 {{- define "lemmy.postgresql.password" -}}
-{{- if .Values.postgresql.enabled -}}
-{{- .Values.postgresql.auth.password | default "" }}
-{{- else -}}
-{{ required "A valid postgresql.auth.password is required" .Values.postgresql.auth.password }}
+{{- if .Values.postgresql.auth.existingSecret -}}
+{{-   $existing := lookup "v1" "Secret" .Release.Namespace .Values.postgresql.auth.existingSecret -}}
+{{-   if not $existing -}}
+{{-     fail "Can't find provided existing postgresql secret" -}}
+{{-   end -}}
+{{-   get $existing.data (.Values.postgresql.auth.secretKeys.userPasswordKey | default "password") | b64dec -}}
+{{- else if .Values.postgresql.enabled -}}
+{{-   if .Values.postgresql.auth.password -}}
+{{-     .Values.postgresql.auth.password -}}
+{{-   else -}}
+{{-     $existing := lookup "v1" "Secret" .Release.Namespace (include "lemmy.postgresql.secret" .) -}}
+{{-     $existing.data.password | b64dec -}}
+{{-   end -}}
 {{- end -}}
 {{- end -}}
 
