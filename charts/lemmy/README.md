@@ -7,8 +7,11 @@ Lemmy
 
 A minimal Lemmy install could look something like;
 
-    helm install lemmy ananace-charts/lemmy --set ingress.host=lemmy.example.com
+    helm install lemmy ananace-charts/lemmy --set serverName=lemmy.example.com
 
-Note that the system will require valid TLS certificates in order for federation to work as expected.
+This will set up a full Lemmy install, with backend, frontend (using lemmy-ui), nginx-based routing proxy, pict-rs media storage, and postgresql server.  
+Note that this will require a working ingress in your cluster, if an ingress isn't available you can also deploy the proxy as a `LoadBalancer`/`NodePort` service in order to try the system out.
 
-S3 storage is supported for media, refer to the [values](values.yaml) for `.pictrs.storage`.
+**Nota Bene**: The system **will** require valid TLS certificates and working routing on regular HTTP(s) ports in order for federation to work.
+
+S3 storage is also supported for media, refer to the [values](values.yaml) under `.pictrs.storage` for the necessary configuration.

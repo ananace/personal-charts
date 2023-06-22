@@ -162,7 +162,7 @@ pictrs:
     method: filesystem
 
     objectStorage:
-      ## For self-hosted S3
+      ## For self-hosted S3, note that region _must_ also be provided, even for self-hosted S3
       # endpoint: https://minio.example.com
       usePathStyle: false
 
