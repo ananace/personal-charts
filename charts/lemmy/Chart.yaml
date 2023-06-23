@@ -6,7 +6,7 @@ icon: https://join-lemmy.org/static/assets/images/lemmy.svg
 appVersion: 0.17.4
 
 type: application
-version: 0.2.1
+version: 0.2.2
 
 maintainers:
   - name: Alexander Olofsson
