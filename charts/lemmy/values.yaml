@@ -144,6 +144,7 @@ frontend:
   affinity: {}
 
 pictrs:
+  ## NB: pict-rs uses a Sled database by default, which can only be opened by a single instance
   replicaCount: 1
 
   strategy:

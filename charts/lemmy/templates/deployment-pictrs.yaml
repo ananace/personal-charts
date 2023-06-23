@@ -51,6 +51,19 @@ spec:
                   name: {{ include "lemmy.fullname" . }}
                   key: pictrs_apikey
                 {{- end }}
+          {{- if and (eq .Values.pictrs.storage.method "object_storage") .Values.pictrs.storage.objectStorage.existingSecret }}
+          {{- $existingS3 := .Values.pictrs.storage.objectStorage.existingSecret }}
+            - name: PICTRS__STORE__ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $existingS3 }}
+                  key: {{ .Values.pictrs.storage.objectStorage.existingSecretAccessKey | default "access-key" }}
+            - name: PICTRS__STORE__SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $existingS3 }}
+                  key: {{ .Values.pictrs.storage.objectStorage.existingSecretSecretKey | default "secret-key" }}
+          {{- end }}
           {{- with .Values.pictrs.env }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
