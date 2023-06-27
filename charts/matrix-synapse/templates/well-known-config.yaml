@@ -21,7 +21,7 @@ data:
       "mod_extforward",
       "mod_setenv"
     )
-    include "mime-types.conf"
+    include "conf.d/00-mime-types.conf"
     server.username      = "lighttpd"
     server.groupname     = "lighttpd"
     server.document-root = {{ .Values.wellknown.htdocsPath | quote }}
