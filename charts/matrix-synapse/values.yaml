@@ -650,7 +650,7 @@ wellknown:
   ## The lighttpd image to run.
   ##
   image:
-    repository: m4rcu5/lighttpd
+    repository: ghcr.io/rtsp/docker-lighttpd
     tag: latest
     pullPolicy: Always
 
