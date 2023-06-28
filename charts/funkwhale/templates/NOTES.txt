@@ -19,13 +19,6 @@ Your application should be available at the following URL:
   kubectl port-forward $POD_NAME 8080:80
 {{- end }}
 
-NB: For people upgrading to version 1.0, you may need to replace all the old
-thumbnails with updated ones.
-As the actions required for this differs between storage methods, it is left
-up to manual action.
-
-https://docs.funkwhale.audio/changelog.html#increased-quality-of-jpeg-thumbnails-manual-action-required
-
 To get a shell in the master pod, run the following commands;
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "funkwhale.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   kubectl exec --namespace {{ .Release.Namespace }} -c funkwhale -it $POD_NAME -- bash
