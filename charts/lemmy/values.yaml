@@ -279,6 +279,8 @@ postgresql:
   enabled: true
   # host:
 
+  poolSize: 10
+
   auth:
     username: lemmy
     database: lemmy
