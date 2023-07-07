@@ -77,6 +77,10 @@ spec:
             httpGet:
               path: /
               port: http
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
           volumeMounts:
