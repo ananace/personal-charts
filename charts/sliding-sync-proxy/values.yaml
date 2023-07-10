@@ -76,6 +76,7 @@ affinity: {}
 
 postgresql:
   enabled: true
+  # sslmode: prefer
 
   auth:
     ## Change me
