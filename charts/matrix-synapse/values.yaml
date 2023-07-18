@@ -553,6 +553,7 @@ workers:
   ##
   appservice:
     enabled: false
+    name: appservices
 
   ## This worker handles sending federation traffic to other Synapse servers.
   ##
@@ -587,6 +588,7 @@ workers:
   ##
   user_dir:
     enabled: false
+    name: userdir
     listeners: [client]
     csPaths:
       - "/_matrix/client/(api/v1|r0|v3|unstable)/user_directory/search$"

@@ -49,6 +49,20 @@ data:
     log_config: "/synapse/config/log.yaml"
     report_stats: {{ required "You need to specify config.reportStats" .Values.config.reportStats }}
 
+    instance_map:
+      main:
+        host: {{ include "matrix-synapse.replicationname" . }}
+        port: 9093
+    {{- $default := .Values.workers.default }}
+    {{- range $worker, $config := .Values.workers }}
+        {{- if and $config.enabled $config.name $config.listeners (has "replication" $config.listeners) }}
+        {{- $name := $worker | replace "_" "-" }}
+      {{ $config.name | quote }}:
+        host: {{ include "matrix-synapse.workername" (dict "global" $ "worker" $name) | quote }}
+        port: 9093
+      {{- end }}
+    {{- end }}
+
     ## Ports ##
 
     listeners:
@@ -133,7 +147,7 @@ data:
         {{- else if or (eq $worker "appservice") (eq ($config.app | default "") "appservice") }}
 
     # For appservice worker
-    notify_appservices: false
+    notify_appservices_from_worker: {{ $config.name | quote }}
         {{- else if or (eq $worker "federation_sender") (eq ($config.app | default "") "federation_sender") }}
 
     # For federation_sender worker
@@ -145,7 +159,7 @@ data:
         {{- else if or (eq $worker "user_dir") (eq ($config.app | default "") "user_dir") }}
 
     # For user_dir worker
-    update_user_directory: false
+    update_user_directory_from_worker: {{ $config.name | quote }}
         {{- end }}
       {{- end }}
     {{- end }}

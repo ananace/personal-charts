@@ -51,6 +51,12 @@ spec:
       targetPort: listener
       protocol: TCP
       name: listener
+  {{- if has "replication" $config.listeners }}
+    - port: 9093
+      targetPort: replication
+      protocol: TCP
+      name: replication
+  {{- end }}
   selector:
     {{- include "matrix-synapse.selectorLabels" $ | nindent 4 }}
     app.kubernetes.io/component: {{ $name }}
