@@ -84,6 +84,8 @@ redis:
 
   ## External Redis hostname or IP
   # host: redis.example.com
+  ## Name of the redis database funkwhale should connect to
+  database: 0
 
   auth:
     enabled: true

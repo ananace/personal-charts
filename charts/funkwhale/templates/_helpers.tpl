@@ -71,7 +71,7 @@ Create the correct image tag name
 {{- else if .Values.redis.enabled -}}
 redis://:{{ .Values.redis.auth.password }}@{{ template "funkwhale.redis.host" . }}:{{ .Values.redis.master.service.port | default 6379 }}/0
 {{- else if .Values.redis.host -}}
-redis://:{{ .Values.redis.auth.password }}@{{ .Values.redis.host }}:{{ .Values.redis.master.service.port | default 6379 }}/0
+redis://:{{ .Values.redis.auth.password }}@{{ .Values.redis.host }}:{{ .Values.redis.master.service.port | default 6379 }}/{{ .Values.redis.database }}
 {{- else -}}
 {{ fail "Either redis.enabled or redis.host are required!" }}
 {{- end -}}
