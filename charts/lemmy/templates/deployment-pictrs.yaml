@@ -80,14 +80,18 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          {{- with .Values.pictrs.livenessProbe }}
           livenessProbe:
-            httpGet:
-              path: /healthz
-              port: http
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pictrs.readinessProbe }}
           readinessProbe:
-            httpGet:
-              path: /healthz
-              port: http
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.pictrs.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: /mnt/database

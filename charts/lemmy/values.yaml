@@ -63,6 +63,21 @@ backend:
   strategy:
     type: RollingUpdate
 
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  startupProbe:
+    httpGet:
+      path: /
+      port: http
+
   podAnnotations: {}
 
   podSecurityContext: {}
@@ -111,6 +126,16 @@ frontend:
   envFrom:
     # - secretRef:
     #    name: my-extra-secrets
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
 
   podAnnotations: {}
 
@@ -201,6 +226,21 @@ pictrs:
     # existingClaim: 
     # storageClass:
 
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+
+  readinessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+
+  startupProbe:
+    httpGet:
+      path: /healthz
+      port: http
+
   podAnnotations: {}
 
   podSecurityContext: {}
@@ -243,6 +283,16 @@ proxy:
     repository: nginx
     pullPolicy: Always
     tag: 1-alpine
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
 
   podAnnotations: {}
 
