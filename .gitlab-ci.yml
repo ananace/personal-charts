@@ -33,6 +33,7 @@ pages:
     - "echo \"User-Agent: *\nDisallow: /\" > ./public/robots.txt"
     - curl --user gitlab-ci-token:$CI_JOB_TOKEN "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/${CHANNEL}/index.yaml" -o repo-index.yaml
     - sed -e "s|- charts/|- ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/${CHANNEL}/charts/|" repo-index.yaml > ./public/index.yaml
+    - cp artifacthub-repo.yml ./public/
   artifacts:
     paths:
       - public
