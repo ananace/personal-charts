@@ -553,6 +553,7 @@ workers:
   ##
   appservice:
     enabled: false
+    generic: true
     name: appservices
 
   ## This worker handles sending federation traffic to other Synapse servers.
