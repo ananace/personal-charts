@@ -29,11 +29,12 @@ data:
 {{-   end }}
     worker_name: {{ $config.name }}
 {{- end }}
+{{- $bindAddresses := $config.bindAddresses | default $.Values.config.bindAddresses | default (list "::") }}
 
     worker_listeners:
       - port: 9090
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
 
         resources:
@@ -47,7 +48,7 @@ data:
 
       - port: 9093
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
         x_forwarded: true
 
@@ -58,7 +59,7 @@ data:
 
       - port: 8083
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
         x_forwarded: true
 

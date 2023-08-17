@@ -64,11 +64,12 @@ data:
     {{- end }}
 
     ## Ports ##
+    {{- $bindAddresses := .Values.config.bindAddresses | default (list "::") }}
 
     listeners:
       - port: 8008
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
         x_forwarded: true
 
@@ -83,7 +84,7 @@ data:
 
       - port: 9090
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
 
         resources:
@@ -92,7 +93,7 @@ data:
 
       - port: 9093
         tls: false
-        bind_addresses: ['::']
+        bind_addresses: {{ toJson $bindAddresses }}
         type: http
 
         resources:
