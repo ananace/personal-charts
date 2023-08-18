@@ -17,6 +17,15 @@ extraEnv: {}
   # SYNCV3_DEBUG: "true"
 
 imagePullSecrets: []
+#initContainers:
+#  01-init-db:
+#    image: ghcr.io/onedr0p/postgres-init:14.9
+#    imagePullPolicy: IfNotPresent
+#    envFrom: &envFrom
+#      - configMapRef:
+#          name: &configMap synapse-configmap
+#      - secretRef:
+#          name: &secret synapse-secret
 nameOverride: ""
 fullnameOverride: ""
 
