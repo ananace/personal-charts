@@ -28,6 +28,24 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{- $initContainers := list }}
+        {{- range $index, $key := (keys .Values.initContainers | uniq | sortAlpha) }}
+          {{- $container := get $.Values.initContainers $key }}
+          {{- if not $container.name -}}
+            {{- $_ := set $container "name" $key }}
+          {{- end }}
+          {{- if $container.env -}}
+            {{- $_ := set $ "ObjectValues" (dict "envVars" $container.env) -}}
+            {{- $newEnv := fromYaml (include "lib.container.envVars" $) -}}
+            {{- $_ := unset $.ObjectValues "envVars" -}}
+            {{- $_ := set $container "env" $newEnv.env }}
+          {{- end }}
+          {{- $initContainers = append $initContainers $container }}
+        {{- end }}
+        {{- tpl (toYaml $initContainers) $ | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
