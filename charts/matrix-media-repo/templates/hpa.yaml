@@ -1,9 +1,5 @@
 {{- if .Values.autoscaling.enabled }}
-{{- if .Capabilities.APIVersions.Has "autoscaling/v2" -}}
-apiVersion: autoscaling/v2
-{{- else -}}
-apiVersion: autoscaling/v2beta1
-{{- end }}
+apiVersion: {{ ternary "autoscaling/v2" "autoscaling/v2beta2" (.Capabilities.APIVersions.Has "autoscaling/v2") }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "matrix-media-repo.fullname" . }}
@@ -21,12 +17,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          AverageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
   {{- end }}
   {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          AverageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
   {{- end }}
 {{- end }}
