@@ -20,14 +20,14 @@ imagePullSecrets: []
 config:
   datastores:
     - type: file
-      enabled: true
+      id: "examplefile"
       forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
       opts:
         path: /media
 #
 #   - type: s3
-#     enabled: true
-#     forKinds: ["thumbnails", "remote_media", "local_media", "archives"]
+#     id: "examples3"
+#     forKinds: ["all"]
 #     opts:
 #       tempPath: "/tmp/mediarepo_s3_upload"
 #       endpoint: sfo2.digitaloceanspaces.com
