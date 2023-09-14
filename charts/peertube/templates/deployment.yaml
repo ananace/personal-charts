@@ -118,12 +118,12 @@ spec:
                   name: {{ .Values.externalRedis.existingSecret }}
                 {{- end }}
 {{- end }}
-{{- if .Values.config.mail.externalSecret }}
+{{- if .Values.config.mail.existingSecret }}
             - name: PEERTUBE_SMTP_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: {{ .Values.config.mail.externalSecretKey | default "smtp-password" }}
-                  name: {{ .Values.config.mail.externalSecret }}
+                  key: {{ .Values.config.mail.existingSecretKey | default "smtp-password" }}
+                  name: {{ .Values.config.mail.existingSecret }}
 {{- end }}
 {{- with .Values.extraEnv }}
             {{- . | toYaml | nindent 12 }}
