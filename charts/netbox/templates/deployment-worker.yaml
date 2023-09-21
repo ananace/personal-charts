@@ -35,6 +35,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ include "netbox.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: HOME
+              value: /tmp
           {{- if and (or .Values.redis.auth.existingSecret .Values.redis.enabled) (not .Values.redis.auth.password) }}
             - name: REDIS_PASSWORD
               valueFrom:
