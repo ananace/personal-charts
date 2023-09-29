@@ -31,6 +31,10 @@ config:
   ## Requires valid certificates, but is also required for federation support
   tls: true
 
+## Extra configuration to merge into the main lemmy.hjson file
+extraConfig: {}
+  # opentelemetry_url: http://otel:4137
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
