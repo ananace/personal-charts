@@ -44,6 +44,13 @@ spec:
                   name: {{ .Values.redis.auth.existingSecret | default (include "netbox.redis.fullname" .) }}
                   key: {{ .Values.redis.auth.existingSecretPasswordKey | default "redis-password" }}
           {{- end }}
+          {{- if .Values.existingDjangoSecret }}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingDjangoSecret }}
+                  key: {{ .Values.existingDjangoSecretKey }}
+          {{- end }}
           {{- if (or .Values.postgresql.auth.existingSecret .Values.postgresql.enabled) }}
             - name: DB_PASSWORD
               valueFrom:
