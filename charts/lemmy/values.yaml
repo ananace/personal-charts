@@ -2,8 +2,8 @@
 image:
   repository: dessalines/lemmy
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  #tag: latest
+  ## Overrides the image tag whose default is the chart appVersion.
+  # tag: latest
 
 ## The domain of the Lemmy instance
 serverName: "localhost"
@@ -116,8 +116,8 @@ backend:
 frontend:
   image:
     repository: dessalines/lemmy-ui
-    #pullPolicy: IfNotPresent
-    #tag:
+    # pullPolicy: IfNotPresent
+    # tag:
 
   replicaCount: 1
 
@@ -205,7 +205,7 @@ pictrs:
       # existingSecret: pictrs-secret
       # existingSecretAccessKey: access-key
       # existingSecretSecretKey: secret-key
-  
+
   env:
     PICTRS__MEDIA__VIDEO_CODEC: vp9
     PICTRS__MEDIA__GIF__MAX_WIDTH: 256
@@ -227,7 +227,7 @@ pictrs:
     enabled: true
     accessMode: ReadWriteOnce
     size: 16Gi
-    # existingClaim: 
+    # existingClaim:
     # storageClass:
 
   livenessProbe:
