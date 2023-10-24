@@ -1,0 +1,12 @@
+---
+yaml-files:
+  - 'Chart.yaml'
+  - 'values.yaml'
+
+extends: default
+
+rules:
+  comments-indentation: disable
+  line-length:
+    max: 140
+    level: warning

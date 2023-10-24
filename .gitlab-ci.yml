@@ -11,6 +11,12 @@ lint:charts:
   script:
     - helm lint charts/*
 
+lint:yaml:
+  image: registry.gitlab.com/pipeline-components/yamllint:latest
+  stage: test
+  script:
+    - yamllint charts/
+
 pages:
   image:
     name: alpine/helm

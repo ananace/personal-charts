@@ -134,10 +134,10 @@ externalRedis:
   # database: 0
 
   ## The name of an existing secret with redis credentials
-  #existingSecret: redis-secrets
+  # existingSecret: redis-secrets
 
   ## Password key to be retrieved from existing secret
-  #existingSecretPasswordKey: redis-password
+  # existingSecretPasswordKey: redis-password
 
 ## Configures an application-specific service account.
 ##
