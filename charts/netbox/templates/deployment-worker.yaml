@@ -73,7 +73,7 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
-          {{- if or .Values.extraConfiguration .Values.extraPlugins }}
+          {{- if or .Values.extraConfiguration .Values.extraPlugins .Values.worker.extraVolumeMounts }}
           volumeMounts:
             {{- if .Values.extraConfiguration }}
             - name: netbox-extra-config
@@ -85,12 +85,15 @@ spec:
               mountPath: /etc/netbox/config/plugins.py
               subPath: plugins.py
             {{- end }}
+          {{- if .Values.worker.extraVolumeMounts }}
+            {{ toYaml .Values.worker.extraVolumeMounts | nindent 12 }}
+          {{- end }}
           {{- end }}
     {{- with .Values.worker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- if or .Values.extraConfiguration .Values.extraPlugins }}
+    {{- if or .Values.extraConfiguration .Values.extraPlugins .Values.worker.extraVolumes }}
       volumes:
       {{- if .Values.extraConfiguration }}
         - name: netbox-extra-config
@@ -101,6 +104,9 @@ spec:
         - name: netbox-extra-plugins
           configMap:
             name: {{ .Chart.Name }}-plugins
+      {{- end }}
+      {{- if .Values.worker.extraVolumes }}
+        {{ toYaml .Values.worker.extraVolumes | nindent 8 }}
       {{- end }}
     {{- end }}
     {{- with .Values.worker.affinity }}

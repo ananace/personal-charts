@@ -165,6 +165,9 @@ persistence:
 worker:
   enabled: true
 
+  #extraVolumes: []
+  #extraVolumeMounts: []
+
   replicaCount: 1
 
   resources: {}
