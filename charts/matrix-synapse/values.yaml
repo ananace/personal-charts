@@ -960,3 +960,11 @@ ingress:
   ## Set the name of the IngressClass cluster resource (optional)
   ## https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec
   # className: can-be-anything
+
+## Specifies whether a service account should be created, and annotations to add.
+##
+serviceAccount:
+  create: false
+  annotations: {}
+    # eks.amazonaws.com/role-arn: arn:aws:iam::000000000000:role/matrix-synapse
+  # name: non-default-service-name

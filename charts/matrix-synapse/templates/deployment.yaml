@@ -37,6 +37,7 @@ spec:
         {{ . | toYaml | nindent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "matrix-synapse.serviceAccountName" . }}
       {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
       securityContext:
         {{- toYaml .Values.synapse.podSecurityContext | nindent 8 }}
