@@ -10,7 +10,7 @@ icon: https://raw.githubusercontent.com/digitalocean/netbox/develop/netbox/proje
 appVersion: 3.6.4
 
 type: application
-version: 5.5.4
+version: 5.5.5
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
