@@ -275,3 +275,14 @@ Set redis database id
 {{ .Values.externalRedis.dbid }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "matrix-synapse.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "matrix-synapse.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
