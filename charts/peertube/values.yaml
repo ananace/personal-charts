@@ -105,6 +105,18 @@ extraSecret: {}
 ##
 extraPodSpec: {}
 
+# Additional volumes of the peertube pod.
+extraVolumes: []
+  # - name: my-config
+  #   configMap:
+  #     name: my-config
+
+# Additional volume mounts of the peertube container.
+extraVolumeMounts: []
+  # - name: my-config
+  #   mountPath: /my-path/
+  #   subPath: my-file
+
 ## Self-deployed PostgreSQL database
 ## See: https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 ##
