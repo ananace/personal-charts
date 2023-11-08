@@ -1,12 +1,15 @@
 ---
 apiVersion: v2
 name: peertube
-description: Free software to take back control of your videos
+description: |
+  Free software to take back control of your videos
+
+  NB; With the 1.0 release, the names for existing SMTP secrets have been changed/fixed.
 icon: https://upload.wikimedia.org/wikipedia/commons/2/2b/Logo_de_PeerTube.svg
 appVersion: 5.2.1
 
 type: application
-version: 0.3.5
+version: 1.0.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
