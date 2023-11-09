@@ -2,10 +2,10 @@
 apiVersion: v2
 name: sliding-sync-proxy
 description: An implementation of MSC3575
-appVersion: "0.99.11"
+appVersion: "0.99.12"
 
 type: application
-version: 0.2.5
+version: 0.2.6
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
