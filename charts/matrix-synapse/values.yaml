@@ -194,8 +194,8 @@ synapse:
   ##
   annotations: {}
   #  prometheus.io/scrape: "true"
-  #  prometheus.io/path: /_synapse/metrics
-  #  prometheus.io/port: 9090
+  #  prometheus.io/path: "/_synapse/metrics"
+  #  prometheus.io/port: "9090"
 
   ## Labels to apply to the main Synapse pod.
   ##
