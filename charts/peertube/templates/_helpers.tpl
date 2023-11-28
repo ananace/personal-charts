@@ -37,7 +37,11 @@ Build a valid peertube image tag
 {{- if .Values.image.tag }}
 {{- .Values.image.tag }}
 {{- else }}
+{{-   if semverCompare ">=6.0.0" .Chart.AppVersion }}
+{{- printf "v%s-bookworm" .Chart.AppVersion }}
+{{-   else }}
 {{- printf "v%s-bullseye" .Chart.AppVersion }}
+{{-   end}}
 {{- end }}
 {{- end }}
 

@@ -74,7 +74,7 @@ data:
       streaming_playlists:
         {{- .Values.config.objectStorage.streaming | toYaml | nindent 8 }}
 
-      videos:
+      web_videos:
         {{- .Values.config.objectStorage.videos | toYaml | nindent 8 }}
 
     # Extra config
