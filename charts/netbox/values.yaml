@@ -10,6 +10,7 @@ image:
   # tag:
   pullPolicy: Always
 
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -140,6 +141,8 @@ extraVolumes: []
 
 extraVolumeMounts: []
 
+## Note that enabling features like LOGIN_REQUIRED or auto-SSO login may
+## require using different probe URLs
 readinessProbe:
   httpGet:
     port: http
