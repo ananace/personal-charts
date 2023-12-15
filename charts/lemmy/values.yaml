@@ -221,13 +221,18 @@ frontend:
 
   livenessProbe:
     httpGet:
-      path: /
+      path: /robots.txt
       port: http
 
   readinessProbe:
     httpGet:
-      path: /
+      path: /robots.txt
       port: http
+
+  # startupProbe:
+  #   httpGet:
+  #     path: /robots.txt
+  #     port: http
 
   podAnnotations: {}
 
