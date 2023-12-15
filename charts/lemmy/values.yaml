@@ -30,6 +30,8 @@ config:
   siteName: Lemmy on Kubernetes
   ## Requires valid certificates, but is also required for federation support
   tls: true
+  ## Should pict-rs cache external link previews
+  cacheExternalLinkPreviews: true
 
 ## Extra configuration to merge into the main lemmy.hjson file
 extraConfig: {}
@@ -113,6 +115,92 @@ backend:
 
   affinity: {}
 
+taskrunner:
+  enabled: false
+
+  image:
+    _keep: true
+    # repository: dessalines/lemmy
+    # pullPolicy: IfNotPresent
+    # tag:
+
+  env:
+    # RUST_BACKTRACE: 1
+
+  envFrom:
+    # - secretRef:
+    #    name: my-extra-secrets
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+federationsender:
+  enabled: false
+
+  image:
+    _keep: true
+    # repository: dessalines/lemmy
+    # pullPolicy: IfNotPresent
+    # tag:
+
+  env:
+    # RUST_BACKTRACE: 1
+
+  envFrom:
+    # - secretRef:
+    #    name: my-extra-secrets
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
 frontend:
   image:
     repository: dessalines/lemmy-ui
@@ -157,6 +245,7 @@ frontend:
   service:
     type: ClusterIP
     port: 80
+    sessionAffinity: ClientIP
 
   resources: {}
     # limits:

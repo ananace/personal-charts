@@ -1,31 +1,30 @@
+{{- if and .Values.taskrunner.enabled (semverCompare ">=0.19" (.Values.backend.image.tag | default .Values.image.tag | default .Chart.AppVersion)) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "lemmy.fullname" . }}
+  name: {{ include "lemmy.fullname" . }}-taskrunner
   labels:
     {{- include "lemmy.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
-  replicas: {{ .Values.backend.replicaCount }}
-  {{- with .Values.backend.strategy }}
+  replicas: 1
   strategy:
-    {{- . | toYaml | nindent 4 }}
-  {{- end }}
+    type: Recreate
   selector:
     matchLabels:
       {{- include "lemmy.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: backend
+      app.kubernetes.io/component: taskrunner
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/secret-configuration.yaml") . | sha256sum }}
-      {{- with .Values.backend.podAnnotations }}
+      {{- with .Values.taskrunner.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "lemmy.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: backend
+        app.kubernetes.io/component: taskrunner
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,23 +32,17 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "lemmy.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.taskrunner.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-{{- if semverCompare ">=0.19" (.Values.backend.image.tag | default .Values.image.tag | default .Chart.AppVersion) }}
           args:
-{{-   if .Values.federationsender.enabled }}
+            - --disable-http-server
             - --disable-activity-sending
-{{-   end }}
-{{-   if .Values.taskrunner.enabled }}
-            - --disable-scheduled-tasks
-{{-   end }}
-{{- end }}
           securityContext:
-            {{- toYaml .Values.backend.securityContext | nindent 12 }}
-          image: "{{ .Values.backend.image.repository | default .Values.image.repository }}:{{ .Values.backend.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy | default .Values.image.pullPolicy }}
-          {{- if or (not .Values.postgresql.auth.password) .Values.backend.env }}
+            {{- toYaml .Values.taskrunner.securityContext | nindent 12 }}
+          image: "{{ .Values.taskrunner.image.repository | default .Values.image.repository }}:{{ .Values.taskrunner.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.taskrunner.image.pullPolicy | default .Values.image.pullPolicy }}
+          {{- if or (not .Values.postgresql.auth.password) .Values.taskrunner.env }}
           env:
             {{- if not .Values.postgresql.auth.password }}
             - name: PGPASSWORD
@@ -63,48 +56,32 @@ spec:
                   name: {{ include "lemmy.postgresql.secret" . }}
               {{- end }}
             {{- end }}
-            {{- with .Values.backend.env }}
+            {{- with .Values.taskrunner.env }}
               {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | toString | quote }}
               {{- end }}
             {{- end }}
           {{- end }}
-          {{- with .Values.backend.envFrom }}
+          {{- with .Values.taskrunner.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          ports:
-            - name: http
-              containerPort: 8536
-              protocol: TCP
-          {{- with .Values.backend.livenessProbe }}
-          livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.backend.readinessProbe }}
-          readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.backend.startupProbe }}
-          startupProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           resources:
-            {{- toYaml .Values.backend.resources | nindent 12 }}
+            {{- toYaml .Values.taskrunner.resources | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /config/config.hjson
               subPath: config.hjson
-      {{- with .Values.backend.nodeSelector }}
+      {{- with .Values.taskrunner.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.backend.affinity }}
+      {{- with .Values.taskrunner.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.backend.tolerations }}
+      {{- with .Values.taskrunner.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -112,3 +89,4 @@ spec:
         - name: config
           secret:
             secretName: {{ include "lemmy.fullname" . }}
+{{- end }}
