@@ -24,6 +24,15 @@ You will also require some federation guides, either in the form of a `.well-kno
 When using a well-known entry, you will need to have a valid cert for whatever subdomain you wish to serve Synapse on.
 When using an SRV record, you will additionally need a valid cert for the main domain that you're using for your MXIDs.
 
+### ArgoCD
+
+This chart needs to be handled slightly differently when using it with ArgoCD because hooks behave differently when using ArgoCD. 
+
+You need to enable the signingkey job *once* for the initial sync, and disable it after it has run and created the secret.
+This can be done by setting `signingkey.job.enabled=false` in [`values.yml`](./values.yaml).
+
+**If you don't do this, the signingkey job will run on every sync and could end up creating a new secret, deleting your signing key.**
+
 ## Installation Examples
 
 Refer to [the main Synapse docs](https://github.com/matrix-org/synapse/blob/master/docs/federate.md) for more information.
