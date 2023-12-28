@@ -28,11 +28,10 @@ When using an SRV record, you will additionally need a valid cert for the main d
 
 This chart needs to be handled slightly differently when using it with ArgoCD because hooks behave differently when using ArgoCD.
 
-Because of that, on the initial install, you need to *first* partly sync the `signingkey` secret, and *then* sync the rest of the chart.
+Because of that, on the initial install, you need to *first* partly sync the `signingkey` secret, and *then* sync the entire chart.
 
-The chart will run a job to create the signing key, but it needs the secret to exist beforehand. On other platforms, this is handled by the pre-install hook, but ArgoCD doesn't support those without endangering deletion of the secret.
-
-**If you don't do this, the signingkey job will run on every sync and could end up creating a new secret, deleting your signing key.**
+The full sync will trigger a job to create the signing key, but it needs the secret to exist beforehand.
+On other platforms, this is handled by the pre-install hook, but ArgoCD doesn't support those without endangering deletion of the secret.
 
 ## Installation Examples
 
