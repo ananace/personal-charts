@@ -47,6 +47,9 @@ signingkey:
   ## If you lose your signing key then any federation traffic from your instance
   ## might not be trusted any more by the wider network.
   ##
+  ## If  you're on ArgoCD, you will want to set this to `true` once, and then keep it on false. This will create the secret once, and then keep it.
+  ## Keeping this turned on with ArgoCD will not overwrite/delete the existing secret, but it will complain about missing jobs once they have completed.
+  ##
   job:
     enabled: true
 

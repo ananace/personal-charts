@@ -26,12 +26,17 @@ When using an SRV record, you will additionally need a valid cert for the main d
 
 ### ArgoCD
 
-This chart needs to be handled slightly differently when using it with ArgoCD because hooks behave differently when using ArgoCD.
+If you use an existing secret for the signing key, there are no differences of note.
 
-Because of that, on the initial install, you need to *first* partly sync the `signingkey` secret, and *then* sync the entire chart.
+If you want to generate a new signing key though, you will need to adjust a bit:
 
-The full sync will trigger a job to create the signing key, but it needs the secret to exist beforehand.
-On other platforms, this is handled by the pre-install hook, but ArgoCD doesn't support those without endangering deletion of the secret.
+First, as also noted in the [values.yaml](./values.yaml) file, you need to set `signingkey.job.enabled` to `true`, as you normally would.
+
+Once the secret has been created and the jobs to generate the key have run, you will see ArgoCD complain about the jobs being defined, but not existing anymore (since they successfully completed).
+
+To fix this, you need to change the `signingkey.job.enabled` value to `false` and sync again. The secret that was generated will continue to exist and be used by Synapse.
+
+It is not dangerous to keep the job enabled, as it will not delete the existing secret, but it will keep your ArgoCD application state in `Missing` rather than `Healthy`.
 
 ## Installation Examples
 
