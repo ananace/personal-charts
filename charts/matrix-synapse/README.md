@@ -30,26 +30,28 @@ The chart will automatically generate a signing key for you, but you can also pr
 
 #### Use existing key
 
-Set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml) to prevent the job from running.
-
 Set `existingSecret` to the existing secrets name and `existingSecretKey` to the key name in [values.yaml](./values.yaml) to use the existing key.
+
+To disable the generation job, set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml).
 
 
 #### Generate key
 
 Set `signingkey.job.enabled` to `true` in [values.yaml](./values.yaml) to enable the job.
 
-This will create a secret and jobs to fill it on the first sync.
+This will create the secret and run a job to generate a value for it.
 
-After your secret has been generated, change the `signingkey.job.enabled` value to `false` and sync again. The secret that was generated will continue to exist and be used by Synapse.
+After your secret has been generated, you can set `signingkey.job.enabled` to `false`. The secret that was generated will continue to exist and be used by Synapse.
 
-It is not dangerous to keep the job enabled, as it will not delete the existing secret, but it will run the job on each sync and if you're using ArgoCD, keep the application state in `Missing` rather than `Healthy`.
+It is not dangerous to keep the job enabled, as it will not delete the existing secret.
 
 ##### ArgoCD
 
 This chart will attempt to detect that it's being run under ArgoCD, and will automatically adjust necessary parts of the signing key job if it is.
 
 If for some reason this does not work for you, or you want to make doubly sure that it does, you can set `argoCD` to `true` in [values.yaml](./values.yaml) to force the changes.
+
+After the signingkey job has run, the application state will be stuck in `Missing` rather than `Healthy` until you set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml).
 
 ## Installation Examples
 
