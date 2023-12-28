@@ -44,8 +44,6 @@ signingkey:
   ## If you lose your signing key then any federation traffic from your instance
   ## might not be trusted any more by the wider network.
   ##
-  ## ArgoCD specific:
-  ## Set "enabled" to `true` ONCE, and then keep it `false` forever. Otherwise you run risk of losing your signing key.
   job:
     enabled: true
 
