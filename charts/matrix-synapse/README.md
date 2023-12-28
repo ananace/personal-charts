@@ -38,6 +38,12 @@ To fix this, you need to change the `signingkey.job.enabled` value to `false` an
 
 It is not dangerous to keep the job enabled, as it will not delete the existing secret, but it will keep your ArgoCD application state in `Missing` rather than `Healthy`.
 
+#### ArgoCD Detection
+
+This chart will attempt to detect that it's being run under ArgoCD, and will automatically adjust necessary parts of the signing key job if it is.
+
+If for some reason this does not work for you, or you want to make doubly sure that it does, you can set `argoCD` to `true` in [values.yaml](./values.yaml) to force the changes.
+
 ## Installation Examples
 
 Refer to [the main Synapse docs](https://github.com/matrix-org/synapse/blob/master/docs/federate.md) for more information.
