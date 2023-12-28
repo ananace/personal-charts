@@ -86,6 +86,7 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
+  {{- if or .Values.signingkey.job.annotations (not $insideArgoCD) }}
   annotations:
     {{- if not $insideArgoCD }}
     helm.sh/hook: pre-install
@@ -93,6 +94,7 @@ metadata:
     {{- end }}
   {{- with .Values.signingkey.job.annotations }}
     {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
 spec:
   ttlSecondsAfterFinished: 0
