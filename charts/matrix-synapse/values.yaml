@@ -32,6 +32,9 @@ image:
 ## in config as well as for client API links in the ingress.
 # publicServerName: 'matrix.example.com'
 
+## Force the chart to change behavior for ArgoCD compatability. It *should* autodetect it, but you can force it here to be sure.
+# argoCD: true
+
 ## The source of the signing key used by Synapse in federation.
 ##
 signingkey:

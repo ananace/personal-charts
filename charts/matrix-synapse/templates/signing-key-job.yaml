@@ -1,10 +1,11 @@
+{{- $insideArgoCD := (or .Values.argoCD (.Capabilities.APIVersions.Has "argoproj.io/v1alpha1")) }}
+{{- $secretName := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey") }}
+
 {{- if .Values.signingkey.job.enabled }}
 {{- if .Values.signingkey.existingSecret }}
 {{- fail "Can't specify both signingkey.job.enabled and signingkey.existingSecret" }}
 {{- end }}
 {{- $name := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey-job") }}
-{{- $secretName := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey") }}
-{{- $insideArgoCD := (or .Values.argoCD (.Capabilities.APIVersions.Has "argoproj.io/v1alpha1")) }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -154,7 +155,10 @@ spec:
   parallelism: 1
   completions: 1
   backoffLimit: 1
+{{- end }}
 ---
+# Create secret if signing key job is enabled, or if we're running in ArgoCD and we don't have an existing secret
+{{- if or .Values.signingkey.job.enabled (and (not .Values.signingkey.existingSecret) $insideArgoCD) }}
 apiVersion: v1
 kind: Secret
 metadata:
