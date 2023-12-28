@@ -136,14 +136,14 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
+  {{- if not $insideArgoCD }}
   annotations:
-    {{- if not $insideArgoCD }}
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: never
     helm.sh/resource-policy: keep
     # If for some reason we didn't detect ArgoCD, but are running in it, we want to make sure we don't delete the secret
     argocd.argoproj.io/hook: Skip
-    {{- end }}
+  {{- end }}
   name: {{ $secretName }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
