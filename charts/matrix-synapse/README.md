@@ -24,21 +24,28 @@ You will also require some federation guides, either in the form of a `.well-kno
 When using a well-known entry, you will need to have a valid cert for whatever subdomain you wish to serve Synapse on.
 When using an SRV record, you will additionally need a valid cert for the main domain that you're using for your MXIDs.
 
-### ArgoCD
+### Signing key generation
 
-If you use an existing secret for the signing key, there are no differences of note.
+The chart will automatically generate a signing key for you, but you can also provide your own key if you want to.
 
-If you want to generate a new signing key though, you will need to adjust a bit:
+#### Use existing key
 
-First, as also noted in the [values.yaml](./values.yaml) file, you need to set `signingkey.job.enabled` to `true`, as you normally would.
+Set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml) to prevent the job from running.
 
-Once the secret has been created and the jobs to generate the key have run, you will see ArgoCD complain about the jobs being defined, but not existing anymore (since they successfully completed).
+Set `existingSecret` to the existing secrets name and `existingSecretKey` to the key name in [values.yaml](./values.yaml) to use the existing key.
 
-To fix this, you need to change the `signingkey.job.enabled` value to `false` and sync again. The secret that was generated will continue to exist and be used by Synapse.
 
-It is not dangerous to keep the job enabled, as it will not delete the existing secret, but it will keep your ArgoCD application state in `Missing` rather than `Healthy`.
+#### Generate key
 
-#### ArgoCD Detection
+Set `signingkey.job.enabled` to `true` in [values.yaml](./values.yaml) to enable the job.
+
+This will create a secret and jobs to fill it on the first sync.
+
+After your secret has been generated, change the `signingkey.job.enabled` value to `false` and sync again. The secret that was generated will continue to exist and be used by Synapse.
+
+It is not dangerous to keep the job enabled, as it will not delete the existing secret, but it will run the job on each sync and if you're using ArgoCD, keep the application state in `Missing` rather than `Healthy`.
+
+##### ArgoCD
 
 This chart will attempt to detect that it's being run under ArgoCD, and will automatically adjust necessary parts of the signing key job if it is.
 
