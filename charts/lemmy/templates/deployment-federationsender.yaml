@@ -38,6 +38,8 @@ spec:
           args:
             - --disable-http-server
             - --disable-scheduled-tasks
+            - --federate-process-index=1
+            - --federate-process-count=1
           securityContext:
             {{- toYaml .Values.federationsender.securityContext | nindent 12 }}
           image: "{{ .Values.federationsender.image.repository | default .Values.image.repository }}:{{ .Values.federationsender.image.tag | default .Values.image.tag | default .Chart.AppVersion }}"
