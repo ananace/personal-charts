@@ -437,6 +437,9 @@ postgresql:
   service:
     port: 5432
 
+  ## This may need to be set to 'require' if your PostgreSQL database forbids unencrypted connections
+  # sslmode: prefer
+
 ingress:
   enabled: true
   className: ""
