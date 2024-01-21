@@ -32,6 +32,9 @@ image:
 ## in config as well as for client API links in the ingress.
 # publicServerName: 'matrix.example.com'
 
+## Force the chart to use ArgoCD compatibility. It should automatically detect it, but you can force it here to be sure.
+# argoCD: true
+
 ## The source of the signing key used by Synapse in federation.
 ##
 signingkey:
@@ -43,6 +46,8 @@ signingkey:
   ##
   ## If you lose your signing key then any federation traffic from your instance
   ## might not be trusted any more by the wider network.
+  ##
+  ## After the initial install, the job should be disabled to speed up subsequent upgrades.
   ##
   job:
     enabled: true

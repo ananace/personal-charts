@@ -24,6 +24,35 @@ You will also require some federation guides, either in the form of a `.well-kno
 When using a well-known entry, you will need to have a valid cert for whatever subdomain you wish to serve Synapse on.
 When using an SRV record, you will additionally need a valid cert for the main domain that you're using for your MXIDs.
 
+### Signing key generation
+
+The chart will automatically generate a signing key for you, but you can also provide your own key if you want to.
+
+#### Use existing key
+
+Set `existingSecret` to the existing secrets name and `existingSecretKey` to the key name in [values.yaml](./values.yaml) to use the existing key.
+
+To disable the generation job, set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml).
+
+
+#### Generate key
+
+Set `signingkey.job.enabled` to `true` in [values.yaml](./values.yaml) to enable the job.
+
+This will create the secret and run a job to generate a value for it.
+
+After your secret has been generated, you can set `signingkey.job.enabled` to `false`. The secret that was generated will continue to exist and be used by Synapse.
+
+It is not dangerous to keep the job enabled, as it will not delete the existing secret.
+
+##### ArgoCD
+
+This chart will attempt to detect that it's being run under ArgoCD, and will automatically adjust necessary parts of the signing key job if it is.
+
+If for some reason this does not work for you, or you want to make doubly sure that it does, you can set `argoCD` to `true` in [values.yaml](./values.yaml) to force the changes.
+
+After the signingkey job has run, the application state will be stuck in `Missing` rather than `Healthy` until you set `signingkey.job.enabled` to `false` in [values.yaml](./values.yaml).
+
 ## Installation Examples
 
 Refer to [the main Synapse docs](https://github.com/matrix-org/synapse/blob/master/docs/federate.md) for more information.

@@ -1,9 +1,25 @@
+{{- $insideArgoCD := (or .Values.argoCD (.Capabilities.APIVersions.Has "argoproj.io/v1alpha1")) }}
+{{- $secretName := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey") }}
+
 {{- if .Values.signingkey.job.enabled }}
 {{- if .Values.signingkey.existingSecret }}
 {{- fail "Can't specify both signingkey.job.enabled and signingkey.existingSecret" }}
 {{- end }}
 {{- $name := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey-job") }}
-{{- $secretName := include "matrix-synapse.workername" (dict "global" . "worker" "signingkey") }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}-scripts
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+  {{- if not $insideArgoCD }}
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-delete-policy: hook-succeeded
+  {{- end }}
+data:
+{{ (.Files.Glob "scripts/*.sh").AsConfig | indent 2 }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -12,9 +28,11 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
+  {{- if not $insideArgoCD }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: hook-succeeded
+  {{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -23,9 +41,11 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
+  {{- if not $insideArgoCD }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: hook-succeeded
+  {{- end }}
 rules:
   - apiGroups:
       - ""
@@ -45,9 +65,11 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
+  {{- if not $insideArgoCD }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: hook-succeeded
+  {{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -64,11 +86,15 @@ metadata:
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
     app.kubernetes.io/component: signingkey-job
+  {{- if or .Values.signingkey.job.annotations (not $insideArgoCD) }}
   annotations:
+    {{- if not $insideArgoCD }}
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: hook-succeeded
+    {{- end }}
   {{- with .Values.signingkey.job.annotations }}
     {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
 spec:
   ttlSecondsAfterFinished: 0
@@ -131,16 +157,21 @@ spec:
   parallelism: 1
   completions: 1
   backoffLimit: 1
+{{- end }}
 ---
+# Create secret if signing key job is enabled, or if we're running in ArgoCD and we don't have an existing secret
+{{- if or .Values.signingkey.job.enabled (and (not .Values.signingkey.existingSecret) $insideArgoCD) }}
 apiVersion: v1
 kind: Secret
 metadata:
+  {{- if not $insideArgoCD }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-delete-policy: never
     helm.sh/resource-policy: keep
+    # If for some reason we didn't detect ArgoCD, but are running in it, we want to make sure we don't delete the secret
     argocd.argoproj.io/hook: Skip
-    argocd.argoproj.io/hook-delete-policy: Never
+  {{- end }}
   name: {{ $secretName }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
