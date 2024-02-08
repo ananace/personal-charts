@@ -1,0 +1,129 @@
+{{- if not (or .Values.puppetdb.ssl.key.content .Values.puppetdb.ssl.key.existingSecret .Values.puppetdb.ssl.key.mounted) }}
+{{ fail "You need to provide an SSL key for connecting to PuppetDB" }}
+{{- end }}
+{{- if not (or .Values.puppetdb.ssl.cert.content .Values.puppetdb.ssl.cert.existingSecret .Values.puppetdb.ssl.cert.mounted) }}
+{{ fail "You need to provide an SSL cert for connecting to PuppetDB" }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "puppetboard.fullname" . }}
+  labels:
+    {{- include "puppetboard.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "puppetboard.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "puppetboard.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "puppetboard.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PUPPETBOARD_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: PUPPETDB_HOST
+              value: {{ .Values.puppetdb.host }}
+            - name: PUPPETDB_PORT
+              value: {{ .Values.puppetdb.port | default 8081 | quote }}
+          {{- if not (or .Values.puppetdb.ssl.ca.existingSecret .Values.puppetdb.ssl.ca.mounted) }}
+            - name: PUPPETDB_SSL_VERIFY
+              value: "false"
+          {{- end }}
+          {{- if .Values.existingSecret }}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.existingSecret }}
+                  key: {{ .Values.existingSecretKey | default "SECRET_KEY" }}
+          {{- end }}
+          {{- if .Values.puppetdb.ssl.key.existingSecret }}
+            - name: PUPPETDB_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.puppetdb.ssl.key.existingSecret }}
+                  key: {{ .Values.puppetdb.ssl.key.existingSecretKey | default "PUPPETDB_KEY" }}
+          {{- end }}
+          {{- if .Values.puppetdb.ssl.cert.existingSecret }}
+            - name: PUPPETDB_CERT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.puppetdb.ssl.cert.existingSecret }}
+                  key: {{ .Values.puppetdb.ssl.cert.existingSecretKey | default "PUPPETDB_CERT" }}
+          {{- end }}
+          {{- if .Values.puppetdb.ssl.ca.existingSecret }}
+            - name: PUPPETDB_SSL_VERIFY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.puppetdb.ssl.ca.existingSecret }}
+                  key: {{ .Values.puppetdb.ssl.ca.existingSecretKey | default "PUPPETDB_SSL_VERIFY" }}
+          {{- end }}
+          {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.extraEnvFrom .Values.secretKey (not .Values.existingSecret) .Values.puppetdb.ssl.key.value .Values.puppetdb.ssl.cert.value .Values.puppetdb.ssl.ca.value .Values.extraSecrets }}
+          envFrom:
+          {{-   if or .Values.secretKey (not .Values.existingSecret) .Values.puppetdb.ssl.key.value .Values.puppetdb.ssl.cert.value .Values.puppetdb.ssl.ca.value .Values.extraSecrets }}
+            - secretRef:
+                name: {{ include "puppetboard.fullname" . }}
+          {{-   end }}
+          {{-   with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+          {{-   end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

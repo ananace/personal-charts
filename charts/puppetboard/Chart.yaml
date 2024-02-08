@@ -1,0 +1,12 @@
+---
+apiVersion: v2
+name: puppetboard
+description: Web frontend for PuppetDB
+icon: https://raw.githubusercontent.com/voxpupuli/logos/master/images/8bit-vox.png
+appVersion: 5.3.0
+
+type: application
+version: 0.1.0
+maintainers:
+  - name: Alexander Olofsson
+    email: ace@haxalot.com
