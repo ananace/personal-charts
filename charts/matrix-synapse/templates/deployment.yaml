@@ -87,7 +87,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.postgresql.enabled }}
-                  name: {{ .Values.postgresql.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
+                  name: {{ .Values.postgresql.auth.existingSecret | default (include "matrix-synapse.postgresql.fullname" .) }}
                   key: password
                   {{- else }}
                   name: {{ .Values.externalPostgresql.existingSecret }}
