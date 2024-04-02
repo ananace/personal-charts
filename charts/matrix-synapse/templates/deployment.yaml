@@ -66,6 +66,8 @@ spec:
             - sh
             - -c
             - |
+              export POSTGRES_PASSWORD=$(echo "${POSTGRES_PASSWORD:-}" | sed 's/\//\\\//g' | sed 's/\&/\\\&/g') && \
+              export REDIS_PASSWORD=$(echo "${REDIS_PASSWORD:-}" | sed 's/\//\\\//g' | sed 's/\&/\\\&/g') && \
               cat /synapse/secrets/*.yaml | \
                 sed -e "s/@@POSTGRES_PASSWORD@@/${POSTGRES_PASSWORD:-}/" \
                     -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
