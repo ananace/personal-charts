@@ -39,6 +39,10 @@ extraEnv: {}
 ## If you need to set additional secret environment variables
 extraSecrets: {}
 
+## Extra commands to run before handing over to cron
+extraCommands: []
+# - echo "0 0 1 */2 * autocompressor_reset.sh" | crontab -u nobody -
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

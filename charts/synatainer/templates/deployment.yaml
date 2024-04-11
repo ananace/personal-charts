@@ -36,6 +36,9 @@ spec:
             - |
               cp /tmp/mxtoken /conf/
               cp /tmp/pgpassword /conf/
+              {{- with .Values.extraCommands }}
+              {{- . | join "\n" | nindent 14 }}
+              {{- end }}
               exec /entrypoint.sh
           name: {{ .Chart.Name }}
           envFrom:
