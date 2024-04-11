@@ -41,7 +41,8 @@ extraSecrets: {}
 
 ## Extra commands to run before handing over to cron
 extraCommands: []
-# - echo "0 0 1 */2 * autocompressor_reset.sh" | crontab -u nobody -
+# - echo "2 2 * * * /usr/local/bin/synatainer-cron.sh" >> /conf/synatainer.crontab
+# - echo "0 0 1 */2 * /usr/local/bin/autocompressor_reset.sh" >> /conf/synatainer.crontab
 
 imagePullSecrets: []
 nameOverride: ""
