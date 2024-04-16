@@ -23,7 +23,7 @@ pages:
     entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   before_script:
-    - apk add pandoc --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community --no-cache
+    - apk add pandoc --no-cache
     - grep 'repository:' charts/*/Chart.yaml | awk '{ print $3 }' | uniq | xargs -rn1 sh -c 'helm repo add $(basename $0) $0'
     - helm repo update
     - ls -d1 charts/* | xargs -rn1 helm dependency build --skip-refresh
