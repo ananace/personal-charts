@@ -68,6 +68,28 @@ signingkey:
       # tag: latest
       pullPolicy: IfNotPresent
 
+    ## Configure for pod job security policy, setting ovnership of the pod such that
+    ## synapse owns the files created by signing key job.
+    ## Synapse default UID:GID is 666:666
+    ##
+    ## Some systems will have a default owner such as root to own the files, synpase
+    ## will not be able to access the files in such a case, deppending on permissions.
+    podSecurityContext: {}
+    #  fsGroup: 666
+    #  runAsGroup: 666
+    #  runAsUser: 666
+
+    ## Configuration for the container security policy, refer to the above
+    ## podSecurityContext for more relevant information.
+    ##
+    securityContext: {}
+    #  capabilities:
+    #    drop:
+    #    - ALL
+    #  readOnlyRootFilesystem: true
+    #  runAsNonRoot: true
+    #  runAsUser: 666
+
   ## Specify an existing signing key secret, will need to be created in advance.
   ##
   # existingSecret: secret-name

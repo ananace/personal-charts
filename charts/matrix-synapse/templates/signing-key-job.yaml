@@ -120,6 +120,8 @@ spec:
           name: signing-key-generate
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.signingkey.job.podSecurityContext | nindent 12 }}
           volumeMounts:
             - mountPath: /synapse/keys
               name: matrix-synapse-keys
@@ -138,6 +140,8 @@ spec:
           name: signing-key-upload
           resources:
             {{- toYaml .Values.signingkey.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.signingkey.job.podSecurityContext | nindent 12 }}
           volumeMounts:
             - mountPath: /scripts
               name: scripts
@@ -145,6 +149,8 @@ spec:
             - mountPath: /synapse/keys
               name: matrix-synapse-keys
               readOnly: true
+      securityContext:
+        {{- toYaml .Values.signingkey.job.securityContext | nindent 8 }}
       restartPolicy: Never
       serviceAccount: {{ $name }}
       volumes:
