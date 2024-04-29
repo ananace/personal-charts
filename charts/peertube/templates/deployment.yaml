@@ -135,6 +135,9 @@ spec:
             - mountPath: /home/peertube
               name: empty
               subPath: home
+            - mountPath: /app/storage
+              name: empty
+              subPath: storage
             - mountPath: /tmp
               name: empty
               subPath: tmp
