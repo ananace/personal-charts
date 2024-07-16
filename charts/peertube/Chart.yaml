@@ -6,10 +6,10 @@ description: |
 
   NB; With the 1.0 release, the names for existing SMTP secrets have been changed/fixed.
 icon: https://upload.wikimedia.org/wikipedia/commons/2/2b/Logo_de_PeerTube.svg
-appVersion: 6.1.0
+appVersion: 6.2.0
 
 type: application
-version: 1.2.0
+version: 1.3.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
