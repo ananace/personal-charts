@@ -63,6 +63,49 @@ data:
       {{- end }}
     {{- end }}
 
+{{- $postgresHost := include "matrix-synapse.postgresql.host" . }}
+{{- $postgresDB   := include "matrix-synapse.postgresql.database" . }}
+{{- $postgresUser := include "matrix-synapse.postgresql.username" . }}
+{{- $postgresPort := include "matrix-synapse.postgresql.port" . }}
+{{- $postgresSSLMode := include "matrix-synapse.postgresql.sslmode" . }}
+{{- $postgresExtraArgs := include "matrix-synapse.postgresql.extraArgs" . }}
+
+    ## Database configuration ##
+
+    database:
+      name: "psycopg2"
+      args:
+        user: {{ $postgresUser | quote }}
+        password: "%{env:POSTGRES_PASSWORD}%"
+        database: {{ $postgresDB | quote }}
+        host: {{ $postgresHost | quote }}
+        port: {{ $postgresPort }}
+        sslmode: {{ $postgresSSLMode | quote }}
+        cp_min: 5
+        cp_max: 10
+        {{- $postgresExtraArgs | nindent 8 }}
+
+{{- $redisHost := include "matrix-synapse.redis.host" . }}
+{{- $redisPort := include "matrix-synapse.redis.port" . }}
+{{- $redisDbid := include "matrix-synapse.redis.dbid" . }}
+{{- $redisTls  := or (and .Values.redis.enabled .Values.redis.tls .Values.redis.tls.enabled) (and (not .Values.redis.enabled) .Values.externalRedis.tls) }}
+
+    ## Redis configuration ##
+
+    redis:
+      enabled: true
+      host: {{ $redisHost | quote }}
+{{- if $redisPort }}
+      port: {{ $redisPort }}
+{{- end }}
+      password: "%{!env:REDIS_PASSWORD}%"
+{{- if $redisDbid }}
+      dbid: {{ $redisDbid }}
+{{- end }}
+{{- if $redisTls }}
+      use_tls: true
+{{- end }}
+
     ## Ports ##
     {{- $bindAddresses := .Values.config.bindAddresses | default (list "::") }}
 
@@ -112,6 +155,7 @@ data:
     ## Captcha ##
 
     recaptcha_public_key: {{ .Values.config.recaptcha.publicKey | quote }}
+    recaptcha_private_key: "%{env:RECAPTCHA_PRIVATE_KEY}%"
     enable_registration_captcha: true
     {{- end }}
     {{- if .Values.config.turnUris }}
@@ -120,11 +164,17 @@ data:
 
     turn_uris:
       {{ toYaml .Values.config.turnUris | nindent 6 }}
+    turn_shared_secret: "%{!env:TURN_SHARED_SECRET}%"
     {{- end }}
 
     ## Registration ##
 
     enable_registration: {{ .Values.config.enableRegistration | default false }}
+    registration_shared_secret: "%{env:REGISTRATION_SHARED_SECRET}%"
+
+    ## API Configuration ##
+
+    macaroon_secret_key: "%{!env:MACAROON_SECRET_KEY}%"
 
     ## Metrics ###
 

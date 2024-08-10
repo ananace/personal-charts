@@ -125,6 +125,8 @@ config:
   reportStats: false
 
   ## Protect registration with recaptcha. (optional)
+  ## Recaptcha private key can also be set using extraEnv/extraEnvFrom with the
+  ## environment variable RECAPTCHA_PRIVATE_KEY
   ##
   # recaptcha:
   #   publicKey: ''
@@ -132,6 +134,8 @@ config:
 
   ## URIs and secret key for TURN servers to use to help establish 1:1 WebRTC
   ## calls.
+  ## TURN secret can also be set using extraEnv/extraEnvFrom with the
+  ## environment variable TURN_SHARED_SECRET
   ##
   # turnUris: []
   # turnSecret: ''
@@ -142,9 +146,13 @@ config:
   # enableRegistration: false
 
   ## NB; this value will default to a random string if not specified.
+  ## It can also be set using extraEnv/extraEnvFrom with the environment variable
+  ## REGISTRATION_SHARED_SECRET
   # registrationSharedSecret: ''
 
   ## NB; Strongly recommended to set this to a secure value.
+  ## It can also be set using extraEnv/extraEnvFrom with the environment variable
+  ## MACAROON_SECRET_KEY
   # macaroonSecretKey: ''
 
   ## A set of trusted servers to contact if another server doesn't respond to a
@@ -178,6 +186,8 @@ config:
   useStructuredLogging: false
 
 ## Specify arbitrary Synapse configuration here;
+## Environment variable expansion can be done using the following syntax;
+##   key: '%{env:ENVIRONMENT_VARIABLE}%'
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 extraConfig: {}
@@ -199,6 +209,8 @@ extraLoggers: {}
 
 ## Specify arbitrary - secret - Synapse configuration here;
 ## These values will be stored in secrets instead of configmaps
+## Environment variable expansion can be done using the following syntax;
+##   key: '%{env:ENVIRONMENT_VARIABLE}%'
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 extraSecrets: {}
@@ -243,6 +255,14 @@ synapse:
   #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
   #  - name: SYNAPSE_CACHE_FACTOR
   #    value: "2"
+
+  ## Additional environment variable objects to add to the main Synapse pod
+  ##
+  extraEnvFrom: []
+  #  - configMapRef:
+  #      name: extra-environment
+  #  - secretRef:
+  #      name: extra-secret-environment
 
   ## Additional volumes to mount into Synapse
   ##
@@ -385,6 +405,14 @@ workers:
     #    value: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
     #  - name: SYNAPSE_CACHE_FACTOR
     #    value: "1.0"
+
+    ## Additional environment variable objects to add to the worker.
+    ##
+    extraEnvFrom: []
+    #  - configMapRef:
+    #      name: extra-environment
+    #  - secretRef:
+    #      name: extra-secret-environment
 
     ## Additional volumes to add to the worker.
     ## Useful for the media repo, or for adding Python modules.

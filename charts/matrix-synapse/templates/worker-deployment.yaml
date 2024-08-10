@@ -66,24 +66,20 @@ spec:
             - sh
             - -c
             - |
-              cat /synapse/secrets/*.yaml | \
-                sed -e "s/@@POSTGRES_PASSWORD@@/${POSTGRES_PASSWORD:-}/" \
-                    -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
-                       > /synapse/config/conf.d/secrets.yaml
-
-              {{- if (or $config.extraCommands $default.extraCommands) }}
+              mkdir -p /tmp/conf.d || true
 
               {{- with $config.extraCommands | default $default.extraCommands }}
               {{ range . }}
               {{ . | nindent 14 }}
               {{- end }}
               {{- end }}
-              {{- end }}
 
+              python /synapse/scripts/munge-config.py > /tmp/homeserver.yaml
+              python /synapse/scripts/munge-config.py /synapse/config/{{ $name }}.worker > /tmp/worker.yaml
               exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $app }} \
-                          -c /synapse/config/homeserver.yaml \
-                          -c /synapse/config/conf.d/ \
-                          -c /synapse/config/{{ $name }}.worker
+                          -c /tmp/homeserver.yaml \
+                          -c /tmp/worker.yaml \
+                          -c /tmp/conf.d/
           env:
           {{- if or $.Values.postgresql.enabled $.Values.externalPostgresql.existingSecret }}
             - name: POSTGRES_PASSWORD
@@ -110,6 +106,12 @@ spec:
                   {{- end -}}
           {{- end }}
           {{- with $config.extraEnv | default $default.extraEnv }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "matrix-synapse.fullname" . }}
+          {{- with $config.extraEnvFrom | default $default.extraEnvFrom }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
           securityContext:
@@ -154,10 +156,10 @@ spec:
             - name: worker-config
               mountPath: /synapse/config/{{ $name }}.worker
               subPath: {{ $name }}.worker
-            - name: tmpconf
-              mountPath: /synapse/config/conf.d
+            {{- if .Values.extraSecrets }}
             - name: secrets
               mountPath: /synapse/secrets
+            {{- end }}
             - name: signingkey
               mountPath: /synapse/keys
           {{- if eq $name "media-repository" }}
@@ -186,17 +188,17 @@ spec:
         - name: worker-config
           configMap:
             name: {{ include "matrix-synapse.workername" (dict "global" $ "worker" "workers") }}
+        {{- if .Values.extraSecrets }}
         - name: secrets
           secret:
-            secretName: {{ include "matrix-synapse.fullname" $ }}
+            secretName: {{ include "matrix-synapse.fullname" $ }}-extra
+        {{- end }}
         - name: signingkey
           secret:
             secretName: {{ $.Values.signingkey.existingSecret | default (include "matrix-synapse.workername" (dict "global" $ "worker" "signingkey")) | quote }}
             items:
               - key: {{ $.Values.signingkey.existingSecretKey | default "signing.key" | quote }}
                 path: signing.key
-        - name: tmpconf
-          emptyDir: {}
       {{- if eq $name "media-repository" }}
         - name: media
         {{- if $.Values.persistence.enabled }}

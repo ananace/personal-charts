@@ -67,6 +67,8 @@ spec:
             - sh
             - -c
             - |
+              mkdir -p /tmp/conf.d || true
+
               {{- range .Values.synapse.extraCommands }}
               {{ . }}
               {{- end }}
@@ -74,6 +76,7 @@ spec:
               python /synapse/scripts/munge-config.py > /tmp/homeserver.yaml
               exec python -B -m synapse.app.homeserver \
                           -c /tmp/homeserver.yaml \
+                          -c /tmp/conf.d/
           env:
           {{- if or .Values.postgresql.enabled .Values.externalPostgresql.existingSecret }}
             - name: POSTGRES_PASSWORD
@@ -100,6 +103,12 @@ spec:
                   {{- end -}}
           {{- end }}
           {{- with .Values.synapse.extraEnv }}
+            {{- . | toYaml | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "matrix-synapse.fullname" . }}
+          {{- with .Values.synapse.extraEnvFrom }}
             {{- . | toYaml | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ include "matrix-synapse.imageTag" . }}"
@@ -131,12 +140,12 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /synapse/config
-            - name: tmpconf
-              mountPath: /synapse/config/conf.d
             - name: scripts
               mountPath: /synapse/scripts
+            {{- if .Values.extraSecrets }}
             - name: secrets
               mountPath: /synapse/secrets
+            {{- end }}
             - name: signingkey
               mountPath: /synapse/keys
             - name: media
@@ -155,17 +164,17 @@ spec:
         - name: scripts
           configMap:
             name: {{ include "matrix-synapse.fullname" . }}-scripts
+        {{- if .Values.extraSecrets }}
         - name: secrets
           secret:
-            secretName: {{ include "matrix-synapse.fullname" . }}
+            secretName: {{ include "matrix-synapse.fullname" . }}-extra
+        {{- end }}
         - name: signingkey
           secret:
             secretName: {{ .Values.signingkey.existingSecret | default (include "matrix-synapse.workername" (dict "global" . "worker" "signingkey")) | quote }}
             items:
               - key: {{ .Values.signingkey.existingSecretKey | default "signing.key" | quote }}
                 path: signing.key
-        - name: tmpconf
-          emptyDir: {}
         - name: tmpdir
           emptyDir: {}
         - name: media
