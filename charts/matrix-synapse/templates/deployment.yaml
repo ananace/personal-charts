@@ -67,23 +67,13 @@ spec:
             - sh
             - -c
             - |
-              export POSTGRES_PASSWORD=$(echo "${POSTGRES_PASSWORD:-}" | sed 's/\//\\\//g' | sed 's/\&/\\\&/g') && \
-              export REDIS_PASSWORD=$(echo "${REDIS_PASSWORD:-}" | sed 's/\//\\\//g' | sed 's/\&/\\\&/g') && \
-              cat /synapse/secrets/*.yaml | \
-                sed -e "s/@@POSTGRES_PASSWORD@@/${POSTGRES_PASSWORD:-}/" \
-                    -e "s/@@REDIS_PASSWORD@@/${REDIS_PASSWORD:-}/" \
-                       > /synapse/config/conf.d/secrets.yaml
-
-              {{- if .Values.synapse.extraCommands }}
-
-              {{ range .Values.synapse.extraCommands }}
+              {{- range .Values.synapse.extraCommands }}
               {{ . }}
               {{- end }}
-              {{- end }}
 
+              python /synapse/scripts/munge-config.py > /tmp/homeserver.yaml
               exec python -B -m synapse.app.homeserver \
-                          -c /synapse/config/homeserver.yaml \
-                          -c /synapse/config/conf.d/
+                          -c /tmp/homeserver.yaml \
           env:
           {{- if or .Values.postgresql.enabled .Values.externalPostgresql.existingSecret }}
             - name: POSTGRES_PASSWORD
@@ -143,6 +133,8 @@ spec:
               mountPath: /synapse/config
             - name: tmpconf
               mountPath: /synapse/config/conf.d
+            - name: scripts
+              mountPath: /synapse/scripts
             - name: secrets
               mountPath: /synapse/secrets
             - name: signingkey
@@ -160,6 +152,9 @@ spec:
         - name: config
           configMap:
             name: {{ include "matrix-synapse.fullname" . }}
+        - name: scripts
+          configMap:
+            name: {{ include "matrix-synapse.fullname" . }}-scripts
         - name: secrets
           secret:
             secretName: {{ include "matrix-synapse.fullname" . }}

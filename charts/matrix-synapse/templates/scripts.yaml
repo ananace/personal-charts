@@ -1,0 +1,21 @@
+{{- $insideArgoCD := (or .Values.argoCD (.Capabilities.APIVersions.Has "argoproj.io/v1alpha1")) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "matrix-synapse.fullname" . }}-scripts
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+  {{- if not $insideArgoCD }}
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-delete-policy: never
+    helm.sh/resource-policy: keep
+    # If for some reason we didn't detect ArgoCD, but are running in it, we want to make sure we don't delete the scripts
+    argocd.argoproj.io/hook: Skip
+  {{- end }}
+data:
+{{- if .Values.signingkey.job.enabled }}
+{{ (.Files.Glob "scripts/*.sh").AsConfig | indent 2 }}
+{{- end }}
+{{ (.Files.Glob "scripts/*.py").AsConfig | indent 2 }}
