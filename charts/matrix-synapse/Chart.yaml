@@ -13,7 +13,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: ^12.1.4
+    version: ^15.5.29
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: redis
