@@ -292,7 +292,7 @@ Defines a PodDisruptionBudget for each enabled service
 */}}
 {{- define "matrix-synapse.podDisruptionBudget" -}}
 {{- if .settings.enabled -}}
-{{- if not (and .settings.minAvailable .settings.maxUnavailable) -}}
+{{- if not (or .settings.minAvailable .settings.maxUnavailable) -}}
 {{-  printf "You must specify either minAvailable or maxUnavailable for podDisruptionBudget for %s" .name | fail -}}
 {{- end -}}
 apiVersion: policy/v1
