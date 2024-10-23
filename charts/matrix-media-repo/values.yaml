@@ -215,6 +215,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+## Applies a disruption budget to the Matrix Media Repo deployment.
+## Either minAvailable or maxUnavailable can be specified, but not both.
+##
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 75%
+  # maxUnavailable: 25%
+
 ## Configure a PodMonitor definition for the application.
 ## Requires the Prometheus Operator
 ##
