@@ -53,3 +53,27 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "sliding-sync-proxy.postgresql.fullname" -}}
 {{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Defines a PodDisruptionBudget for each enabled service
+*/}}
+{{- define "sliding-sync-proxy.podDisruptionBudget" -}}
+{{- if .settings.enabled -}}
+{{- if not (or .settings.minAvailable .settings.maxUnavailable) -}}
+{{-  fail "You must specify either minAvailable or maxUnavailable for podDisruptionBudget" -}}
+{{- end -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "sliding-sync-proxy.fullname" .root }}-pdb
+spec:
+  {{- if .settings.minAvailable }}
+  minAvailable: {{ .settings.minAvailable }}
+  {{- else if .settings.maxUnavailable }}
+  maxUnavailable: {{ .settings.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "sliding-sync-proxy.selectorLabels" .root | nindent 6 }}
+{{- end -}}
+{{- end -}}

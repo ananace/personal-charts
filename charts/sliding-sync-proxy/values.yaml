@@ -70,6 +70,14 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+## Applies a disruption budget to the Sliding Sync Proxy deployment.
+## Either minAvailable or maxUnavailable can be specified, but not both.
+##
+podDisruptionBudget:
+  enabled: false
+  # minAvailable: 75%
+  # maxUnavailable: 25%
+
 autoscaling:
   enabled: false
   minReplicas: 1
