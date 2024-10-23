@@ -5,6 +5,7 @@
 {{- if (and .Values.redis.enabled (and .Values.redis.usePassword (and (not .Values.redis.auth.password) (not .Values.redis.auth.existingSecret)))) -}}
 {{-  fail "You must specify a static redis password or existing secret if using the included redis chart" -}}
 {{- end -}}
+{{- $name := "synapse" }}
 ---
 # Server: {{ required "A valid serverName is required" .Values.serverName }}
 apiVersion: apps/v1
@@ -13,7 +14,7 @@ metadata:
   name: {{ include "matrix-synapse.fullname" . }}
   labels:
     {{- include "matrix-synapse.labels" . | nindent 4 }}
-    app.kubernetes.io/component: synapse
+    app.kubernetes.io/component: {{ $name }}
 spec:
   replicas: 1
   strategy:
@@ -21,7 +22,7 @@ spec:
   selector:
     matchLabels:
       {{- include "matrix-synapse.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/component: synapse
+      app.kubernetes.io/component: {{ $name }}
   template:
     metadata:
       annotations:
@@ -32,7 +33,7 @@ spec:
         {{- end }}
       labels:
         {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/component: synapse
+        app.kubernetes.io/component: {{ $name }}
         {{- with .Values.synapse.labels }}
         {{ . | toYaml | nindent 8 }}
         {{- end }}
@@ -200,3 +201,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+---
+{{ template "matrix-synapse.podDisruptionBudget" (dict "settings" .Values.synapse.podDisruptionBudget "name" $name "root" .) }}
