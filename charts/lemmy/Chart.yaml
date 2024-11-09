@@ -3,10 +3,10 @@ apiVersion: v2
 name: lemmy
 description: A link aggregator and forum for the fediverse
 icon: https://join-lemmy.org/static/assets/images/lemmy.svg
-appVersion: 0.19.5
+appVersion: 0.19.6
 
 type: application
-version: 0.5.8
+version: 0.5.9
 
 maintainers:
   - name: Alexander Olofsson
