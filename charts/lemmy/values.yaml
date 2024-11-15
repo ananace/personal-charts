@@ -30,8 +30,9 @@ config:
   siteName: Lemmy on Kubernetes
   ## Requires valid certificates, but is also required for federation support
   tls: true
-  ## Should pict-rs cache external link previews
-  cacheExternalLinkPreviews: true
+  ## To which degree should pict-rs cache external resources
+  ## Valid modes are; None, StoreLinkPreviews, and ProxyAllImages
+  imageMode: StoreLinkPreviews
 
 ## Extra configuration to merge into the main lemmy.hjson file
 extraConfig: {}
