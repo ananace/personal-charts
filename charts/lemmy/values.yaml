@@ -1,6 +1,6 @@
 ---
 image:
-  repository: dessalines/lemmy
+  repository: docker.io/dessalines/lemmy
   pullPolicy: IfNotPresent
   ## Overrides the image tag whose default is the chart appVersion.
   # tag: latest
@@ -54,7 +54,7 @@ serviceAccount:
 backend:
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -121,7 +121,7 @@ taskrunner:
 
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -164,7 +164,7 @@ federationsender:
 
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -204,7 +204,7 @@ federationsender:
 
 frontend:
   image:
-    repository: dessalines/lemmy-ui
+    repository: docker.io/dessalines/lemmy-ui
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -313,7 +313,7 @@ pictrs:
     #    name: my-extra-secrets
 
   image:
-    repository: asonix/pictrs
+    repository: docker.io/asonix/pictrs
     pullPolicy: IfNotPresent
     tag: 0.4.0-beta.19
 
