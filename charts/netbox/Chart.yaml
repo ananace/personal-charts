@@ -7,10 +7,10 @@ description: |
   Important; With chart version 4.0.0 there are major upgrades to the packaged Redis and Postgres,
   as well as a major version bump of Netbox that introduces housekeeping. Take care when upgrading.
 icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/netbox/project-static/img/netbox_icon.svg
-appVersion: 4.1.6
+appVersion: 4.1.7
 
 type: application
-version: 6.1.3
+version: 6.1.4
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
