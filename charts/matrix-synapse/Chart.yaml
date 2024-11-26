@@ -3,10 +3,10 @@ apiVersion: v2
 name: matrix-synapse
 description: Matrix reference homeserver
 icon: https://matrix.org/images/matrix-logo.svg
-appVersion: 1.119.0
+appVersion: 1.120.0
 
 type: application
-version: 3.10.1
+version: 3.10.2
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
