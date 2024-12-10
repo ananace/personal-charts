@@ -243,3 +243,7 @@ annotations: {}
 ## Deployment labels
 ##
 labels: {}
+
+## Command line arguments
+##
+commandArguments: ""
