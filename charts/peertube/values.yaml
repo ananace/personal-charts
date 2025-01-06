@@ -69,6 +69,16 @@ config:
       # prefix:
       # base_url:
 
+    exports:
+      bucket_name: peertube-exports
+      # prefix:
+      # base_url:
+
+    originals:
+      bucket_name: peertube-originals
+      # prefix:
+      # base_url:
+
   ## Main persistent storage, will be used for uploads, processing, plugins, etc
   persistence:
     enabled: true
