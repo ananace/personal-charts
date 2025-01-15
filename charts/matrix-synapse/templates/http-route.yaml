@@ -74,56 +74,56 @@ spec:
 
     {{- if has . $csHosts }}
     {{- with $.Values.gateway.csPaths }}
-      {{ . | toYaml | nindent 10 }}
+      {{ . | toYaml | nindent 6 }}
     {{- end }}
     {{- end }}
     {{- if has . $s2sHosts }}
     {{- with $.Values.gateway.paths }}
-      {{ . | toYaml | nindent 10 }}
+      {{ . | toYaml | nindent 6 }}
     {{- end }}
     {{- end }}
 
     {{- if or (has . $csHosts) (has . $s2sHosts) }}
-      - backendRefs:
-          - kind: Service
-            name: {{ $fullName }}
-            port: {{ $.Values.service.port }}
-        matches:
-          - path:
-              type: PathPrefix
-              value: /_matrix
+    - backendRefs:
+        - kind: Service
+          name: {{ $fullName }}
+          port: {{ $.Values.service.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /_matrix
     {{- end }}
 
     {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
-      - backendRefs:
-          - kind: Service
-            name: {{ $fullName }}
-            port: {{ $.Values.service.port }}
-        matches:
-          - path:
-              type: PathPrefix
-              value: /_synapse
+    - backendRefs:
+        - kind: Service
+          name: {{ $fullName }}
+          port: {{ $.Values.service.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /_synapse
     {{- end }}
 
     {{- if has . $wkHosts }}
       {{- if $.Values.wellknown.enabled }}
-      - backendRefs:
-          - kind: Service
-            name: {{ $wkName }}
-            port: {{ $.Values.wellknown.service.port | default 80 }}
-        matches:
-          - path:
-              type: PathPrefix
-              value: /.well-known/matrix
+    - backendRefs:
+        - kind: Service
+          name: {{ $wkName }}
+          port: {{ $.Values.wellknown.service.port | default 80 }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/matrix
       {{- else }}
-      - backendRefs:
-          - kind: Service
-            name: {{ $fullName }}
-            port: {{ $.Values.service.port }}
-        matches:
-          - path:
-              type: PathPrefix
-              value: /.well-known/matrix
+    - backendRefs:
+        - kind: Service
+          name: {{ $fullName }}
+          port: {{ $.Values.service.port }}
+      matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/matrix
       {{- end }}
     {{- end }}
     {{- end }}
