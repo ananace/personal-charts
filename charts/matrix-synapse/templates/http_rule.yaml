@@ -1,0 +1,130 @@
+{{- if and .Values.gateway.enabled (not .Values.ingress.enabled) -}}
+{{- $fullName := include "matrix-synapse.fullname" . -}}
+{{- $wkName := include "matrix-synapse.externalname" (dict "global" . "external" "wellknown-lighttpd") -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "matrix-synapse.labels" . | nindent 4 }}
+  {{- with .Values.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- with .Values.gateway.parentRefs -}}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  
+  {{- $csHosts := .Values.gateway.csHosts }}
+  {{- if .Values.gateway.includeServerName }}
+    {{- $csHosts = concat (list (.Values.publicServerName | default .Values.serverName)) $csHosts }}
+  {{- end }}
+  {{- $s2sHosts := .Values.gateway.hosts }}
+  {{- if .Values.gateway.includeServerName }}
+    {{- $s2sHosts = concat (list .Values.serverName) $s2sHosts }}
+  {{- end }}
+  {{- $wkHosts := .Values.gateway.wkHosts }}
+  {{- if .Values.gateway.includeServerName }}
+    {{- $wkHosts = concat (list .Values.serverName) $wkHosts }}
+  {{- end }}
+  {{- $hosts := uniq (concat $s2sHosts $csHosts $wkHosts) }}
+  
+  hostnames:
+  {{- range $hosts }}
+    - {{ . | quote }}
+  {{- end }}
+
+  rules:
+    {{- range $hosts }}
+    {{- $host := . }}
+
+    {{- $default := $.Values.workers.default }}
+    {{- range $worker, $config := $.Values.workers }}
+      {{- $name := $worker | replace "_" "-" }}
+      {{- if and $config.enabled $config.listeners (or $config.paths $config.csPaths) }}
+        {{- $service := include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
+        {{- if has $host $csHosts }}
+          {{- range $config.csPaths }}
+    - backendRefs:
+        - kind: Service
+          name: {{ $service }}
+          port: 8083
+      matches:
+        - path:
+            type: RegularExpression
+            value: {{ . | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if has $host $s2sHosts }}
+          {{- range $config.paths }}
+    - backendRefs:
+        - kind: Service
+          name: {{ $service }}
+          port: 8083
+      matches:
+        - path:
+            type: RegularExpression
+            value: {{ . | quote }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+    {{- if has . $csHosts }}
+    {{- with $.Values.gateway.csPaths }}
+      {{ . | toYaml | nindent 10 }}
+    {{- end }}
+    {{- end }}
+    {{- if has . $s2sHosts }}
+    {{- with $.Values.gateway.paths }}
+      {{ . | toYaml | nindent 10 }}
+    {{- end }}
+    {{- end }}
+
+    {{- if or (has . $csHosts) (has . $s2sHosts) }}
+      - backendRefs:
+          - kind: Service
+            name: {{ $fullName }}
+            port: {{ $.Values.service.port }}
+        matches:
+          - path:
+              type: PathPrefix
+              value: /_matrix
+    {{- end }}
+
+    {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
+      - backendRefs:
+          - kind: Service
+            name: {{ $fullName }}
+            port: {{ $.Values.service.port }}
+        matches:
+          - path:
+              type: PathPrefix
+              value: /_synapse
+    {{- end }}
+
+    {{- if has . $wkHosts }}
+      {{- if $.Values.wellknown.enabled }}
+      - backendRefs:
+          - kind: Service
+            name: {{ $wkName }}
+            port: {{ $.Values.wellknown.service.port | default 80 }}
+        matches:
+          - path:
+              type: PathPrefix
+              value: /.well-known/matrix
+      {{- else }}
+      - backendRefs:
+          - kind: Service
+            name: {{ $fullName }}
+            port: {{ $.Values.service.port }}
+        matches:
+          - path:
+              type: PathPrefix
+              value: /.well-known/matrix
+      {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
