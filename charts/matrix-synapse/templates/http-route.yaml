@@ -74,12 +74,12 @@ spec:
 
     {{- if has . $csHosts }}
     {{- with $.Values.gateway.csPaths }}
-      {{ . | toYaml | nindent 6 }}
+      {{ . | toYaml | nindent 4 }}
     {{- end }}
     {{- end }}
     {{- if has . $s2sHosts }}
     {{- with $.Values.gateway.paths }}
-      {{ . | toYaml | nindent 6 }}
+      {{ . | toYaml | nindent 4 }}
     {{- end }}
     {{- end }}
 
