@@ -36,6 +36,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ include "element-web.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ELEMENT_WEB_PORT
+              value: '8080'
           ports:
             - name: http
               containerPort: 8080
@@ -54,8 +57,9 @@ spec:
             - mountPath: /app/config.json
               name: config
               subPath: config.json
-            - mountPath: /etc/nginx/conf.d
+            - mountPath: /etc/nginx/conf.d/config.json
               name: config-nginx
+              subPath: config.json
           {{- with .Values.extraVolumeMounts }}
           {{- . | toYaml | nindent 12 }}
           {{- end }}
