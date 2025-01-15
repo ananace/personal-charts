@@ -45,13 +45,13 @@ spec:
       {{- $name := $worker | replace "_" "-" }}
       {{- if and $config.enabled $config.listeners (or $config.paths $config.csPaths) }}
         {{- $service := include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
-        {{- if has $host $csHosts }}
-          {{- range $config.csPaths }}
     - backendRefs:
         - kind: Service
           name: {{ $service }}
           port: 8083
       matches:
+        {{- if has $host $csHosts }}
+          {{- range $config.csPaths }}
         - path:
             type: RegularExpression
             value: {{ . | quote }}
@@ -59,11 +59,6 @@ spec:
         {{- end }}
         {{- if has $host $s2sHosts }}
           {{- range $config.paths }}
-    - backendRefs:
-        - kind: Service
-          name: {{ $service }}
-          port: 8083
-      matches:
         - path:
             type: RegularExpression
             value: {{ . | quote }}
@@ -83,22 +78,18 @@ spec:
     {{- end }}
     {{- end }}
 
-    {{- if or (has . $csHosts) (has . $s2sHosts) }}
     - backendRefs:
         - kind: Service
           name: {{ $fullName }}
           port: {{ $.Values.service.port }}
       matches:
+    {{- if or (has . $csHosts) (has . $s2sHosts) }}
         - path:
             type: PathPrefix
             value: /_matrix
     {{- end }}
-
+    
     {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
-    - backendRefs:
-        - kind: Service
-          name: {{ $fullName }}
-          port: {{ $.Values.service.port }}
       matches:
         - path:
             type: PathPrefix
