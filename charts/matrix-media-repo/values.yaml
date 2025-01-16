@@ -6,7 +6,7 @@ replicaCount: 1
 ## Image configuration for the media repo
 ##
 image:
-  repository: turt2live/matrix-media-repo
+  repository: ghcr.io/t2bot/matrix-media-repo
   pullPolicy: IfNotPresent
   # tag: ""
 
