@@ -38,10 +38,13 @@ spec:
 
   rules:
     {{- $default := $.Values.workers.default }}
+
     {{- range $worker, $config := $.Values.workers }}
       {{- $name := $worker | replace "_" "-" }}
+
       {{- if and $config.enabled $config.listeners (or $config.paths $config.csPaths) }}
         {{- $service := include "matrix-synapse.workername" (dict "global" $ "worker" $name) }}
+
     - backendRefs:
         - kind: Service
           name: {{ $service }}
@@ -51,7 +54,7 @@ spec:
         backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
         {{- range $hosts }}
-        {{- $host := . }}
+          {{- $host := . }}
           {{- if has $host $csHosts }}
             {{- range $config.csPaths }}
         - path:
@@ -70,15 +73,17 @@ spec:
       {{- end }}
     {{- end }}
 
-    {{- if has . $csHosts }}
-    {{- with $.Values.gateway.csPaths }}
-      {{ . | toYaml | nindent 4 }}
-    {{- end }}
-    {{- end }}
-    {{- if has . $s2sHosts }}
-    {{- with $.Values.gateway.paths }}
-      {{ . | toYaml | nindent 4 }}
-    {{- end }}
+    {{- range $hosts }}
+      {{- if has . $csHosts }}
+        {{- with $.Values.gateway.csPaths }}
+          {{ . | toYaml | nindent 4 }}
+        {{- end }}
+      {{- end }}
+      {{- if has . $s2sHosts }}
+        {{- with $.Values.gateway.paths }}
+          {{ . | toYaml | nindent 4 }}
+        {{- end }}
+      {{- end }}
     {{- end }}
 
     - backendRefs:
@@ -89,20 +94,21 @@ spec:
         request: {{ $.Values.gateway.timeouts.request }}
         backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
-    {{- if or (has . $csHosts) (has . $s2sHosts) }}
+    {{- range $hosts }}
+      {{- if or (has . $csHosts) (has . $s2sHosts) }}
         - path:
             type: PathPrefix
             value: /_matrix
-    {{- end }}
-    
-    {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
-      matches:
+      {{- end }}
+      {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
         - path:
             type: PathPrefix
             value: /_synapse
+      {{- end }}
     {{- end }}
 
-    {{- if has . $wkHosts }}
+    {{- $wkHostsLen := len $wkHosts }}
+    {{- if or (.Values.gateway.includeServerName) (gt $wkHostsLen 0) }}
       {{- if $.Values.wellknown.enabled }}
     - backendRefs:
         - kind: Service
