@@ -37,9 +37,6 @@ spec:
   {{- end }}
 
   rules:
-    {{- range $hosts }}
-    {{- $host := . }}
-
     {{- $default := $.Values.workers.default }}
     {{- range $worker, $config := $.Values.workers }}
       {{- $name := $worker | replace "_" "-" }}
@@ -50,18 +47,21 @@ spec:
           name: {{ $service }}
           port: 8083
       matches:
-        {{- if has $host $csHosts }}
-          {{- range $config.csPaths }}
+        {{- range $hosts }}
+        {{- $host := . }}
+          {{- if has $host $csHosts }}
+            {{- range $config.csPaths }}
         - path:
             type: RegularExpression
             value: {{ . | quote }}
+            {{- end }}
           {{- end }}
-        {{- end }}
-        {{- if has $host $s2sHosts }}
-          {{- range $config.paths }}
+          {{- if has $host $s2sHosts }}
+            {{- range $config.paths }}
         - path:
             type: RegularExpression
             value: {{ . | quote }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -116,6 +116,5 @@ spec:
             type: PathPrefix
             value: /.well-known/matrix
       {{- end }}
-    {{- end }}
     {{- end }}
 {{- end }}
