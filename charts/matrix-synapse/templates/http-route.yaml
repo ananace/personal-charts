@@ -94,17 +94,26 @@ spec:
         request: {{ $.Values.gateway.timeouts.request }}
         backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
+    {{- $addUnderscoreMatrix := false }}
+    {{- $addUnderscoreSynapse := false }}
     {{- range $hosts }}
       {{- if or (has . $csHosts) (has . $s2sHosts) }}
+        {{- $addUnderscoreMatrix = true }}
+      {{- end }}
+
+      {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
+        {{- $addUnderscoreSynapse = true }}
+      {{- end }}
+    {{- end}}
+    {{- if $addUnderscoreMatrix }}
         - path:
             type: PathPrefix
             value: /_matrix
-      {{- end }}
-      {{- if and (has . $csHosts) $.Values.gateway.includeUnderscoreSynapse }}
+    {{- end }}
+    {{- if $addUnderscoreSynapse }}
         - path:
             type: PathPrefix
             value: /_synapse
-      {{- end }}
     {{- end }}
 
     {{- $wkHostsLen := len $wkHosts }}
