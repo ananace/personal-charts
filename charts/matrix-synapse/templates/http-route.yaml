@@ -46,6 +46,9 @@ spec:
         - kind: Service
           name: {{ $service }}
           port: 8083
+      timeouts:
+        request: {{ $.Values.gateway.timeouts.request }}
+        backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
         {{- range $hosts }}
         {{- $host := . }}
@@ -82,6 +85,9 @@ spec:
         - kind: Service
           name: {{ $fullName }}
           port: {{ $.Values.service.port }}
+      timeouts:
+        request: {{ $.Values.gateway.timeouts.request }}
+        backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
     {{- if or (has . $csHosts) (has . $s2sHosts) }}
         - path:
@@ -102,6 +108,9 @@ spec:
         - kind: Service
           name: {{ $wkName }}
           port: {{ $.Values.wellknown.service.port | default 80 }}
+      timeouts:
+        request: {{ $.Values.gateway.timeouts.request }}
+        backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
         - path:
             type: PathPrefix
@@ -111,6 +120,9 @@ spec:
         - kind: Service
           name: {{ $fullName }}
           port: {{ $.Values.service.port }}
+      timeouts:
+        request: {{ $.Values.gateway.timeouts.request }}
+        backendRequest: {{ $.Values.gateway.timeouts.backendRequest }}
       matches:
         - path:
             type: PathPrefix

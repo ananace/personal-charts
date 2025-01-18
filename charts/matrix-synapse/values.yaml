@@ -1078,6 +1078,16 @@ gateway:
   parentRefs:
   #  - name: example-gateway
 
+  ## Set the global timeout for requests.
+  ## Note that this currently needs to be higher than your expected /sync timeout. Usually this is around 30s.
+  ## Some SDks however expect 60s
+  ##
+  ## Note that request MUST be higher or equals backendRequest
+  ## https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.HTTPRouteTimeouts
+  timeouts:
+    request: "60s"
+    backendRequest: "60s"
+
 ## Specifies whether a service account should be created, and annotations to add.
 ##
 serviceAccount:
