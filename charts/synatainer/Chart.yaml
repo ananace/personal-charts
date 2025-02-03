@@ -5,8 +5,8 @@ description: Synapse Maintenance Container
 home: https://gitlab.com/mb-saces/synatainer
 type: application
 
-version: 1.1.4
-appVersion: 0.4.3
+version: 1.1.5
+appVersion: 0.4.4
 
 maintainers:
   - name: Alexander Olofsson

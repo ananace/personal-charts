@@ -2,7 +2,7 @@
 ## Docker image configuration, used for Synapse and workers.
 ##
 image:
-  repository: matrixdotorg/synapse
+  repository: ghcr.io/element-hq/synapse
   ## Tag to override with, will default to the application version.
   ##
   # tag: ''
@@ -608,6 +608,8 @@ workers:
     listeners: [media]
     csPaths:
       - "/_matrix/media/.*"
+      - "/_matrix/client/v1/media/.*"
+      - "/_matrix/federation/v1/media/.*"
       - "/_synapse/admin/v1/purge_media_cache$"
       - "/_synapse/admin/v1/room/.*/media"
       - "/_synapse/admin/v1/user/.*/media"
@@ -616,6 +618,8 @@ workers:
       - "/_synapse/admin/v1/users/.*/media$"
     paths:
       - "/_matrix/media/.*"
+      - "/_matrix/client/v1/media/.*"
+      - "/_matrix/federation/v1/media/.*"
 
   ## This worker deals with user directory searches.
   ##

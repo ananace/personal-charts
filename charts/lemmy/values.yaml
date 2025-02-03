@@ -1,6 +1,6 @@
 ---
 image:
-  repository: dessalines/lemmy
+  repository: docker.io/dessalines/lemmy
   pullPolicy: IfNotPresent
   ## Overrides the image tag whose default is the chart appVersion.
   # tag: latest
@@ -30,8 +30,9 @@ config:
   siteName: Lemmy on Kubernetes
   ## Requires valid certificates, but is also required for federation support
   tls: true
-  ## Should pict-rs cache external link previews
-  cacheExternalLinkPreviews: true
+  ## To which degree should pict-rs cache external resources
+  ## Valid modes are; None, StoreLinkPreviews, and ProxyAllImages
+  imageMode: StoreLinkPreviews
 
 ## Extra configuration to merge into the main lemmy.hjson file
 extraConfig: {}
@@ -53,7 +54,7 @@ serviceAccount:
 backend:
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -120,7 +121,7 @@ taskrunner:
 
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -163,7 +164,7 @@ federationsender:
 
   image:
     _keep: true
-    # repository: dessalines/lemmy
+    # repository: docker.io/dessalines/lemmy
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -203,7 +204,7 @@ federationsender:
 
 frontend:
   image:
-    repository: dessalines/lemmy-ui
+    repository: docker.io/dessalines/lemmy-ui
     # pullPolicy: IfNotPresent
     # tag:
 
@@ -312,7 +313,7 @@ pictrs:
     #    name: my-extra-secrets
 
   image:
-    repository: asonix/pictrs
+    repository: docker.io/asonix/pictrs
     pullPolicy: IfNotPresent
     tag: 0.4.0-beta.19
 

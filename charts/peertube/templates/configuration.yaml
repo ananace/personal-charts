@@ -73,9 +73,12 @@ data:
 
       streaming_playlists:
         {{- .Values.config.objectStorage.streaming | toYaml | nindent 8 }}
-
       web_videos:
         {{- .Values.config.objectStorage.videos | toYaml | nindent 8 }}
+      user_exports:
+        {{- .Values.config.objectStorage.exports | toYaml | nindent 8 }}
+      original_video_files:
+        {{- .Values.config.objectStorage.originals | toYaml | nindent 8 }}
 
     # Extra config
     {{- .Values.extraConfig | toYaml | nindent 4 }}
