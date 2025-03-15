@@ -739,6 +739,11 @@ wellknown:
   ##
   affinity: {}
 
+database:
+  args:
+    cp_min: 5
+    cp_max: 10
+
 ## This configuration is for setting up the internally provided Postgres server,
 ## if you instead want to use an existing server, then you may want to set
 ## enabled to false and configure the externalPostgresql block.
