@@ -199,6 +199,10 @@ readinessProbe:
   httpGet:
     path: /api/v1/ping
     port: http
+startupProbe:
+  httpGet:
+    path: /api/v1/ping
+    port: http
 
 serviceAccount:
   ## Specifies whether a service account should be created
