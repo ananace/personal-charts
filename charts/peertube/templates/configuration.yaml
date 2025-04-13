@@ -79,6 +79,8 @@ data:
         {{- .Values.config.objectStorage.exports | toYaml | nindent 8 }}
       original_video_files:
         {{- .Values.config.objectStorage.originals | toYaml | nindent 8 }}
+      captions:
+        {{- .Values.config.objectStorage.captions | toYaml | nindent 8 }}
 
     # Extra config
     {{- .Values.extraConfig | toYaml | nindent 4 }}

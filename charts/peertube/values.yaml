@@ -79,6 +79,11 @@ config:
       # prefix:
       # base_url:
 
+    captions:
+      bucket_name: peertube-captions
+      # prefix:
+      # base_url:
+
   ## Main persistent storage, will be used for uploads, processing, plugins, etc
   persistence:
     enabled: true
