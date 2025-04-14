@@ -3,10 +3,10 @@ apiVersion: v2
 name: funkwhale
 description: A social platform to enjoy and share music
 icon: https://funkwhale.audio/favicon.png
-appVersion: "1.4.0"
+appVersion: "1.4.1"
 
 type: application
-version: 2.0.5
+version: 2.0.6
 dependencies:
   - name: postgresql
     version: ^12.1.4
