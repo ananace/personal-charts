@@ -6,7 +6,7 @@ replicaCount: 1
 ## Image configuration
 ##
 image:
-  repository: vectorim/element-web
+  repository: ghcr.io/element-hq/element-web
   pullPolicy: IfNotPresent
   # tag: ""
 
