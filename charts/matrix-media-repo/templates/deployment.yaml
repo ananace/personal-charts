@@ -117,3 +117,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+---
+{{ template "matrix-media-repo.podDisruptionBudget" (dict "settings" .Values.podDisruptionBudget "root" .) }}

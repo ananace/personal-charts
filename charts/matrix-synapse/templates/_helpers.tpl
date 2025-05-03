@@ -286,3 +286,28 @@ Create the name of the service account to use
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Defines a PodDisruptionBudget for each enabled service
+*/}}
+{{- define "matrix-synapse.podDisruptionBudget" -}}
+{{- if .settings.enabled -}}
+{{- if not (or .settings.minAvailable .settings.maxUnavailable) -}}
+{{-  printf "You must specify either minAvailable or maxUnavailable for podDisruptionBudget for %s" .name | fail -}}
+{{- end -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "matrix-synapse.fullname" .root }}-pdb-{{ .name }}
+spec:
+  {{- if .settings.minAvailable }}
+  minAvailable: {{ .settings.minAvailable }}
+  {{- else if .settings.maxUnavailable }}
+  maxUnavailable: {{ .settings.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "matrix-synapse.selectorLabels" .root | nindent 6 }}
+      app.kubernetes.io/component: {{ .name }}
+{{- end -}}
+{{- end -}}

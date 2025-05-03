@@ -79,3 +79,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+---
+{{ template "sliding-sync-proxy.podDisruptionBudget" (dict "settings" .Values.podDisruptionBudget "root" .) }}

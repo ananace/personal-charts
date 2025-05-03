@@ -217,6 +217,14 @@ synapse:
   strategy:
     type: RollingUpdate
 
+  ## Applies a disruption budget to the main Synapse deployment.
+  ## Either minAvailable or maxUnavailable can be specified, but not both.
+  ##
+  podDisruptionBudget:
+    enabled: false
+    # minAvailable: 75%
+    # maxUnavailable: 25%
+
   ## Annotations to apply to the main Synapse pod.
   ##
   annotations: {}
@@ -347,6 +355,14 @@ workers:
     ##
     strategy:
       type: RollingUpdate
+
+    ## Applies a disruption budget to the worker deployment.
+    ## Either minAvailable or maxUnavailable can be specified, but not both.
+    ##
+    podDisruptionBudget:
+      enabled: false
+      # minAvailable: 75%
+      # maxUnavailable: 25%
 
     ## A specific name for this worker, can't be set globally.
     ## Note that this can only be set when replicaCount is 1
@@ -648,6 +664,14 @@ workers:
 wellknown:
   enabled: false
   replicaCount: 1
+
+  ## Applies a disruption budget to the well-known deployment.
+  ## Either minAvailable or maxUnavailable can be specified, but not both.
+  ##
+  podDisruptionBudget:
+    enabled: false
+    # minAvailable: 75%
+    # maxUnavailable: 25%
 
   # Lighttpd does not bind on IPv6 by default, although this is required in
   # Ipv6-only clusters.

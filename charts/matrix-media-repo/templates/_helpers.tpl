@@ -205,3 +205,27 @@ Set redis password
 {{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Defines a PodDisruptionBudget for each enabled service
+*/}}
+{{- define "matrix-media-repo.podDisruptionBudget" -}}
+{{- if .settings.enabled -}}
+{{- if not (or .settings.minAvailable .settings.maxUnavailable) -}}
+{{-  fail "You must specify either minAvailable or maxUnavailable for podDisruptionBudget" -}}
+{{- end -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "matrix-media-repo.fullname" .root }}-pdb
+spec:
+  {{- if .settings.minAvailable }}
+  minAvailable: {{ .settings.minAvailable }}
+  {{- else if .settings.maxUnavailable }}
+  maxUnavailable: {{ .settings.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "matrix-media-repo.selectorLabels" .root | nindent 6 }}
+{{- end -}}
+{{- end -}}
