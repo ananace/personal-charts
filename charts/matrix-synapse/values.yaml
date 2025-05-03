@@ -1001,6 +1001,93 @@ ingress:
   ## https://kubernetes.io/docs/reference/kubernetes-api/service-resources/ingress-v1/#IngressSpec
   # className: can-be-anything
 
+## The K8s gateway HTTPRule configuration, this will be used in order to
+## set up all routing necessary for use with a sharded Synapse instance.
+## If you're not using a Gateway compatible K8s ingress, you might need to use
+## the ingress configuration instead.
+##
+gateway:
+  enabled: false
+
+  ## Annotations to apply to the created HTTPRule resource.
+  ##
+  annotations: {}
+
+  ## Hosts to add to the HTTPRule configuration for handling Client-to-Server
+  ## API request paths.
+  ##
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
+  csHosts: []
+  #  - matrix.example.com
+
+  ## Additional hosts to add to the HTTPRule configuration for handling
+  ## Server-to-Server API requests.
+  ##
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
+  hosts: []
+  #  - example.com
+
+  ## Additional hosts to add to the HTTPRule configuration for handling
+  ## well-known requests.
+  ##
+  ## NB; config.serverName is included if includeServerName is set. (default)
+  ##
+  wkHosts: []
+  #  - example.com
+
+  ## Additional paths to add to the Server-to-Server HTTPRule blocks, will be
+  ## inserted before the /_matrix catch-all path.
+  ##
+  paths: []
+  # - backendRefs:
+  #     - kind: Service
+  #       name: matrix-media-repo
+  #       port: 8000
+  #   matches:
+  #     - path:
+  #         type: PathPrefix
+  #         value: /_matrix/media
+
+  ## Additional paths to add to the Client-to-Server ingress blocks, will be
+  ## inserted before the /_matrix and /_synapse catch-all paths.
+  ##
+  csPaths: []
+  # - backendRefs:
+  #     - kind: Service
+  #       name: matrix-media-repo
+  #       port: 8000
+  #   matches:
+  #     - path:
+  #         type: PathPrefix
+  #         value: /_matrix/media
+
+  ## Should the /_synapse path be included in the HTTPRule, admin APIs are
+  ## provided under this path.
+  ##
+  includeUnderscoreSynapse: true
+
+  ## Should config.serverName be included in the list of HTTPRule paths, can be
+  ## set to false if the main domain is managed in some external way.
+  ##
+  includeServerName: true
+
+  ## Set the parentRefs of the HTTPRule resource
+  ## https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.ParentReference
+  parentRefs:
+  #  - name: example-gateway
+
+  ## Set the global timeout for requests.
+  ## Note that this currently needs to be higher than your expected /sync timeout. Usually this is around 30s.
+  ## Some SDks however expect 60s
+  ##
+  ## Note that request MUST be higher or equals backendRequest
+  ## https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.HTTPRouteTimeouts
+  timeouts:
+    request: "60s"
+    backendRequest: "60s"
+
 ## Specifies whether a service account should be created, and annotations to add.
 ##
 serviceAccount:
