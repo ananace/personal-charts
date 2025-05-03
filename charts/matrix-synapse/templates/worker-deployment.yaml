@@ -74,8 +74,8 @@ spec:
               {{- end }}
               {{- end }}
 
-              python /synapse/scripts/munge-config.py > /tmp/homeserver.yaml
-              python /synapse/scripts/munge-config.py /synapse/config/{{ $name }}.worker > /tmp/worker.yaml
+              python /synapse/scripts/munge-config.py -o /tmp/homeserver.yaml
+              python /synapse/scripts/munge-config.py /synapse/config/{{ $name }}.worker -o /tmp/worker.yaml
               exec python -B -m synapse.app.{{ (not (not $config.generic)) | ternary "generic_worker" $app }} \
                           -c /tmp/homeserver.yaml \
                           -c /tmp/worker.yaml \

@@ -73,7 +73,7 @@ spec:
               {{ . }}
               {{- end }}
 
-              python /synapse/scripts/munge-config.py > /tmp/homeserver.yaml
+              python /synapse/scripts/munge-config.py -o /tmp/homeserver.yaml
               exec python -B -m synapse.app.homeserver \
                           -c /tmp/homeserver.yaml \
                           -c /tmp/conf.d/
