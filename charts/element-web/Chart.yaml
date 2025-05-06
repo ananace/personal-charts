@@ -7,10 +7,10 @@ description: |
   Talk to everyone through the open global Matrix network, protected by proper
   end-to-end encryption.
 icon: https://element.io/images/logo-mark-primary.svg
-appVersion: 1.11.99
+appVersion: 1.11.100
 
 type: application
-version: 1.4.9
+version: 1.4.10
 
 maintainers:
   - name: Alexander Olofsson
