@@ -27,7 +27,11 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") . | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/scripts.yaml") $ | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+        {{- if .Values.extraSecrets }}
+        checksum/extra-secrets: {{ include (print $.Template.BasePath "/extra-secrets.yaml") | sha256sum }}
+        {{- end }}
         {{- with .Values.synapse.annotations }}
         {{ . | toYaml | nindent 8 }}
         {{- end }}

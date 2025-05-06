@@ -26,8 +26,13 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configuration.yaml") $ | sha256sum }}
+        # TODO: Should only sum the worker-specific config
         checksum/worker-config: {{ include (print $.Template.BasePath "/worker-configuration.yaml") $ | sha256sum }}
+        checksum/scripts: {{ include (print $.Template.BasePath "/scripts.yaml") $ | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") $ | sha256sum }}
+        {{- if $.Values.extraSecrets }}
+        checksum/extra-secrets: {{ include (print $.Template.BasePath "/extra-secrets.yaml") $ | sha256sum }}
+        {{- end }}
       {{- with ($config.annotations | default $default.annotations) }}
         {{ . | toYaml | nindent 8 }}
       {{- end }}
@@ -188,6 +193,9 @@ spec:
         - name: worker-config
           configMap:
             name: {{ include "matrix-synapse.workername" (dict "global" $ "worker" "workers") }}
+        - name: scripts
+          configMap:
+            name: {{ include "matrix-synapse.fullname" . }}-scripts
         {{- if .Values.extraSecrets }}
         - name: secrets
           secret:

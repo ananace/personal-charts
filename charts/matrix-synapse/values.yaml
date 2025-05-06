@@ -200,6 +200,8 @@ extraConfig: {}
 #    - nyc.example.com
 #    - syd.example.com
 #  dynamic_thumbnails: true
+#  password_config:
+#    pepper: '%{env:PASSWORD_PEPPER}'
 
 ## Specify additional loggers configutation here;
 ## Ref: https://matrix-org.github.io/synapse/latest/structured_logging.html
@@ -209,13 +211,19 @@ extraLoggers: {}
 
 ## Specify arbitrary - secret - Synapse configuration here;
 ## These values will be stored in secrets instead of configmaps
-## Environment variable expansion can be done using the following syntax;
-##   key: '%{env:ENVIRONMENT_VARIABLE}%'
+## Environment variable expansion will be performed on these configuration values too
 ## Ref: https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
 ##
 extraSecrets: {}
 #  password_config:
-#    pepper: ''
+#    pepper: 'some random pepper value'
+
+## Specify arbitrary secret values to add to the environment for Synapse and workers
+## Use these in your general configuration with macro expansion;
+##   key: '%{env:ENVIRONMENT_VARIABLE}%'
+##
+extraSecretEnv: {}
+#   PASSWORD_PEPPER: 'some random pepper value'
 
 ## Configuration to apply to the main Synapse pod.
 ##
