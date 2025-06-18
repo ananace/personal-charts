@@ -4,10 +4,10 @@ name: peertube
 description: |
   Free software to take back control of your videos
 icon: https://upload.wikimedia.org/wikipedia/commons/2/2b/Logo_de_PeerTube.svg
-appVersion: 7.2.0
+appVersion: 7.2.1
 
 type: application
-version: 1.5.6
+version: 1.5.7
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
