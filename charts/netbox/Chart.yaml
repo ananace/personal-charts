@@ -10,10 +10,10 @@ description: |
   NB; Support for this chart will end this year, migrate to the official chart instead, located at
   https://github.com/netbox-community/netbox-chart
 icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/netbox/project-static/img/netbox_icon.svg
-appVersion: 4.3.3
+appVersion: 4.3.4
 
 type: application
-version: 6.1.19
+version: 6.1.20
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
