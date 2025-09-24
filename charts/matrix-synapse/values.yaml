@@ -769,6 +769,8 @@ wellknown:
 ##
 postgresql:
   enabled: true
+  image:
+    repository: bitnamilegacy/postgresql
 
   auth:
     # XXX Change me!
@@ -824,6 +826,8 @@ externalPostgresql:
 ##
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
 
   ## Database ID for non-default database
   # dbid: 0
