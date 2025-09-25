@@ -191,21 +191,3 @@ worker:
   tolerations: []
 
   affinity: {}
-
-# Handles the Netbox 3.0+ housekeeping pod
-housekeeping:
-  enabled: true
-
-  resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 32Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 32Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
