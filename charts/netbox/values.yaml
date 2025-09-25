@@ -44,6 +44,8 @@ ingress:
 
 postgresql:
   enabled: true
+  image:
+    repository: bitnamilegacy/postgresql
 
   auth:
     database: netbox
@@ -60,6 +62,9 @@ postgresql:
 # For standalone redis, set enabled=false and host to your redis server
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
+
   # host: example.com
 
   architecture: standalone
