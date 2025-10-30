@@ -15,9 +15,7 @@ Current applications
 - [Matrix Synapse](charts/matrix-synapse)
 - [Netbox](charts/netbox)
 - [Peertube](charts/peertube)
-- [CEPH RadosGW](charts/radosgw)
 - [Synatainer](charts/synatainer)
-- [Matrix Sliding Sync / Sync v3 proxy](charts/sliding-sync-proxy)
 
 Using
 -----

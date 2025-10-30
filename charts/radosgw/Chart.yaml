@@ -1,7 +1,0 @@
----
-apiVersion: v1
-appVersion: "14.2"
-description: CEPH RadosGW
-icon: http://ceph.com/wp-content/uploads/2016/07/Ceph_Logo_Stacked_RGB_120411_fa.png
-name: radosgw
-version: 0.3.4
