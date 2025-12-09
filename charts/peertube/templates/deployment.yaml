@@ -65,6 +65,10 @@ spec:
             - -c
             - |
               (
+                echo "Waiting for peertube to start before running background migrations..."
+                while ! grep :2328 /proc/1/net/tcp > /dev/null && ! grep :2328 /proc/1/net/tcp6 > /dev/null; do
+                  sleep 1
+                end
                 echo "Running migrations in background..."
                 find dist/scripts/migrations/ -iname '*.js' | xargs -rn1 node
                 echo "Background migrations have finished."
