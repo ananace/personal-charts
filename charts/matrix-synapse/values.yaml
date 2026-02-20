@@ -332,6 +332,10 @@ synapse:
   ##
   affinity: {}
 
+  ## Priority class to set for the main Synapse pod.
+  ##
+  priorityClassName: ""
+
 ## Configuration for handling Synapse workers, which are useful for handling
 ## high-load deployments.
 ##

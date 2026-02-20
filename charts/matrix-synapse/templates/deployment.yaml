@@ -61,6 +61,9 @@ spec:
             - name: media
               mountPath: /synapse/data
     {{- end }}
+      {{- if .Values.synapse.priorityClassName }}
+      priorityClassName: {{ .Values.synapse.priorityClassName }}
+      {{- end }}
       containers:
         - name: synapse
           command:
