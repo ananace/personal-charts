@@ -41,9 +41,13 @@ spec:
         {{- include "matrix-synapse.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: {{ $name }}
     spec:
+      serviceAccountName: {{ .Values.wellknown.serviceAccountName | default (include "matrix-synapse.serviceAccountName" .) }}
       {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
       securityContext:
         {{- toYaml .Values.wellknown.podSecurityContext | nindent 8 }}
+      {{- with .Values.wellknown.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
       containers:
         - name: lighttpd
           image: "{{ .Values.wellknown.image.repository }}:{{ .Values.wellknown.image.tag }}"
@@ -81,15 +85,15 @@ spec:
             name: {{ $wkName }}
         - name: run
           emptyDir: {}
-    {{- with .Values.nodeSelector }}
+    {{- with .Values.wellknown.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.wellknown.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.wellknown.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
