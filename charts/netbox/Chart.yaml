@@ -7,13 +7,13 @@ description: |
   Important; With chart version 4.0.0 there are major upgrades to the packaged Redis and Postgres,
   as well as a major version bump of Netbox that introduces housekeeping. Take care when upgrading.
 
-  NB; Support for this chart will end this year, migrate to the official chart instead, located at
+  NB; Support for this chart has ended and is only in basic maintenance, migrate to the official chart instead, located at
   https://github.com/netbox-community/netbox-chart
 icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/netbox/project-static/img/netbox_icon.svg
-appVersion: 4.5.5
+appVersion: 4.5.8
 
 type: application
-version: 6.2.9
+version: 6.2.10
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
