@@ -48,7 +48,7 @@ spec:
         - name: config-ensure
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: busybox
+          image: docker.io/library/busybox
           imagePullPolicy: IfNotPresent
           command:
             - mkdir
