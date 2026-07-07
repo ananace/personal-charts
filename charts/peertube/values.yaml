@@ -54,6 +54,7 @@ config:
     # endpoint:
     # region: us-east-1
     # uploadACL: public-read
+    # uploadACLPrivate: private
     # maxUploadPart: 2GB
 
     # accessKey: ""
