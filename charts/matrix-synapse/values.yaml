@@ -277,6 +277,10 @@ synapse:
   #  runAsGroup: 666
   #  runAsUser: 666
 
+  ## Priority class name to set on the main Synapse pod.
+  ##
+  # priorityClassName: system-cluster-critical
+
   ## Configuration for the container security policy, refer to the above
   ## podSecurityContext for more relevant information.
   ##
@@ -404,6 +408,10 @@ workers:
     #   fsGroup: 666
     #   runAsGroup: 666
     #   runAsUser: 666
+
+    ## Priority class name to set on worker pods.
+    ##
+    # priorityClassName: system-cluster-critical
 
     ## Container security context information to set to the worker.
     ##
@@ -730,6 +738,15 @@ wellknown:
   #  fsGroup: 101
   #  runAsGroup: 101
   #  runAsUser: 100
+
+  ## Priority class name to set on the well-known pod.
+  ##
+  # priorityClassName: system-cluster-critical
+
+  ## Service account name to use for the well-known deployment.
+  ## Defaults to the chart service account configuration.
+  ##
+  # serviceAccountName: matrix-synapse-wellknown
 
   ## Configuration for the container security policy.
   ##

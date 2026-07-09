@@ -42,6 +42,9 @@ spec:
       {{- include "matrix-synapse.imagePullSecrets" . | nindent 6 }}
       securityContext:
         {{- toYaml .Values.synapse.podSecurityContext | nindent 8 }}
+      {{- with .Values.synapse.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
     {{- if $needsVolumePermissions }}
       initContainers:
         - name: volume-permissions
