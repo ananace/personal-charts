@@ -65,7 +65,9 @@ data:
       region: {{ .Values.config.objectStorage.region | quote }}
       {{- end }}
       {{- if .Values.config.objectStorage.uploadACL }}
-      upload_acl: {{ .Values.config.objectStorage.uploadACL | quote }}
+      upload_acl:
+        public: {{ .Values.config.objectStorage.uploadACL | quote }}
+        private: {{ .Values.config.objectStorage.uploadACLPrivate | default "private" | quote }}
       {{- end }}
       {{- if .Values.config.objectStorage.maxUploadPart }}
       max_upload_part: {{ .Values.config.objectStorage.maxUploadPart | quote }}
