@@ -28,7 +28,7 @@ data:
       name: {{ (include "peertube.postgresql.database" .) | quote }}
       hostname: {{ (include "peertube.postgresql.host" .) | quote }}
       port: {{ include "peertube.postgresql.port" . }}
-      username: {{ (include "peertube.postgresql.database" .) | quote }}
+      username: {{ (include "peertube.postgresql.username" .) | quote }}
       ssl: {{ include "peertube.postgresql.ssl" . }}
 
     redis:
