@@ -130,7 +130,11 @@ Get the postgres SSL capability
 {{- if .Values.postgresql.enabled -}}
 {{- true }}
 {{- else -}}
-{{- .Values.externalPostgresql.ssl | default true }}
+{{- if hasKey .Values.externalPostgresql "ssl" -}}
+{{- .Values.externalPostgresql.ssl }}
+{{- else -}}
+{{- true }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
