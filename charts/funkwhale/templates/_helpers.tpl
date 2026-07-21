@@ -58,7 +58,7 @@ postgres://{{ .Values.postgresql.username }}:{{ .Values.postgresql.password }}@{
 
 {{- define "funkwhale.redisUrl" -}}
 {{- if .Values.redis.enabled -}}
-{{- fail "Internal postgresql server is no longer available" -}}
+{{- fail "Internal redis server is no longer available" -}}
 {{- end -}}
 {{- if .Values.redis.password -}}
 redis://:{{ .Values.redis.password }}@{{ required "You must specify redis.host" .Values.redis.host }}:{{ .Values.redis.port | default 6379 }}/{{ .Values.redis.database | default 0 }}
