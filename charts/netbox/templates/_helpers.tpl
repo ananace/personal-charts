@@ -37,23 +37,3 @@ Get the correct image tag name
 {{- define "netbox.imageTag" -}}
 {{- .Values.image.tag | default (printf "v%s" .Chart.AppVersion) -}}
 {{- end -}}
-
-{{/*
-Get the installed postgresql fullname
-*/}}
-{{- define "netbox.postgresql.fullname" -}}
-{{- $name := .Values.postgresql.nameOverride | default "postgresql" -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Get the installed redis fullname
-*/}}
-{{- define "netbox.redis.fullname" -}}
-{{- $name := .Values.redis.nameOverride | default "redis" -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{- define "netbox.redisHost" -}}
-{{- printf "%s-%s" (include "netbox.redis.fullname" .) "master" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}

@@ -1,12 +1,3 @@
-{{- if .Values.database }}
-  {{- if .Values.postgresql.enabled }}
-    {{- "Both external and internal database enabled, you may want to set postgresql.enabled=false" | fail }}
-  {{- end }}
-{{- else }}
-  {{- if not (or .Values.postgresql.enabled .Values.postgresql.postgresqlHost) }}
-    {{- "Neither external nor internal database enabled, you may want to set postgresql.enabled=true" | fail }}
-  {{- end }}
-{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,11 +36,11 @@ spec:
           env:
             - name: HOME
               value: /tmp
-          {{- if and (or .Values.redis.auth.existingSecret .Values.redis.enabled) (not .Values.redis.auth.password) }}
+          {{- if .Values.redis.auth.existingSecret }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.redis.auth.existingSecret | default (include "netbox.redis.fullname" .) }}
+                  name: {{ .Values.redis.auth.existingSecret }}
                   key: {{ .Values.redis.auth.existingSecretPasswordKey | default "redis-password" }}
           {{- end }}
           {{- if .Values.existingDjangoSecret }}
@@ -59,17 +50,12 @@ spec:
                   name: {{ .Values.existingDjangoSecret }}
                   key: {{ .Values.existingDjangoSecretKey }}
           {{- end }}
-          {{- if (or .Values.postgresql.auth.existingSecret .Values.postgresql.enabled) }}
+          {{- if .Values.postgresql.auth.existingSecret }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                {{- if .Values.postgresql.auth.existingSecret }}
                   name: {{ .Values.postgresql.auth.existingSecret }}
                   key: {{ .Values.postgresql.auth.existingSecretKey | default "password" }}
-                {{- else }}
-                  name: {{ include "netbox.postgresql.fullname" . }}
-                  key: password
-                {{- end }}
           {{- end }}
           envFrom:
             - configMapRef:

@@ -1,6 +1,3 @@
-{{- if and (not .Values.redis.enabled) (not .Values.redis.host) }}
-{{ fail "Redis host must be provided if built-in redis is disabled" }}
-{{- end }}
 {{- if .Values.extraConfiguration }}
 ---
 apiVersion: v1
@@ -44,10 +41,10 @@ metadata:
 data:
   DB_NAME: {{ .Values.postgresql.auth.database | quote }}
   DB_USER: {{ .Values.postgresql.auth.username | quote }}
-  DB_HOST: {{ .Values.postgresql.postgresqlHost | default (include "netbox.postgresql.fullname" .) }}
+  DB_HOST: {{ .Values.postgresql.postgresqlHost | required "A PostgreSQL host must be specified" }}
   DB_PORT: {{ .Values.postgresql.postgresqlPort | default 5432 | quote }}
 
-  REDIS_HOST: {{ .Values.redis.host | default (include "netbox.redisHost" .) }}
+  REDIS_HOST: {{ .Values.redis.host | required "A Redis host must be specified" }}
   REDIS_PORT: {{ .Values.redis.master.service.port | default 6379 | quote }}
   REDIS_SSL: "false"
 

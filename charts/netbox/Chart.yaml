@@ -10,20 +10,10 @@ description: |
   NB; Support for this chart has ended and is only in basic maintenance, migrate to the official chart instead, located at
   https://github.com/netbox-community/netbox-chart
 icon: https://raw.githubusercontent.com/netbox-community/netbox/develop/netbox/project-static/img/netbox_icon.svg
-appVersion: 4.6.7
+appVersion: 4.7.0
 
 type: application
-version: 6.2.17
+version: 7.0.0
 maintainers:
   - name: Alexander Olofsson
     email: ace@haxalot.com
-
-dependencies:
-  - name: postgresql
-    version: ^12.1.4
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
-  - name: redis
-    version: ^17.3.17
-    repository: https://charts.bitnami.com/bitnami
-    condition: redis.enabled
